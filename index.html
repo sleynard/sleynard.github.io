@@ -1412,7 +1412,7 @@
           <tr>
             <th style="width:46%">Post</th>
             <th>Status</th>
-            <th>Publish date</th>
+            <th>Created</th>
             <th style="text-align:right">Actions</th>
           </tr>
         </thead>
@@ -1468,9 +1468,9 @@
 
         <div class="field" style="margin-bottom:0;">
 
-          <label for="editDate">Publish date</label>
+          <label for="editDate">Created</label>
 
-          <input type="date" id="editDate">
+          <input type="text" id="editDate" value="Assigned when saved" readonly>
 
         </div>
 
@@ -1610,10 +1610,12 @@
    STATE
    ============================================================ */
 
-const STORAGE_KEY = 'mycms_posts_v1';
 const AUTH_KEY = 'mycms_authed';
 const ADMIN_PASSWORD = 'admin123';
 const THEME_KEY = 'mindovermatter_theme';
+const SUPABASE_REST_URL = 'https://ljseqpciuohncchdcewa.supabase.co/rest/v1/';
+const SUPABASE_KEY = 'sb_publishable_cWKtBkdbEFnbtJYV0Ttt0w_rn42Hx-k';
+const POST_COLUMNS = 'id,created_at,title,body,published';
 
 function currentTheme(){
   return document.documentElement.dataset.theme === 'light' ? 'light' : 'dark';
@@ -1647,83 +1649,48 @@ osTheme.addEventListener?.('change', event => {
   }
 });
 
-const SAMPLE_POSTS = [
-  {
-    id: 's1',
-    title: 'The stories we tell ourselves under stress',
-    excerpt: 'When the mind is under pressure, it reaches for the nearest explanation — and the nearest explanation is rarely the most accurate one.',
-    body: `Under stress, the brain stops optimizing for accuracy and starts optimizing for speed. That trade-off made sense for a nervous system built to react to immediate physical threats. It makes considerably less sense when the "threat" is an ambiguous email or a delayed reply.
-
-What this means in practice: the story you tell yourself in the first sixty seconds of a stressful moment is usually the least reliable interpretation available to you, precisely because it was generated under the worst conditions for careful thinking.
-
-A simple habit helps more than it should — treat your first read of a stressful situation as a draft, not a conclusion. Write it down, wait an hour, and read it again. Most people find the second read is noticeably calmer than the first, not because the situation changed, but because the nervous system did.`,
-    status: 'published',
-    date: '2026-08-02'
-  },
-
-  {
-    id: 's2',
-    title: 'Habits are not about willpower',
-    excerpt: 'The research is fairly consistent on this point, even though it runs against most of the popular advice: willpower is the least reliable lever you have.',
-    body: `Ask most people why a habit failed and they'll tell you they didn't have enough discipline. Ask a behavioral psychologist and you'll get a different answer: the environment made the old behavior easier than the new one.
-
-Willpower is a limited, fluctuating resource — it's depleted by sleep debt, hunger, and unrelated decision-making earlier in the day. Environment, by contrast, doesn't get tired. If the cue for the old behavior is still sitting on the counter, in the app on your home screen, or in the friend group you see every weekend, willpower is fighting a battle it was never built to win consistently.
-
-The more durable move is almost always structural: change what's easiest to reach for, not how hard you try to resist it.`,
-    status: 'published',
-    date: '2026-07-18'
-  },
-
-  {
-    id: 's3',
-    title: 'What rumination is actually for',
-    excerpt: 'Replaying a conversation for the tenth time isn\'t a malfunction. It\'s a system trying, badly, to finish a job it was never given the right tools for.',
-    body: `Rumination gets treated as a symptom to eliminate, and in its chronic form, it often should be addressed. But it's worth understanding what the mechanism is actually trying to do before dismissing it.
-
-Replaying an unresolved social moment is the brain's attempt at threat assessment — it's looking for the piece of information that would let it close the loop and stop monitoring. The problem is that most ruminated-on moments don't contain new information; you're running the same search against the same data and getting the same non-answer.
-
-What tends to actually close the loop isn't more replaying, it's new input: a conversation with the other person, a written reframe, or simply enough time for the nervous system to downgrade the threat on its own. Understanding that distinction — search versus resolution — is often the first step toward interrupting the cycle.`,
-    status: 'published',
-    date: '2026-08-09'
-  },
-
-  {
-    id: 's4',
-    title: 'Draft: on the psychology of procrastination',
-    excerpt: 'Some unfinished notes on procrastination as an emotion-regulation strategy rather than a time-management failure.',
-    body: `Still working through this one. The short version: procrastination correlates more strongly with mood regulation than with poor scheduling. More to come once the research review is finished.`,
-    status: 'draft',
-    date: '2026-08-11'
-  }
-];
-
-function loadPosts(){
-  const raw = localStorage.getItem(STORAGE_KEY);
-
-  if(raw){
-    try{
-      return JSON.parse(raw);
-    }catch(e){
-      /* fall through */
+async function supabaseRequest(path, options = {}){
+  const response = await fetch(SUPABASE_REST_URL + path, {
+    ...options,
+    headers:{
+      apikey:SUPABASE_KEY,
+      'Content-Type':'application/json',
+      ...(options.headers || {})
     }
+  });
+
+  if(!response.ok){
+    const raw = await response.text();
+    let detail = raw;
+    try{
+      const error = JSON.parse(raw);
+      detail = error.message || error.details || raw;
+    }catch(e){}
+    throw new Error(detail || `Supabase request failed (${response.status})`);
   }
 
-  localStorage.setItem(
-    STORAGE_KEY,
-    JSON.stringify(SAMPLE_POSTS)
-  );
-
-  return SAMPLE_POSTS.slice();
+  if(response.status === 204) return null;
+  const text = await response.text();
+  return text ? JSON.parse(text) : null;
 }
 
-function savePosts(posts){
-  localStorage.setItem(
-    STORAGE_KEY,
-    JSON.stringify(posts)
+async function loadPosts(){
+  posts = await supabaseRequest(
+    `posts?select=${POST_COLUMNS}&order=created_at.desc`
   );
+  return posts;
 }
 
-let posts = loadPosts();
+function deriveExcerpt(body){
+  const text = String(body || '')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return text.length > 160
+    ? text.slice(0,157).trimEnd() + '…'
+    : text;
+}
+
+let posts = [];
 let currentFilter = 'all';
 let currentEditId = null;
 let pendingDeleteId = null;
@@ -1825,23 +1792,39 @@ function isAuthed(){
   return sessionStorage.getItem(AUTH_KEY) === '1';
 }
 
-function goHome(){
+async function goHome(refresh = true){
+
+  showPage('view-landing');
+
+  if(refresh){
+    try{
+      await loadPosts();
+    }catch(error){
+      console.error(error);
+      showToast('Could not refresh posts');
+    }
+  }
 
   document.getElementById('landingPostCount').textContent =
     posts.filter(
-      p => p.status === 'published'
+      p => p.published
     ).length + ' essays published';
-
-  showPage('view-landing');
 }
 
-function goPublic(){
+async function goPublic(){
 
   currentPublicPostId = null;
 
-  renderPublicList();
-
   showPage('view-blog-list');
+
+  try{
+    await loadPosts();
+    renderPublicList();
+  }catch(error){
+    console.error(error);
+    renderLoadError('publicPostList');
+    showToast('Could not load posts');
+  }
 }
 
 function goAdminEntry(){
@@ -1897,16 +1880,22 @@ function logout(){
   showToast('Logged out');
 }
 
-function goDashboard(){
+async function goDashboard(){
 
   if(!isAuthed()){
     goAdminEntry();
     return;
   }
 
-  renderDashboard();
-
   showPage('view-dashboard');
+
+  try{
+    await loadPosts();
+    renderDashboard();
+  }catch(error){
+    console.error(error);
+    showToast('Could not load posts');
+  }
 }
 
 
@@ -1943,12 +1932,12 @@ function renderStats(){
 
   const published =
     posts.filter(
-      p => p.status === 'published'
+      p => p.published
     ).length;
 
   const drafts =
     posts.filter(
-      p => p.status === 'draft'
+      p => !p.published
     ).length;
 
   const now = new Date();
@@ -1957,9 +1946,7 @@ function renderStats(){
     posts.filter(p => {
 
       const d =
-        new Date(
-          p.date + 'T00:00:00'
-        );
+        new Date(p.created_at);
 
       return (
         d.getFullYear() === now.getFullYear() &&
@@ -1983,10 +1970,9 @@ function renderStats(){
 
 function fmtDate(iso){
 
-  const d =
-    new Date(
-      iso + 'T00:00:00'
-    );
+  const d = new Date(iso);
+
+  if(Number.isNaN(d.getTime())) return '';
 
   return d.toLocaleDateString(
     'en-US',
@@ -2010,13 +1996,13 @@ function renderTable(){
       .slice()
       .sort(
         (a,b) =>
-          b.date.localeCompare(a.date)
+          b.created_at.localeCompare(a.created_at)
       );
 
   if(currentFilter !== 'all'){
     list =
       list.filter(
-        p => p.status === currentFilter
+        p => currentFilter === 'published' ? p.published : !p.published
       );
   }
 
@@ -2045,19 +2031,19 @@ function renderTable(){
           </div>
 
           <div class="pexcerpt">
-            ${escapeHtml(p.excerpt)}
+            ${escapeHtml(deriveExcerpt(p.body))}
           </div>
 
         </td>
 
         <td>
-          <span class="badge ${p.status}">
-            ${p.status}
+          <span class="badge ${p.published ? 'published' : 'draft'}">
+            ${p.published ? 'published' : 'draft'}
           </span>
         </td>
 
         <td class="date-cell">
-          ${fmtDate(p.date)}
+          ${fmtDate(p.created_at)}
         </td>
 
         <td>
@@ -2066,12 +2052,12 @@ function renderTable(){
 
             <button
               class="btn-icon"
-              title="${p.status === 'published' ? 'Move to draft' : 'Publish'}"
-              onclick="toggleStatus('${p.id}')"
+              title="${p.published ? 'Move to draft' : 'Publish'}"
+              onclick="toggleStatus(${p.id})"
             >
 
               ${
-                p.status === 'published'
+                p.published
                 ? `
                   <svg
                     width="15"
@@ -2104,7 +2090,7 @@ function renderTable(){
             <button
               class="btn-icon"
               title="Edit"
-              onclick="openEditor('${p.id}')"
+              onclick="openEditor(${p.id})"
             >
 
               <svg
@@ -2124,7 +2110,7 @@ function renderTable(){
             <button
               class="btn-icon danger"
               title="Delete"
-              onclick="requestDelete('${p.id}')"
+              onclick="requestDelete(${p.id})"
             >
 
               <svg
@@ -2150,7 +2136,7 @@ function renderTable(){
     `).join('');
 }
 
-function toggleStatus(id){
+async function toggleStatus(id){
 
   const p =
     posts.find(
@@ -2159,20 +2145,21 @@ function toggleStatus(id){
 
   if(!p) return;
 
-  p.status =
-    p.status === 'published'
-      ? 'draft'
-      : 'published';
+  const published = !p.published;
 
-  savePosts(posts);
-
-  renderDashboard();
-
-  showToast(
-    p.status === 'published'
-      ? 'Post published'
-      : 'Moved to draft'
-  );
+  try{
+    await supabaseRequest(`posts?id=eq.${encodeURIComponent(id)}`, {
+      method:'PATCH',
+      headers:{ Prefer:'return=representation' },
+      body:JSON.stringify({ published })
+    });
+    await loadPosts();
+    renderDashboard();
+    showToast(published ? 'Post published' : 'Moved to draft');
+  }catch(error){
+    console.error(error);
+    showToast('Could not update post');
+  }
 }
 
 
@@ -2200,32 +2187,21 @@ function closeDeleteModal(){
     .remove('visible');
 }
 
-function confirmDelete(){
+async function confirmDelete(){
 
-  posts =
-    posts.filter(
-      p => p.id !== pendingDeleteId
-    );
+  const id = pendingDeleteId;
 
-  savePosts(posts);
-
-  closeDeleteModal();
-
-  if(
-    document
-      .getElementById('view-editor')
-      .classList
-      .contains('visible')
-  ){
-
-    goDashboard();
-
-  }else{
-
-    renderDashboard();
+  try{
+    await supabaseRequest(`posts?id=eq.${encodeURIComponent(id)}`, {
+      method:'DELETE'
+    });
+    closeDeleteModal();
+    await goDashboard();
+    showToast('Post deleted');
+  }catch(error){
+    console.error(error);
+    showToast('Could not delete post');
   }
-
-  showToast('Post deleted');
 }
 
 
@@ -2260,9 +2236,7 @@ function openEditor(id){
     document.getElementById('editBody').value = '';
 
     document.getElementById('editDate').value =
-      new Date()
-        .toISOString()
-        .slice(0,10);
+      'Assigned when saved';
 
     document
       .getElementById('editPublished')
@@ -2275,6 +2249,12 @@ function openEditor(id){
         x => x.id === id
       );
 
+    if(!p){
+      showToast('Post not found');
+      goDashboard();
+      return;
+    }
+
     document.getElementById('editTitle').value =
       p.title;
 
@@ -2282,12 +2262,12 @@ function openEditor(id){
       p.body;
 
     document.getElementById('editDate').value =
-      p.date;
+      fmtDate(p.created_at);
 
     document
       .getElementById('editPublished')
       .checked =
-        p.status === 'published';
+        p.published;
   }
 
   onEditorToggle();
@@ -2310,7 +2290,7 @@ function onEditorToggle(){
         : 'Draft';
 }
 
-function saveEditor(){
+async function saveEditor(){
 
   const title =
     document
@@ -2324,20 +2304,10 @@ function saveEditor(){
       .value
       .trim();
 
-  const date =
-    document
-      .getElementById('editDate')
-      .value ||
-      new Date()
-        .toISOString()
-        .slice(0,10);
-
-  const status =
+  const published =
     document
       .getElementById('editPublished')
-      .checked
-      ? 'published'
-      : 'draft';
+      .checked;
 
   if(!title){
 
@@ -2348,44 +2318,32 @@ function saveEditor(){
     return;
   }
 
-  const excerpt =
-    bodyText
-      .split('\n')
-      .find(
-        l => l.trim().length > 0
-      )
-      ?.slice(0,140) || '';
+  const payload = { title, body:bodyText, published };
 
-  if(currentEditId === null){
-
-    posts.push({
-      id: 'p' + Date.now(),
-      title,
-      body: bodyText,
-      excerpt,
-      status,
-      date
-    });
-
-  }else{
-
-    const p =
-      posts.find(
-        x => x.id === currentEditId
+  try{
+    if(currentEditId === null){
+      await supabaseRequest('posts', {
+        method:'POST',
+        headers:{ Prefer:'return=representation' },
+        body:JSON.stringify(payload)
+      });
+    }else{
+      await supabaseRequest(
+        `posts?id=eq.${encodeURIComponent(currentEditId)}`,
+        {
+          method:'PATCH',
+          headers:{ Prefer:'return=representation' },
+          body:JSON.stringify(payload)
+        }
       );
+    }
 
-    p.title = title;
-    p.body = bodyText;
-    p.excerpt = excerpt;
-    p.status = status;
-    p.date = date;
+    showToast('Post saved');
+    await goDashboard();
+  }catch(error){
+    console.error(error);
+    showToast('Could not save post');
   }
-
-  savePosts(posts);
-
-  showToast('Post saved');
-
-  goDashboard();
 }
 
 
@@ -2403,11 +2361,11 @@ function renderPublicList(){
   const list =
     posts
       .filter(
-        p => p.status === 'published'
+        p => p.published
       )
       .sort(
         (a,b) =>
-          b.date.localeCompare(a.date)
+          b.created_at.localeCompare(a.created_at)
       );
 
   if(list.length === 0){
@@ -2431,11 +2389,11 @@ function renderPublicList(){
       <a
         class="post-card"
         href="javascript:void(0)"
-        onclick="openPublicPost('${p.id}')"
+        onclick="openPublicPost(${p.id})"
       >
 
         <div class="pdate">
-          ${fmtDate(p.date)}
+          ${fmtDate(p.created_at)}
         </div>
 
         <h2>
@@ -2443,7 +2401,7 @@ function renderPublicList(){
         </h2>
 
         <p class="pexcerpt">
-          ${escapeHtml(p.excerpt)}
+          ${escapeHtml(deriveExcerpt(p.body))}
         </p>
 
         <span class="read-more">
@@ -2493,7 +2451,7 @@ function openPublicPost(id){
       </a>
 
       <div class="pdate">
-        ${fmtDate(p.date)}
+        ${fmtDate(p.created_at)}
       </div>
 
       <h1>
@@ -2525,6 +2483,17 @@ function escapeHtml(str){
   return div.innerHTML;
 }
 
+function renderLoadError(elementId){
+  const element = document.getElementById(elementId);
+  if(!element) return;
+  element.innerHTML = `
+    <div class="empty-blog">
+      <span class="eyebrow">Unable to load</span>
+      Please refresh the page and try again.
+    </div>
+  `;
+}
+
 let toastTimer = null;
 
 function showToast(msg){
@@ -2551,10 +2520,20 @@ function showToast(msg){
    INIT
    ============================================================ */
 
-(function init(){
+(async function init(){
 
   updateThemeToggle();
-  goHome();
+  showPage('view-landing');
+  document.getElementById('landingPostCount').textContent = 'Loading essays…';
+
+  try{
+    await loadPosts();
+    goHome(false);
+  }catch(error){
+    console.error(error);
+    document.getElementById('landingPostCount').textContent = 'Essays unavailable';
+    showToast('Could not connect to the blog');
+  }
 
 })();
 
