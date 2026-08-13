@@ -52,12 +52,12 @@
     --ink-soft:      #B3AA95;
     --ink-faint:     #726A57;
     --rule:          #2A2619;
-    --gold:          #C9A227;
-    --gold-dk:       #A6841E;
-    --gold-15:       rgba(201,162,39,0.14);
-    --gold-soft:     #E4C55E;
-    --status-pub:    #C9A227;
-    --status-pub-15: rgba(201,162,39,0.15);
+    --gold:          #B89B4A;
+    --gold-dk:       #927A38;
+    --gold-15:       rgba(184,155,74,0.16);
+    --gold-soft:     #D8C078;
+    --status-pub:    #B89B4A;
+    --status-pub-15: rgba(184,155,74,0.16);
     --status-draft:  #9B9280;
     --status-draft-15: rgba(155,146,128,0.14);
     --danger:        #B4463B;
@@ -86,12 +86,12 @@
     --ink-soft:      #625A4B;
     --ink-faint:     #817664;
     --rule:          #D8CFBD;
-    --gold:          #9A7720;
-    --gold-dk:       #765A16;
-    --gold-15:       rgba(154,119,32,0.13);
-    --gold-soft:     #806018;
-    --status-pub:    #806018;
-    --status-pub-15: rgba(154,119,32,0.14);
+    --gold:          #B89B4A;
+    --gold-dk:       #927A38;
+    --gold-15:       rgba(184,155,74,0.16);
+    --gold-soft:     #D8C078;
+    --status-pub:    #B89B4A;
+    --status-pub-15: rgba(184,155,74,0.16);
     --status-draft:  #6F675A;
     --status-draft-15: rgba(111,103,90,0.12);
     --danger:        #9F332D;
@@ -157,12 +157,8 @@
     height:40px;
     object-fit:contain;
     flex:none;
-    filter:drop-shadow(0 2px 5px rgba(201,162,39,0.18));
+    filter:saturate(.82) brightness(.88) drop-shadow(0 2px 5px rgba(184,155,74,0.18));
     transition:filter .2s ease, transform .2s ease;
-  }
-
-  :root[data-theme="light"] .topnav .brand-logo{
-    filter:saturate(.82) brightness(.82) drop-shadow(0 1px 2px rgba(44,35,21,0.12));
   }
 
   .topnav .brand:hover .brand-logo{ transform:scale(1.04); }
@@ -194,6 +190,21 @@
     align-items:center;
     gap:8px;
   }
+
+  .mobile-menu-toggle{
+    display:none;
+    width:40px;
+    height:40px;
+    padding:0;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .mobile-menu-toggle svg{ width:20px; height:20px; }
+  .mobile-menu-toggle .menu-close-icon{ display:none; }
+  .mobile-menu-toggle[aria-expanded="true"] .menu-open-icon{ display:none; }
+  .mobile-menu-toggle[aria-expanded="true"] .menu-close-icon{ display:block; }
+  .theme-toggle-text{ display:none; }
 
   .nav-btn{
     border:1px solid var(--rule);
@@ -1135,9 +1146,69 @@
       padding:0 14px;
     }
 
+    .topnav .brand{
+      gap:7px;
+      font-size:18px;
+      letter-spacing:0;
+      min-width:0;
+    }
+
+    .topnav .brand-logo{
+      width:34px;
+      height:34px;
+    }
+
     .topnav .brand .byline{
       display:none;
     }
+
+    .mobile-menu-toggle{
+      display:inline-flex;
+      flex:none;
+    }
+
+    .nav-actions{
+      position:fixed;
+      top:calc(var(--nav-h) + 8px);
+      left:12px;
+      right:12px;
+      display:flex;
+      flex-direction:column;
+      align-items:stretch;
+      gap:6px;
+      padding:10px;
+      background:var(--panel);
+      border:1px solid var(--rule);
+      border-radius:8px;
+      box-shadow:var(--shadow-pop);
+      opacity:0;
+      visibility:hidden;
+      pointer-events:none;
+      transform:translateY(-10px);
+      transition:opacity .18s ease, transform .18s ease, visibility .18s ease;
+    }
+
+    .nav-actions.open{
+      opacity:1;
+      visibility:visible;
+      pointer-events:auto;
+      transform:translateY(0);
+    }
+
+    .nav-actions .nav-btn{
+      width:100%;
+      min-height:44px;
+      padding:11px 14px;
+      justify-content:flex-start;
+      text-align:left;
+    }
+
+    .nav-actions .theme-toggle{
+      height:44px;
+      gap:9px;
+    }
+
+    .theme-toggle-text{ display:inline; }
   }
 
 </style>
@@ -1156,13 +1227,19 @@
     <span class="byline" id="navByline">Stephen Leynard</span>
   </div>
 
-  <div class="nav-actions">
+  <button class="nav-btn mobile-menu-toggle" id="mobileMenuToggle" type="button" onclick="toggleMobileNav(event)" aria-label="Open navigation menu" aria-expanded="false" aria-controls="navActions">
+    <svg class="menu-open-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    <svg class="menu-close-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+  </button>
+
+  <div class="nav-actions" id="navActions">
     <button class="nav-btn" id="navHomeBtn" onclick="goHome()">Home</button>
     <button class="nav-btn" id="navBlogBtn" onclick="goPublic()">Blog</button>
     <button class="nav-btn" id="navAdminBtn" onclick="goAdminEntry()">Admin</button>
     <button class="nav-btn theme-toggle" id="themeToggle" type="button" onclick="toggleTheme()" aria-label="Switch to light theme" title="Switch to light theme">
       <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"/></svg>
       <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <span class="theme-toggle-text">Theme</span>
     </button>
     <button class="nav-btn ghost-danger" id="navLogoutBtn" style="display:none" onclick="logout()">Log out</button>
   </div>
@@ -1561,6 +1638,7 @@ function setTheme(theme, persist = true){
 
 function toggleTheme(){
   setTheme(currentTheme() === 'dark' ? 'light' : 'dark');
+  closeMobileNav();
 }
 
 const osTheme = window.matchMedia('(prefers-color-scheme: light)');
@@ -1657,7 +1735,27 @@ let currentPublicPostId = null;
    NAV / VIEW ROUTING
    ============================================================ */
 
+function toggleMobileNav(event){
+  event?.stopPropagation();
+  const menu = document.getElementById('navActions');
+  const button = document.getElementById('mobileMenuToggle');
+  const isOpen = menu.classList.toggle('open');
+  button.setAttribute('aria-expanded', String(isOpen));
+  button.setAttribute('aria-label', isOpen ? 'Close navigation menu' : 'Open navigation menu');
+}
+
+function closeMobileNav(){
+  const menu = document.getElementById('navActions');
+  const button = document.getElementById('mobileMenuToggle');
+  if(!menu || !button) return;
+  menu.classList.remove('open');
+  button.setAttribute('aria-expanded', 'false');
+  button.setAttribute('aria-label', 'Open navigation menu');
+}
+
 function showPage(id){
+
+  closeMobileNav();
 
   document
     .querySelectorAll('.page')
@@ -1671,6 +1769,18 @@ function showPage(id){
 
   syncNavButtons(id);
 }
+
+document.addEventListener('click', event => {
+  if(!event.target.closest('.topnav')) closeMobileNav();
+});
+
+document.addEventListener('keydown', event => {
+  if(event.key === 'Escape') closeMobileNav();
+});
+
+window.addEventListener('resize', () => {
+  if(window.innerWidth > 720) closeMobileNav();
+});
 
 function syncNavButtons(id){
 
