@@ -138,42 +138,6 @@ posts/why-we-procrastinate.html   Sample blog post
 posts/the-comparison-trap.html    Sample blog post
 ```
 
-## 1. Put this on GitHub Pages
-
-1. Create a new **public** GitHub repository. If you want it at a `github.io` address, name the repo exactly `<your-username>.github.io` — for any other name, GitHub Pages serves it at `<your-username>.github.io/<repo-name>` instead.
-2. Upload all the files in this folder to the root of that repository (keep the `posts/` folder as a subfolder).
-3. In the repo, go to **Settings → Pages**.
-4. Under **Build and deployment**, set **Source** to `Deploy from a branch`, branch `main`, folder `/ (root)`. Save.
-5. Wait a minute or two — GitHub will give you a live URL like `https://<your-username>.github.io`.
-
-## 2. Point your domain (stephenleynard.com) at it
-
-Since you already own the domain, go to your domain registrar's DNS settings and add these records:
-
-**For the root domain (`stephenleynard.com`):** add four `A` records pointing to GitHub's IP addresses:
-```
-185.199.108.153
-185.199.109.153
-185.199.110.153
-185.199.111.153
-```
-
-**For `www.stephenleynard.com` (optional but recommended):** add a `CNAME` record:
-```
-www   →   <your-username>.github.io
-```
-
-DNS changes can take anywhere from a few minutes to 24 hours to propagate.
-
-Back in **Settings → Pages** on GitHub, enter `stephenleynard.com` in the **Custom domain** field and save — this is what writes the `CNAME` file in your repo (it's already included here, so this step should just confirm it). Once DNS resolves, tick **Enforce HTTPS**.
-
-## 3. Add a new blog post
-
-1. Duplicate `posts/why-we-procrastinate.html` and rename it, e.g. `posts/my-new-post.html`.
-2. Update the `<title>`, the `eyebrow` (category), the `<h1>`, the date/read-time, and the body text between `<article class="post-body">` and `</article>`.
-3. Open `index.html` and add a new `<article class="entry">` block at the top of `.entry-list` (copy an existing one as a template), linking to your new file and pointing to `posts/my-new-post.html`.
-4. Commit and push — GitHub Pages redeploys automatically, usually within a minute.
-
 ## Design notes
 
 The layout uses a "field notebook" motif: a dotted binding rule down the left edge of the page with small rotated tabs marking each section (Intro, Field notes, Contact), an ochre accent for anything worth noticing, and a serif/mono pairing (Newsreader + JetBrains Mono) that reads like handwritten case notes rather than a marketing page. All of this lives in `styles.css` — change the CSS custom properties at the top of the file (`--paper`, `--ink`, `--ochre`, etc.) to adjust the palette globally.
