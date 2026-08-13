@@ -3,7 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MindOverMatter — Stephen Leynard</title>
+<title>Mind Over Matter — Stephen Leynard</title>
+<meta name="description" content="Essays on psychology, behavior, and the quiet mechanics of thought by Stephen Leynard.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Mind Over Matter">
+<meta property="og:title" content="Mind Over Matter — Stephen Leynard">
+<meta property="og:description" content="Essays on psychology, behavior, and the quiet mechanics of thought by Stephen Leynard.">
+<meta property="og:url" content="https://stephenleynard.com/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Mind Over Matter — Stephen Leynard">
+<meta name="twitter:description" content="Essays on psychology, behavior, and the quiet mechanics of thought by Stephen Leynard.">
+<script>
+  (function(){
+    const saved = localStorage.getItem('mindovermatter_theme');
+    const theme = saved === 'light' || saved === 'dark'
+      ? saved
+      : (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+    document.documentElement.dataset.theme = theme;
+  })();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,450;0,9..144,600;0,9..144,700;1,9..144,450;1,9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -15,6 +33,7 @@
      Black & gold, editorial psychology-practice register.
      ============================================================ */
   :root{
+    color-scheme: dark;
     --bg:            #0C0B09;
     --bg-deep:       #060605;
     --panel:         #17150F;
@@ -33,6 +52,10 @@
     --status-draft-15: rgba(155,146,128,0.14);
     --danger:        #B4463B;
     --danger-15:     rgba(180,70,59,0.16);
+    --danger-text:   #E1897E;
+    --on-accent:     #151208;
+    --modal-overlay: rgba(0,0,0,0.68);
+    --switch-knob:   #EFE9D8;
 
     --font-display: 'Fraunces', Georgia, serif;
     --font-body:    'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -41,6 +64,34 @@
     --radius: 3px;
     --shadow-card: 0 1px 2px rgba(0,0,0,0.35), 0 10px 28px rgba(0,0,0,0.4);
     --shadow-pop:  0 16px 48px rgba(0,0,0,0.6);
+  }
+
+  :root[data-theme="light"]{
+    color-scheme: light;
+    --bg:            #F7F3E9;
+    --bg-deep:       #EEE7D7;
+    --panel:         #FFFCF5;
+    --panel-raise:   #F1E9D9;
+    --ink:           #211D16;
+    --ink-soft:      #625A4B;
+    --ink-faint:     #817664;
+    --rule:          #D8CFBD;
+    --gold:          #9A7720;
+    --gold-dk:       #765A16;
+    --gold-15:       rgba(154,119,32,0.13);
+    --gold-soft:     #806018;
+    --status-pub:    #806018;
+    --status-pub-15: rgba(154,119,32,0.14);
+    --status-draft:  #6F675A;
+    --status-draft-15: rgba(111,103,90,0.12);
+    --danger:        #9F332D;
+    --danger-15:     rgba(159,51,45,0.11);
+    --danger-text:   #8C2924;
+    --on-accent:     #FFFCF5;
+    --modal-overlay: rgba(34,29,21,0.46);
+    --switch-knob:   #FFFCF5;
+    --shadow-card: 0 1px 2px rgba(44,35,21,0.08), 0 10px 28px rgba(44,35,21,0.10);
+    --shadow-pop:  0 16px 48px rgba(44,35,21,0.22);
   }
 
   *{ box-sizing: border-box; }
@@ -53,6 +104,7 @@
     font-family:var(--font-body);
     -webkit-font-smoothing:antialiased;
     min-height:100vh;
+    transition:background-color .2s ease, color .2s ease;
   }
 
   a{ color:inherit; text-decoration:none; }
@@ -88,6 +140,12 @@
     font-size:20px;
     letter-spacing:0.2px;
     cursor:pointer;
+  }
+
+  .topnav .brand-title{
+    display:inline-block;
+    white-space:nowrap;
+    word-spacing:normal;
   }
 
   .topnav .brand .mark{
@@ -131,12 +189,31 @@
 
   .nav-btn.active{
     background:var(--gold);
-    color:#151208;
+    color:var(--on-accent);
     border-color:var(--gold);
   }
 
   .nav-btn.active:hover{
-    color:#151208;
+    color:var(--on-accent);
+  }
+
+  .theme-toggle{
+    width:40px;
+    height:38px;
+    padding:0;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .theme-toggle svg{ width:18px; height:18px; }
+  .theme-toggle .sun-icon{ display:none; }
+  :root[data-theme="light"] .theme-toggle .sun-icon{ display:block; }
+  :root[data-theme="light"] .theme-toggle .moon-icon{ display:none; }
+
+  :focus-visible{
+    outline:3px solid var(--gold-15);
+    outline-offset:3px;
   }
 
   .nav-btn.ghost-danger{
@@ -213,7 +290,7 @@
 
   .btn-primary{
     background:var(--gold);
-    color:#151208;
+    color:var(--on-accent);
   }
 
   .btn-primary:hover{
@@ -469,14 +546,12 @@
     background:var(--panel-raise);
   }
 
-  .field input[type="date"]{
-    color-scheme:dark;
-  }
+  .field input[type="date"]{ color-scheme:inherit; }
 
   .login-error{
     display:none;
     background:var(--danger-15);
-    color:#E1897E;
+    color:var(--danger-text);
     font-size:13px;
     font-weight:600;
     padding:9px 12px;
@@ -747,7 +822,7 @@
     height:18px;
     left:3px;
     top:3px;
-    background:#EFE9D8;
+    background:var(--switch-knob);
     border-radius:50%;
     transition:.15s;
     box-shadow:0 1px 2px rgba(0,0,0,0.4);
@@ -759,7 +834,7 @@
 
   .switch input:checked + .slider::before{
     transform:translateX(18px);
-    background:#151208;
+    background:var(--on-accent);
   }
 
   .editor-actions{
@@ -918,7 +993,7 @@
   .post-full .body-copy{
     font-size:17px;
     line-height:1.85;
-    color:#D9D2BF;
+    color:var(--ink-soft);
   }
 
   .post-full .body-copy p{
@@ -932,7 +1007,7 @@
     display:none;
     position:fixed;
     inset:0;
-    background:rgba(0,0,0,0.6);
+    background:var(--modal-overlay);
     z-index:900;
     align-items:center;
     justify-content:center;
@@ -981,7 +1056,7 @@
     left:50%;
     transform:translateX(-50%) translateY(20px);
     background:var(--gold);
-    color:#151208;
+    color:var(--on-accent);
     padding:12px 20px;
     border-radius:6px;
     font-size:13.5px;
@@ -1051,7 +1126,7 @@
 <nav class="topnav">
 
   <div class="brand" onclick="goHome()">
-    <span class="mark">Mind</span> Over Matter
+    <span class="brand-title"><span class="mark">Mind</span> Over Matter</span>
     <span class="byline" id="navByline">Stephen Leynard</span>
   </div>
 
@@ -1059,6 +1134,10 @@
     <button class="nav-btn" id="navHomeBtn" onclick="goHome()">Home</button>
     <button class="nav-btn" id="navBlogBtn" onclick="goPublic()">Blog</button>
     <button class="nav-btn" id="navAdminBtn" onclick="goAdminEntry()">Admin</button>
+    <button class="nav-btn theme-toggle" id="themeToggle" type="button" onclick="toggleTheme()" aria-label="Switch to light theme" title="Switch to light theme">
+      <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"/></svg>
+      <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
     <button class="nav-btn ghost-danger" id="navLogoutBtn" style="display:none" onclick="logout()">Log out</button>
   </div>
 
@@ -1151,10 +1230,6 @@
         </button>
 
       </form>
-
-      <div class="hint">
-        Demo password: <strong>admin123</strong>
-      </div>
 
     </div>
 
@@ -1436,6 +1511,38 @@
 const STORAGE_KEY = 'mycms_posts_v1';
 const AUTH_KEY = 'mycms_authed';
 const ADMIN_PASSWORD = 'admin123';
+const THEME_KEY = 'mindovermatter_theme';
+
+function currentTheme(){
+  return document.documentElement.dataset.theme === 'light' ? 'light' : 'dark';
+}
+
+function updateThemeToggle(){
+  const button = document.getElementById('themeToggle');
+  if(!button) return;
+  const nextTheme = currentTheme() === 'dark' ? 'light' : 'dark';
+  const label = `Switch to ${nextTheme} theme`;
+  button.setAttribute('aria-label', label);
+  button.setAttribute('title', label);
+}
+
+function setTheme(theme, persist = true){
+  const normalized = theme === 'light' ? 'light' : 'dark';
+  document.documentElement.dataset.theme = normalized;
+  if(persist) localStorage.setItem(THEME_KEY, normalized);
+  updateThemeToggle();
+}
+
+function toggleTheme(){
+  setTheme(currentTheme() === 'dark' ? 'light' : 'dark');
+}
+
+const osTheme = window.matchMedia('(prefers-color-scheme: light)');
+osTheme.addEventListener?.('change', event => {
+  if(!localStorage.getItem(THEME_KEY)){
+    setTheme(event.matches ? 'light' : 'dark', false);
+  }
+});
 
 const SAMPLE_POSTS = [
   {
@@ -2311,6 +2418,7 @@ function showToast(msg){
 
 (function init(){
 
+  updateThemeToggle();
   goHome();
 
 })();
