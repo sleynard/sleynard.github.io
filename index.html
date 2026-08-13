@@ -10,9 +10,19 @@
 <meta property="og:title" content="Mind Over Matter — Stephen Leynard">
 <meta property="og:description" content="Essays on psychology, behavior, and the quiet mechanics of thought by Stephen Leynard.">
 <meta property="og:url" content="https://stephenleynard.com/">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://stephenleynard.com/brain-share.png">
+<meta property="og:image:secure_url" content="https://stephenleynard.com/brain-share.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Gold brain logo for Mind Over Matter">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Mind Over Matter — Stephen Leynard">
 <meta name="twitter:description" content="Essays on psychology, behavior, and the quiet mechanics of thought by Stephen Leynard.">
+<meta name="twitter:image" content="https://stephenleynard.com/brain-share.png">
+<meta name="twitter:image:alt" content="Gold brain logo for Mind Over Matter">
+<link rel="icon" type="image/png" href="brain-logo.png">
+<link rel="apple-touch-icon" href="brain-logo.png">
 <script>
   (function(){
     const saved = localStorage.getItem('mindovermatter_theme');
@@ -132,7 +142,7 @@
 
   .topnav .brand{
     display:flex;
-    align-items:baseline;
+    align-items:center;
     gap:9px;
     font-family:var(--font-display);
     font-weight:600;
@@ -141,6 +151,21 @@
     letter-spacing:0.2px;
     cursor:pointer;
   }
+
+  .topnav .brand-logo{
+    width:40px;
+    height:40px;
+    object-fit:contain;
+    flex:none;
+    filter:drop-shadow(0 2px 5px rgba(201,162,39,0.18));
+    transition:filter .2s ease, transform .2s ease;
+  }
+
+  :root[data-theme="light"] .topnav .brand-logo{
+    filter:saturate(.82) brightness(.82) drop-shadow(0 1px 2px rgba(44,35,21,0.12));
+  }
+
+  .topnav .brand:hover .brand-logo{ transform:scale(1.04); }
 
   .topnav .brand-title{
     display:inline-block;
@@ -1126,6 +1151,7 @@
 <nav class="topnav">
 
   <div class="brand" onclick="goHome()">
+    <img class="brand-logo" src="brain-logo.png" alt="">
     <span class="brand-title"><span class="mark">Mind</span> Over Matter</span>
     <span class="byline" id="navByline">Stephen Leynard</span>
   </div>
