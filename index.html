@@ -1235,7 +1235,7 @@
   <div class="nav-actions" id="navActions">
     <button class="nav-btn" id="navHomeBtn" onclick="goHome()">Home</button>
     <button class="nav-btn" id="navBlogBtn" onclick="goPublic()">Blog</button>
-    <button class="nav-btn" id="navAdminBtn" onclick="goAdminEntry()">Admin</button>
+    <button class="nav-btn" id="navAdminBtn" style="display:none" onclick="goAdminEntry()">Admin</button>
     <button class="nav-btn theme-toggle" id="themeToggle" type="button" onclick="toggleTheme()" aria-label="Switch to light theme" title="Switch to light theme">
       <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"/></svg>
       <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -1305,13 +1305,24 @@
 
       <h1>Admin access</h1>
 
-      <p>Enter the password to manage posts.</p>
+      <p>Sign in securely with your Supabase administrator account.</p>
 
       <div class="login-error" id="loginError">
-        Incorrect password. Try again.
+        Sign-in failed. Check your email and password.
       </div>
 
       <form onsubmit="return attemptLogin(event)">
+
+        <div class="field">
+          <label for="adminEmail">Email</label>
+          <input
+            type="email"
+            id="adminEmail"
+            placeholder="you@example.com"
+            autocomplete="username"
+            required
+          >
+        </div>
 
         <div class="field">
           <label for="pw">Password</label>
@@ -1319,7 +1330,8 @@
             type="password"
             id="pw"
             placeholder="••••••••"
-            autocomplete="off"
+            autocomplete="current-password"
+            required
           >
         </div>
 
@@ -1328,7 +1340,7 @@
           class="btn btn-primary"
           style="width:100%; justify-content:center;"
         >
-          Enter dashboard
+          Sign in
         </button>
 
       </form>
@@ -1610,9 +1622,10 @@
    STATE
    ============================================================ */
 
-const AUTH_KEY = 'mycms_authed';
-const ADMIN_PASSWORD = 'admin123';
+const AUTH_SESSION_KEY = 'mindovermatter_auth_session';
+const ADMIN_USER_ID = 'e21f3af3-0afb-41e4-a84f-5b8f10d7f37b';
 const THEME_KEY = 'mindovermatter_theme';
+const SUPABASE_AUTH_URL = 'https://ljseqpciuohncchdcewa.supabase.co/auth/v1/';
 const SUPABASE_REST_URL = 'https://ljseqpciuohncchdcewa.supabase.co/rest/v1/';
 const SUPABASE_KEY = 'sb_publishable_cWKtBkdbEFnbtJYV0Ttt0w_rn42Hx-k';
 const POST_COLUMNS = 'id,created_at,title,body,published';
@@ -1649,14 +1662,97 @@ osTheme.addEventListener?.('change', event => {
   }
 });
 
+function getAuthSession(){
+  try{
+    return JSON.parse(sessionStorage.getItem(AUTH_SESSION_KEY)) || null;
+  }catch(error){
+    sessionStorage.removeItem(AUTH_SESSION_KEY);
+    return null;
+  }
+}
+
+function storeAuthSession(session){
+  const expiresAt = session.expires_at ||
+    Math.floor(Date.now() / 1000) + Number(session.expires_in || 3600);
+  const stored = { ...session, expires_at:expiresAt };
+  sessionStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(stored));
+  return stored;
+}
+
+function clearAuthSession(){
+  sessionStorage.removeItem(AUTH_SESSION_KEY);
+  sessionStorage.removeItem('mycms_authed');
+}
+
+async function authRequest(path, body, accessToken = ''){
+  const headers = {
+    apikey:SUPABASE_KEY,
+    'Content-Type':'application/json'
+  };
+  if(accessToken) headers.Authorization = `Bearer ${accessToken}`;
+
+  const response = await fetch(SUPABASE_AUTH_URL + path, {
+    method:'POST',
+    headers,
+    body:body ? JSON.stringify(body) : undefined
+  });
+
+  const raw = await response.text();
+  let data = null;
+  try{ data = raw ? JSON.parse(raw) : null; }catch(error){}
+
+  if(!response.ok){
+    throw new Error(data?.msg || data?.message || data?.error_description || 'Authentication failed');
+  }
+
+  return data;
+}
+
+async function getAccessToken(){
+  let session = getAuthSession();
+  if(!session || session.user?.id !== ADMIN_USER_ID) return '';
+
+  const now = Math.floor(Date.now() / 1000);
+  if(session.access_token && Number(session.expires_at) > now + 60){
+    return session.access_token;
+  }
+
+  if(!session.refresh_token){
+    clearAuthSession();
+    return '';
+  }
+
+  try{
+    session = await authRequest(
+      'token?grant_type=refresh_token',
+      { refresh_token:session.refresh_token }
+    );
+    if(session.user?.id !== ADMIN_USER_ID) throw new Error('Unauthorized account');
+    return storeAuthSession(session).access_token;
+  }catch(error){
+    clearAuthSession();
+    syncNavButtons('view-landing');
+    return '';
+  }
+}
+
 async function supabaseRequest(path, options = {}){
+  const { auth = false, headers:optionHeaders = {}, ...fetchOptions } = options;
+  const headers = {
+    apikey:SUPABASE_KEY,
+    'Content-Type':'application/json',
+    ...optionHeaders
+  };
+
+  if(auth){
+    const accessToken = await getAccessToken();
+    if(!accessToken) throw new Error('Please sign in again');
+    headers.Authorization = `Bearer ${accessToken}`;
+  }
+
   const response = await fetch(SUPABASE_REST_URL + path, {
-    ...options,
-    headers:{
-      apikey:SUPABASE_KEY,
-      'Content-Type':'application/json',
-      ...(options.headers || {})
-    }
+    ...fetchOptions,
+    headers
   });
 
   if(!response.ok){
@@ -1675,9 +1771,15 @@ async function supabaseRequest(path, options = {}){
 }
 
 async function loadPosts(){
-  posts = await supabaseRequest(
-    `posts?select=${POST_COLUMNS}&order=created_at.desc`
-  );
+  const path = `posts?select=${POST_COLUMNS}&order=created_at.desc`;
+  const useAuth = isAuthed();
+  try{
+    posts = await supabaseRequest(path, { auth:useAuth });
+  }catch(error){
+    if(!useAuth) throw error;
+    clearAuthSession();
+    posts = await supabaseRequest(path);
+  }
   return posts;
 }
 
@@ -1748,6 +1850,10 @@ window.addEventListener('resize', () => {
   if(window.innerWidth > 720) closeMobileNav();
 });
 
+window.addEventListener('hashchange', () => {
+  if(window.location.hash.toLowerCase() === '#admin') goAdminEntry();
+});
+
 function syncNavButtons(id){
 
   const isAdminArea = [
@@ -1782,6 +1888,12 @@ function syncNavButtons(id){
     );
 
   document
+    .getElementById('navAdminBtn')
+    .style.display = isAuthed()
+      ? 'inline-flex'
+      : 'none';
+
+  document
     .getElementById('navLogoutBtn')
     .style.display = isAuthed()
       ? 'inline-flex'
@@ -1789,7 +1901,11 @@ function syncNavButtons(id){
 }
 
 function isAuthed(){
-  return sessionStorage.getItem(AUTH_KEY) === '1';
+  const session = getAuthSession();
+  return Boolean(
+    session?.access_token &&
+    session?.user?.id === ADMIN_USER_ID
+  );
 }
 
 async function goHome(refresh = true){
@@ -1838,44 +1954,63 @@ function goAdminEntry(){
       .classList
       .remove('visible');
 
+    document.getElementById('adminEmail').value = '';
     document.getElementById('pw').value = '';
 
     showPage('view-login');
   }
 }
 
-function attemptLogin(e){
+async function attemptLogin(e){
 
   e.preventDefault();
 
-  const val =
-    document.getElementById('pw').value;
+  const email = document.getElementById('adminEmail').value.trim();
+  const password = document.getElementById('pw').value;
+  const errorBox = document.getElementById('loginError');
+  const submitButton = e.currentTarget.querySelector('button[type="submit"]');
 
-  if(val === ADMIN_PASSWORD){
+  errorBox.classList.remove('visible');
+  submitButton.disabled = true;
+  submitButton.textContent = 'Signing in…';
 
-    sessionStorage.setItem(
-      AUTH_KEY,
-      '1'
+  try{
+    const session = await authRequest(
+      'token?grant_type=password',
+      { email, password }
     );
 
-    goDashboard();
+    if(session.user?.id !== ADMIN_USER_ID){
+      throw new Error('This account is not authorized');
+    }
 
-  }else{
-
-    document
-      .getElementById('loginError')
-      .classList
-      .add('visible');
+    storeAuthSession(session);
+    document.getElementById('pw').value = '';
+    await goDashboard();
+  }catch(error){
+    console.error(error);
+    clearAuthSession();
+    errorBox.textContent = error.message === 'This account is not authorized'
+      ? 'This account is not authorized.'
+      : 'Sign-in failed. Check your email and password.';
+    errorBox.classList.add('visible');
+  }finally{
+    submitButton.disabled = false;
+    submitButton.textContent = 'Sign in';
   }
 
   return false;
 }
 
-function logout(){
+async function logout(){
 
-  sessionStorage.removeItem(AUTH_KEY);
+  const session = getAuthSession();
+  clearAuthSession();
+  if(session?.access_token){
+    authRequest('logout', null, session.access_token).catch(() => {});
+  }
 
-  goHome();
+  await goHome();
 
   showToast('Logged out');
 }
@@ -1891,6 +2026,11 @@ async function goDashboard(){
 
   try{
     await loadPosts();
+    if(!isAuthed()){
+      goAdminEntry();
+      showToast('Your session expired. Please sign in again.');
+      return;
+    }
     renderDashboard();
   }catch(error){
     console.error(error);
@@ -2150,6 +2290,7 @@ async function toggleStatus(id){
   try{
     await supabaseRequest(`posts?id=eq.${encodeURIComponent(id)}`, {
       method:'PATCH',
+      auth:true,
       headers:{ Prefer:'return=representation' },
       body:JSON.stringify({ published })
     });
@@ -2193,7 +2334,8 @@ async function confirmDelete(){
 
   try{
     await supabaseRequest(`posts?id=eq.${encodeURIComponent(id)}`, {
-      method:'DELETE'
+      method:'DELETE',
+      auth:true
     });
     closeDeleteModal();
     await goDashboard();
@@ -2324,6 +2466,7 @@ async function saveEditor(){
     if(currentEditId === null){
       await supabaseRequest('posts', {
         method:'POST',
+        auth:true,
         headers:{ Prefer:'return=representation' },
         body:JSON.stringify(payload)
       });
@@ -2332,6 +2475,7 @@ async function saveEditor(){
         `posts?id=eq.${encodeURIComponent(currentEditId)}`,
         {
           method:'PATCH',
+          auth:true,
           headers:{ Prefer:'return=representation' },
           body:JSON.stringify(payload)
         }
@@ -2528,7 +2672,11 @@ function showToast(msg){
 
   try{
     await loadPosts();
-    goHome(false);
+    if(window.location.hash.toLowerCase() === '#admin'){
+      goAdminEntry();
+    }else{
+      goHome(false);
+    }
   }catch(error){
     console.error(error);
     document.getElementById('landingPostCount').textContent = 'Essays unavailable';
