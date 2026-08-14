@@ -6,17 +6,15 @@ function xml(value = '') {
   return String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&apos;');
 }
 
-function summary(value = '') {
-  const text = String(value).replace(/\s+/g, ' ').trim();
-  return text.length > 240 ? `${text.slice(0, 237).trim()}…` : text;
-}
-
 export async function onRequest() {
-  const response = await fetch(`${SUPABASE_REST_URL}posts?select=title,body,summary,slug,created_at&published=eq.true&order=created_at.desc&limit=50`, { headers: { apikey: SUPABASE_KEY } });
+  const response = await fetch(`${SUPABASE_REST_URL}posts?select=slug,updated_at&published=eq.true&order=created_at.desc`, { headers: { apikey: SUPABASE_KEY } });
   const posts = response.ok ? await response.json() : [];
-  const items = posts.map(post => {
-    const link = `${SITE_URL}/blog/${post.slug}`;
-    return `<item><title>${xml(post.title)}</title><link>${xml(link)}</link><guid>${xml(link)}</guid><pubDate>${new Date(post.created_at).toUTCString()}</pubDate><description>${xml(post.summary || summary(post.body))}</description></item>`;
-  }).join('');
-  return new Response(`<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>Mind Over Matter</title><link>${SITE_URL}</link><description>Essays on psychology and behavior by Stephen Leynard.</description>${items}</channel></rss>`, { headers: { 'content-type': 'application/rss+xml; charset=UTF-8', 'cache-control': 'public, max-age=300' } });
+  const urls = [
+    `<url><loc>${SITE_URL}/</loc></url>`,
+    `<url><loc>${SITE_URL}/blog</loc></url>`,
+    `<url><loc>${SITE_URL}/about</loc></url>`,
+    `<url><loc>${SITE_URL}/privacy</loc></url>`,
+    ...posts.map(post => `<url><loc>${xml(`${SITE_URL}/blog/${post.slug}`)}</loc><lastmod>${xml(post.updated_at)}</lastmod></url>`)
+  ].join('');
+  return new Response(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls}</urlset>`, { headers: { 'content-type': 'application/xml; charset=UTF-8', 'cache-control': 'public, max-age=300' } });
 }
