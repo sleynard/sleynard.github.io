@@ -11,34 +11,78 @@
     }
   })();
 </script>
-<title>Mind Over Matter — Stephen Leynard</title>
+<title>Mind Over Matter | Psychology Essays by Stephen Leynard</title>
 <!-- ARTICLE_META_START -->
-<meta name="description" content="Essays on psychology, behavior, and the quiet mechanics of thought by Stephen Leynard.">
+<meta name="description" content="Mind Over Matter is an independent psychology publication by Stephen Leynard, featuring original essays on human thought, behaviour, and everyday life.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Mind Over Matter">
-<meta property="og:title" content="Mind Over Matter — Stephen Leynard">
-<meta property="og:description" content="Essays on psychology, behavior, and the quiet mechanics of thought by Stephen Leynard.">
+<meta property="og:title" content="Mind Over Matter | Psychology Essays by Stephen Leynard">
+<meta property="og:description" content="An independent psychology publication featuring original essays on human thought, behaviour, and everyday life.">
 <meta property="og:url" content="https://stephenleynard.com/">
 <meta property="og:image" content="https://stephenleynard.com/brain-share-v3.png">
 <meta property="og:image:secure_url" content="https://stephenleynard.com/brain-share-v3.png">
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Mind Over Matter — essays on psychology, behavior, and thought">
+<meta property="og:image:alt" content="Mind Over Matter, an independent psychology publication by Stephen Leynard">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Mind Over Matter — Stephen Leynard">
-<meta name="twitter:description" content="Essays on psychology, behavior, and the quiet mechanics of thought by Stephen Leynard.">
+<meta name="twitter:title" content="Mind Over Matter | Psychology Essays by Stephen Leynard">
+<meta name="twitter:description" content="An independent psychology publication featuring original essays on human thought, behaviour, and everyday life.">
 <meta name="twitter:image" content="https://stephenleynard.com/brain-share-v3.png">
-<meta name="twitter:image:alt" content="Mind Over Matter — essays on psychology, behavior, and thought">
+<meta name="twitter:image:alt" content="Mind Over Matter, an independent psychology publication by Stephen Leynard">
 <link rel="canonical" href="https://stephenleynard.com/">
 <!-- ARTICLE_META_END -->
-<link rel="icon" type="image/png" href="/brain-logo-v2.png">
-<link rel="apple-touch-icon" href="/brain-logo-v2.png">
+<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png">
+<link rel="icon" type="image/png" sizes="96x96" href="/favicon-96.png">
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<meta name="theme-color" content="#0C0B09">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://stephenleynard.com/#website",
+      "url": "https://stephenleynard.com/",
+      "name": "Mind Over Matter",
+      "alternateName": "Mind Over Matter by Stephen Leynard",
+      "description": "An independent psychology publication featuring original essays on human thought, behaviour, and everyday life.",
+      "inLanguage": "en-CA",
+      "publisher": { "@id": "https://stephenleynard.com/#stephen-leynard" }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://stephenleynard.com/#stephen-leynard",
+      "name": "Stephen Leynard",
+      "url": "https://stephenleynard.com/about",
+      "image": "https://stephenleynard.com/stephen-leynard-centered.jpg",
+      "description": "Stephen Leynard is a Canadian psychology graduate and writer with a BA (Honours) in Psychology and an Addictions Certificate from Vancouver Island University.",
+      "alumniOf": {
+        "@type": "CollegeOrUniversity",
+        "name": "Vancouver Island University",
+        "url": "https://www.viu.ca/"
+      },
+      "knowsAbout": ["Psychology", "Human behaviour", "Addiction studies"]
+    },
+    {
+      "@type": "Blog",
+      "@id": "https://stephenleynard.com/#blog",
+      "url": "https://stephenleynard.com/blog",
+      "name": "Mind Over Matter",
+      "description": "Original essays on psychology, human behaviour, and everyday life.",
+      "inLanguage": "en-CA",
+      "author": { "@id": "https://stephenleynard.com/#stephen-leynard" },
+      "publisher": { "@id": "https://stephenleynard.com/#stephen-leynard" }
+    }
+  ]
+}
+</script>
 <script>
   (function(){
     if(location.protocol === 'file:'){
-      document.querySelectorAll('link[href="/brain-logo-v2.png"]').forEach(link => {
-        link.href = 'brain-logo-v2.png';
+      document.querySelectorAll('link[rel~="icon"][href^="/"], link[rel="apple-touch-icon"][href^="/"]').forEach(link => {
+        link.href = link.getAttribute('href').slice(1);
       });
     }
     const saved = localStorage.getItem('mindovermatter_theme');
@@ -1345,22 +1389,53 @@
 
   .site-footer{
     border-top:1px solid var(--rule);
-    padding:34px 28px;
+    padding:28px clamp(20px,4vw,54px);
     color:var(--ink-faint);
     font-size:12px;
   }
 
   .footer-inner{
-    max-width:940px;
+    max-width:1180px;
     margin:0 auto;
-    display:flex;
-    justify-content:space-between;
-    gap:20px;
-    flex-wrap:wrap;
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto auto;
+    align-items:center;
+    gap:24px;
   }
 
-  .footer-links{ display:flex; gap:14px; flex-wrap:wrap; }
-  .footer-links a:hover{ color:var(--gold-soft); }
+  .footer-brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    min-width:0;
+    white-space:nowrap;
+  }
+
+  .footer-brand strong{ color:var(--ink); }
+  .footer-disclaimer{ overflow:hidden; text-overflow:ellipsis; }
+
+  .footer-links{
+    display:flex;
+    align-items:center;
+    gap:17px;
+    white-space:nowrap;
+  }
+  .footer-links button{
+    border:0;
+    padding:0;
+    background:none;
+    color:inherit;
+    font:inherit;
+  }
+  .footer-links a:hover,
+  .footer-links button:hover{ color:var(--gold-soft); }
+
+  .footer-copyright{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    white-space:nowrap;
+  }
 
   @media (max-width: 900px){
     .stats-row{
@@ -1941,6 +2016,238 @@
   .post-full > h1{ font-size:clamp(42px,7vw,66px); line-height:1.02; letter-spacing:-.03em; }
   .post-body{ font-size:17px; line-height:1.85; }
 
+  /* About */
+  .about-wrap{
+    width:min(100%,1120px);
+    margin:0 auto;
+    padding:64px 28px 100px;
+  }
+
+  .page-home-link{
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    min-height:32px;
+    margin:0 0 24px;
+    padding:3px 0;
+    border:0;
+    background:none;
+    color:var(--ink-faint);
+    font-size:11.5px;
+    font-weight:700;
+    letter-spacing:.075em;
+    line-height:1;
+    text-transform:uppercase;
+    transition:color .18s ease;
+  }
+
+  .page-home-link::before{
+    content:'\2190';
+    font-size:14px;
+    font-weight:500;
+    transition:transform .18s ease;
+  }
+
+  .page-home-link:hover{ color:var(--gold-soft); }
+  .page-home-link:hover::before{ transform:translateX(-3px); }
+
+  .login-card .page-home-link{
+    display:flex;
+    width:max-content;
+    margin-left:0;
+    margin-right:auto;
+  }
+
+  .blog-hero > .page-home-link{
+    position:relative;
+    z-index:1;
+  }
+
+  .article-nav{
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:8px 18px;
+    margin-bottom:28px;
+  }
+
+  .article-nav .page-home-link,
+  .post-full .article-nav .back-link{ margin:0; }
+
+  .affiliate-notice{
+    margin:0 0 28px;
+    padding:15px 17px;
+    border:1px solid color-mix(in srgb,var(--gold) 42%,var(--rule));
+    border-left:3px solid var(--gold);
+    border-radius:10px;
+    background:var(--gold-15);
+    color:var(--ink-soft);
+    font-size:12.5px;
+    line-height:1.65;
+  }
+
+  .affiliate-notice strong{
+    display:block;
+    margin-bottom:3px;
+    color:var(--ink);
+    font-size:10.5px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+  }
+
+  .affiliate-required-statement{
+    margin:24px 0;
+    padding:18px 20px;
+    border-left:3px solid var(--gold);
+    border-radius:0 10px 10px 0;
+    background:var(--gold-15);
+    color:var(--ink);
+    font-weight:700;
+  }
+
+  .post-body a,
+  .body-copy a{
+    color:var(--gold-soft);
+    text-decoration:underline;
+    text-decoration-thickness:1px;
+    text-underline-offset:3px;
+  }
+
+  .about-card{
+    position:relative;
+    overflow:hidden;
+    display:grid;
+    grid-template-columns:1fr;
+    align-items:start;
+    gap:clamp(32px,4vw,46px);
+    padding:clamp(26px,4.5vw,52px);
+    border:1px solid var(--rule);
+    border-radius:var(--radius-xl);
+    background:
+      radial-gradient(520px 360px at 0 0,var(--gold-15),transparent 72%),
+      var(--panel);
+    box-shadow:var(--shadow-card);
+  }
+
+  .about-card::after{
+    content:'About';
+    position:absolute;
+    right:-18px;
+    bottom:-55px;
+    color:var(--gold-15);
+    font:italic 600 150px/1 var(--font-display);
+    pointer-events:none;
+  }
+
+  .about-portrait{
+    position:relative;
+    z-index:1;
+    width:min(100%,350px);
+    margin:0 auto;
+  }
+
+  .about-photo-frame{
+    overflow:hidden;
+    aspect-ratio:2/3;
+    border:1px solid color-mix(in srgb,var(--gold) 42%,var(--rule));
+    border-radius:var(--radius-lg);
+    background:var(--bg-deep);
+    box-shadow:0 20px 48px rgba(0,0,0,.22);
+  }
+
+  .about-photo-frame img{
+    display:block;
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    object-position:center;
+  }
+
+  .about-portrait figcaption{
+    margin-top:11px;
+    color:var(--ink-faint);
+    font-size:11px;
+    letter-spacing:.11em;
+    text-align:center;
+    text-transform:uppercase;
+  }
+
+  .about-copy{
+    position:relative;
+    z-index:1;
+    width:min(100%,720px);
+    margin:0 auto;
+  }
+
+  .about-copy h1{
+    margin:13px 0 20px;
+    font:600 clamp(42px,6vw,68px)/1 var(--font-display);
+    letter-spacing:-.035em;
+  }
+
+  .about-copy .post-lede{
+    max-width:660px;
+    margin:0 0 22px;
+    color:var(--ink);
+    font:450 clamp(19px,2vw,23px)/1.55 var(--font-display);
+  }
+
+  .about-copy .post-body{
+    max-width:650px;
+    color:var(--ink-soft);
+    font-size:16px;
+    line-height:1.78;
+  }
+
+  .about-copy .post-body p{ margin:0 0 15px; }
+
+  .about-actions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-top:26px;
+  }
+
+  .about-disclaimer{
+    display:grid;
+    grid-template-columns:minmax(190px,.42fr) minmax(0,1fr);
+    gap:clamp(24px,4vw,48px);
+    margin-top:22px;
+    padding:clamp(24px,3vw,34px);
+    border:1px solid var(--rule);
+    border-radius:var(--radius-lg);
+    background:linear-gradient(135deg,var(--gold-15),transparent 62%),var(--bg-deep);
+  }
+
+  .about-disclaimer h2{
+    margin:8px 0 0;
+    font:600 27px/1.1 var(--font-display);
+  }
+
+  .about-disclaimer p{
+    margin:0;
+    align-self:center;
+    color:var(--ink-soft);
+    font-size:14px;
+    line-height:1.75;
+  }
+
+  .about-editorial-note{
+    display:grid;
+    grid-template-columns:minmax(150px,.3fr) minmax(0,1fr);
+    gap:clamp(18px,3vw,36px);
+    margin-top:18px;
+    padding:22px 4px 0;
+    border-top:1px solid var(--rule);
+  }
+
+  .about-editorial-note p{
+    margin:0;
+    color:var(--ink-faint);
+    font-size:13px;
+    line-height:1.72;
+  }
+
   /* Forms, account, admin, dialogs and feedback */
   .login-card,
   .account-card,
@@ -2005,6 +2312,12 @@
     .home-pillars article{ min-height:0; }
     .home-pillars h3{ margin-top:28px; }
     .post-list{ grid-template-columns:1fr; }
+    .about-card{ grid-template-columns:1fr; align-items:start; }
+    .about-portrait{ width:min(100%,310px); margin:0 auto; }
+    .about-card::after{ font-size:112px; bottom:-38px; }
+    .about-copy{ text-align:left; }
+    .about-disclaimer{ grid-template-columns:1fr; gap:16px; }
+    .about-editorial-note{ grid-template-columns:1fr; gap:8px; }
   }
 
   @media (max-width:640px){
@@ -2032,6 +2345,16 @@
     .featured-post{ border-radius:20px; }
     .post-card,.post-card:first-child{ min-height:250px; padding:24px; border-radius:18px; }
     .post-full{ padding-top:46px; }
+    .about-wrap{ padding:34px 18px 72px; }
+    .page-home-link{ margin-bottom:18px; }
+    .about-card{ gap:28px; padding:20px; border-radius:20px; }
+    .about-portrait{ width:min(88%,280px); }
+    .about-photo-frame{ border-radius:16px; }
+    .about-copy h1{ font-size:clamp(40px,12vw,52px); }
+    .about-copy .post-lede{ font-size:19px; }
+    .about-actions{ display:grid; grid-template-columns:1fr; }
+    .about-actions .btn{ width:100%; justify-content:center; }
+    .about-disclaimer{ padding:23px 20px; border-radius:18px; }
   }
 
   @media (prefers-reduced-motion:reduce){
@@ -2245,10 +2568,13 @@
       line-height:1.4;
     }
 
-    .site-footer{ padding:34px 18px calc(34px + env(safe-area-inset-bottom)); }
-    .footer-inner{ flex-direction:column; align-items:flex-start; gap:18px; line-height:1.6; }
+    .site-footer{ padding:30px 18px calc(30px + env(safe-area-inset-bottom)); }
+    .footer-inner{ display:flex; flex-direction:column; align-items:flex-start; gap:16px; line-height:1.6; }
+    .footer-brand{ align-items:flex-start; flex-direction:column; gap:4px; white-space:normal; }
+    .footer-disclaimer{ overflow:visible; }
     .footer-links{ gap:8px 16px; }
-    .footer-links a{ min-height:38px; display:inline-flex; align-items:center; }
+    .footer-links a,
+    .footer-links button{ min-height:38px; display:inline-flex; align-items:center; }
   }
 
   @media (max-width:370px){
@@ -2312,11 +2638,11 @@
   <div class="landing-wrap">
     <section class="home-hero" aria-labelledby="home-title">
       <div class="home-hero-copy">
-        <div class="home-eyebrow"><span></span> Independent essays on psychology &amp; behavior</div>
-        <h1 id="home-title">Understand your mind.<br><em>Live with intention.</em></h1>
+        <div class="home-eyebrow"><span></span> Independent psychology publication</div>
+        <h1 id="home-title">Explore psychology.<br><em>Live with intention.</em></h1>
         <p class="lede">
-          Thoughtful, plain-language essays about how we think, feel, choose,
-          and change&mdash;for anyone who wants to understand themselves a little better.
+          Mind Over Matter is an independent publication by Stephen Leynard, featuring
+          original essays on human thought, behaviour, and everyday life.
         </p>
         <div class="landing-actions">
           <button class="btn btn-primary" onclick="goPublic()">Explore the essays <span aria-hidden="true">&rarr;</span></button>
@@ -2325,7 +2651,7 @@
         <div class="landing-meta">
           <span id="landingPostCount">0 essays published</span>
           <span class="dot"></span>
-          <span>New writing, published thoughtfully</span>
+          <span>Independent perspectives on psychology</span>
         </div>
       </div>
 
@@ -2335,9 +2661,9 @@
           <div class="orbit-ring orbit-ring-two"></div>
           <div class="brain-halo"></div>
           <img class="hero-brain" src="/brain-logo-v2.png" alt="" onerror="this.onerror=null;this.src='brain-logo-v2.png'">
-          <span class="orbit-word orbit-word-one">Observe</span>
-          <span class="orbit-word orbit-word-two">Reflect</span>
-          <span class="orbit-word orbit-word-three">Choose</span>
+          <span class="orbit-word orbit-word-one">Read</span>
+          <span class="orbit-word orbit-word-two">Learn</span>
+          <span class="orbit-word orbit-word-three">Share</span>
         </div>
       </div>
     </section>
@@ -2372,18 +2698,61 @@
      ABOUT
      ============================================================ -->
 <div class="page" id="view-about">
+  <article class="about-wrap">
+    <button class="page-home-link" onclick="goHome()" aria-label="Back to home">Home</button>
+
+    <section class="about-card" aria-labelledby="aboutHeading">
+      <figure class="about-portrait">
+        <div class="about-photo-frame">
+          <img src="/stephen-leynard-centered.jpg" alt="Portrait of Stephen Leynard" onerror="this.onerror=null;this.src='stephen-leynard-centered.jpg'">
+        </div>
+        <figcaption>Stephen Leynard</figcaption>
+      </figure>
+
+      <div class="about-copy">
+        <div class="eyebrow">About the writer</div>
+        <h1 id="aboutHeading">Stephen Leynard</h1>
+        <p class="post-lede">Stephen is a recent graduate of Vancouver Island University in Canada, where he earned a BA (Honours) in Psychology and an Addictions Certificate.</p>
+        <div class="post-body">
+          <p>Through Mind Over Matter, he shares psychological topics in clear, engaging language for readers interested in how people think, feel, and behave.</p>
+          <p>He is interested in pursuing a PhD in Clinical Psychology and sees psychology as a long-term professional focus.</p>
+        </div>
+        <div class="about-actions">
+          <button class="btn btn-primary" onclick="goPublic()">Read the essays</button>
+          <a class="btn btn-outline" href="mailto:hello@stephenleynard.com" onclick="openContact();return false">Contact Stephen</a>
+        </div>
+      </div>
+    </section>
+
+    <aside class="about-disclaimer" aria-labelledby="disclaimerHeading">
+      <div>
+        <div class="eyebrow">Educational information</div>
+        <h2 id="disclaimerHeading">A note for readers</h2>
+      </div>
+      <p>Content on Mind Over Matter is provided for educational and informational purposes only. These essays reflect the author&rsquo;s personal interpretations and opinions, and readers are encouraged to consider other perspectives, evaluate sources independently, and form their own informed conclusions. The content is not medical or mental-health advice and should not replace care from a qualified health or mental-health professional for personal concerns.</p>
+    </aside>
+
+    <aside class="about-editorial-note" aria-labelledby="editorialStandardsHeading">
+      <div class="eyebrow" id="editorialStandardsHeading">Editorial standards</div>
+      <p>Artificial-intelligence tools assisted with this website&rsquo;s design and development. They are not used to draft or write the essays, which are authored by Stephen Leynard and reflect his original thought, analysis, and voice. Where appropriate and practicable, supporting sources are cited in APA style.</p>
+    </aside>
+  </article>
+</div>
+
+<!-- ============================================================
+     AFFILIATE DISCLOSURE
+     ============================================================ -->
+<div class="page" id="view-affiliate-disclosure">
   <article class="post-full">
-    <button class="btn-text" onclick="goHome()">&larr; Back home</button>
-    <div class="eyebrow" style="margin-top:28px">About</div>
-    <h1>Mind Over Matter</h1>
-    <p class="post-lede">An independent collection of essays by Stephen Leynard about psychology, behavior, and the quiet mechanics of thought.</p>
+    <button class="page-home-link" onclick="goHome()" aria-label="Back to home">Home</button>
+    <div class="eyebrow">Transparency</div>
+    <h1>Affiliate disclosure</h1>
+    <p class="post-lede">A clear explanation of how affiliate links may support Mind Over Matter.</p>
     <div class="post-body">
-      <p>The goal is simple: explore how people think, feel, choose, and change in language that is thoughtful, useful, and easy to follow.</p>
-      <p>These essays are educational and reflective. They are not medical advice, diagnosis, or a substitute for support from a qualified professional.</p>
-    </div>
-    <div class="article-actions">
-      <button class="btn btn-primary" onclick="goPublic()">Read the essays</button>
-      <a class="btn btn-outline" href="mailto:hello@stephenleynard.com">Contact Stephen</a>
+      <p>Some essays may contain affiliate links. If you click an affiliate link and make a purchase, Stephen may receive a commission at no additional cost to you.</p>
+      <div class="affiliate-required-statement">As an Amazon Associate I earn from qualifying purchases.</div>
+      <p>Affiliate relationships do not determine the opinions, analysis, or recommendations published here. Product discussions reflect independent judgment, and any statement presented as personal experience is based on genuine experience.</p>
+      <p>Prices, availability, returns, and customer service are controlled by the retailer and may change. Amazon does not sponsor, endorse, or operate Mind Over Matter.</p>
     </div>
   </article>
 </div>
@@ -2393,8 +2762,8 @@
      ============================================================ -->
 <div class="page" id="view-privacy">
   <article class="post-full">
-    <button class="btn-text" onclick="goHome()">&larr; Back home</button>
-    <div class="eyebrow" style="margin-top:28px">Reader privacy</div>
+    <button class="page-home-link" onclick="goHome()" aria-label="Back to home">Home</button>
+    <div class="eyebrow">Reader privacy</div>
     <h1>Privacy</h1>
     <p class="post-lede">A short explanation of what is stored when you create a Mind Over Matter reader account.</p>
     <div class="post-body">
@@ -2403,7 +2772,7 @@
       <h2>Where it is stored</h2>
       <p>Account and community information is stored in Supabase. Your browser also remembers your theme and sign-in session on your device.</p>
       <h2>Your choices</h2>
-      <p>You can remove your own likes and comments. To ask for your reader account to be deleted, email <a href="mailto:hello@stephenleynard.com" style="color:var(--gold)">hello@stephenleynard.com</a>.</p>
+      <p>You can remove your own likes and comments. To ask for your reader account to be deleted, contact <a href="mailto:hello@stephenleynard.com" onclick="openContact();return false" style="color:var(--gold)">hello@stephenleynard.com</a>.</p>
     </div>
   </article>
 </div>
@@ -2414,6 +2783,7 @@
 <div class="page" id="view-account">
   <div class="login-wrap">
     <div class="login-card account-card">
+      <button class="page-home-link" onclick="goHome()" aria-label="Back to home">Home</button>
       <div class="lock">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
       </div>
@@ -2451,6 +2821,8 @@
   <div class="login-wrap">
 
     <div class="login-card">
+
+      <button class="page-home-link" onclick="goHome()" aria-label="Back to home">Home</button>
 
       <div class="lock">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -2513,6 +2885,8 @@
 <div class="page" id="view-dashboard">
 
   <div class="admin-wrap">
+
+    <button class="page-home-link" onclick="goHome()" aria-label="Back to home">Home</button>
 
     <div class="admin-head">
 
@@ -2601,6 +2975,8 @@
 <div class="page" id="view-editor">
 
   <div class="editor-wrap">
+
+    <button class="page-home-link" onclick="goHome()" aria-label="Back to home">Home</button>
 
     <button class="btn-text" onclick="goDashboard()">
       &larr; Back to dashboard
@@ -2747,13 +3123,15 @@
 
   <div class="blog-hero">
 
+    <button class="page-home-link" onclick="goHome()" aria-label="Back to home">Home</button>
+
     <div class="rule"></div>
 
     <h1>Mind Over Matter</h1>
 
     <p>
       Essays on psychology and behavior by Stephen Leynard —
-      written plainly, published often.
+      written plainly and shared independently.
     </p>
 
   </div>
@@ -2786,21 +3164,37 @@
 
 <footer class="site-footer">
   <div class="footer-inner">
-    <div>
-      <strong style="color:var(--ink)">Mind Over Matter</strong><br>
-      Educational essays—not medical advice or a substitute for professional care.
+    <div class="footer-brand">
+      <strong>Mind Over Matter</strong>
+      <span class="footer-disclaimer">Educational information and personal perspectives—not medical or mental-health advice.</span>
     </div>
-    <div class="footer-links">
+    <nav class="footer-links" aria-label="Footer navigation">
       <a href="/" onclick="goHome();return false">Home</a>
       <a href="/blog" onclick="goPublic();return false">Blog</a>
       <a href="/about" onclick="goAbout();return false">About</a>
       <a href="/privacy" onclick="goPrivacy();return false">Privacy</a>
-      <a href="/rss.xml">RSS</a>
-      <a href="mailto:hello@stephenleynard.com">Contact</a>
-    </div>
-    <div>© <span id="footerYear"></span> Stephen Leynard</div>
+      <a href="/affiliate-disclosure" onclick="goAffiliateDisclosure();return false">Disclosure</a>
+      <button type="button" onclick="openContact()">Contact</button>
+    </nav>
+    <div class="footer-copyright"><span>© <span id="footerYear"></span> Stephen Leynard</span><span aria-hidden="true">·</span><span>All rights reserved.</span></div>
   </div>
 </footer>
+
+<!-- ============================================================
+     CONTACT
+     ============================================================ -->
+<div class="modal-backdrop" id="contactModal" role="dialog" aria-modal="true" aria-labelledby="contactModalTitle" aria-hidden="true" onclick="if(event.target===this) closeContact()">
+  <div class="modal-card">
+    <div class="eyebrow" style="margin-bottom:10px">Contact</div>
+    <h3 id="contactModalTitle">Contact Stephen</h3>
+    <p>Send a message to <strong style="color:var(--ink)">hello@stephenleynard.com</strong>.</p>
+    <div class="modal-actions">
+      <a class="btn btn-primary" href="mailto:hello@stephenleynard.com?subject=Mind%20Over%20Matter">Open email app</a>
+      <button class="btn btn-outline" type="button" onclick="copyContactEmail()">Copy email</button>
+    </div>
+    <button class="btn-text" type="button" style="margin-top:14px" onclick="closeContact()">Close</button>
+  </div>
+</div>
 
 <!-- ============================================================
      DELETE CONFIRM MODAL
@@ -3104,7 +3498,7 @@ function showPage(id){
   syncNavButtons(id);
 
   if(id !== 'view-blog-post'){
-    document.title = 'Mind Over Matter — Stephen Leynard';
+    document.title = 'Mind Over Matter | Psychology Essays by Stephen Leynard';
     const progress = document.getElementById('readingProgress');
     if(progress) progress.style.width = '0';
   }
@@ -3115,7 +3509,10 @@ document.addEventListener('click', event => {
 });
 
 document.addEventListener('keydown', event => {
-  if(event.key === 'Escape') closeMobileNav();
+  if(event.key === 'Escape'){
+    closeMobileNav();
+    closeContact();
+  }
 });
 
 window.addEventListener('resize', () => {
@@ -3273,9 +3670,9 @@ function renderLandingFeature(){
 
   if(!latest){
     wrap.innerHTML = `
-      <div class="home-card-kicker">Latest essay</div>
-      <h2>The first essay is on its way.</h2>
-      <p class="home-latest-excerpt">New writing about psychology, behavior, and everyday life will appear here once it is published.</p>
+      <div class="home-card-kicker">Essay archive</div>
+      <h2>No essays are currently published.</h2>
+      <p class="home-latest-excerpt">When essays are published, this space will collect writing about psychology, behavior, and everyday life.</p>
       <button class="home-text-link" onclick="goPublic()">Visit the blog <span aria-hidden="true">&rarr;</span></button>
     `;
     return;
@@ -3346,6 +3743,11 @@ function goAbout(){
 function goPrivacy(){
   pushRoute('/privacy');
   showPage('view-privacy');
+}
+
+function goAffiliateDisclosure(){
+  pushRoute('/affiliate-disclosure');
+  showPage('view-affiliate-disclosure');
 }
 
 function goAdminEntry(){
@@ -3563,6 +3965,64 @@ function postPath(post){
   return `/blog/${encodeURIComponent(post.slug || `${slugify(post.title)}-${post.id}`)}`;
 }
 
+function isAmazonAffiliateUrl(value){
+  try{
+    const host = new URL(value).hostname.toLowerCase().replace(/^www\./,'');
+    return host === 'amzn.to' ||
+      host === 'a.co' ||
+      host === 'amazon.ca' ||
+      host.endsWith('.amazon.ca') ||
+      host === 'amazon.com' ||
+      host.endsWith('.amazon.com');
+  }catch(error){
+    return false;
+  }
+}
+
+function formatInlineText(text){
+  const source = String(text || '');
+  const linkPattern = /\[([^\]\n]+)\]\((https?:\/\/[^\s)]+)\)|(https?:\/\/[^\s<]+)/gi;
+  let result = '';
+  let lastIndex = 0;
+  let match;
+
+  while((match = linkPattern.exec(source))){
+    result += escapeHtml(source.slice(lastIndex, match.index));
+    let url = match[2] || match[3];
+    let label = match[1] || url;
+    let trailing = '';
+
+    if(!match[2]){
+      const suffix = url.match(/[.,!?;:]+$/);
+      if(suffix){
+        trailing = suffix[0];
+        url = url.slice(0, -trailing.length);
+        label = url;
+      }
+    }
+
+    try{
+      const parsed = new URL(url);
+      if(parsed.protocol !== 'http:' && parsed.protocol !== 'https:') throw new Error('Unsupported link');
+      const rel = isAmazonAffiliateUrl(parsed.href)
+        ? 'sponsored nofollow noopener noreferrer'
+        : 'noopener noreferrer';
+      result += `<a href="${escapeHtml(parsed.href)}" target="_blank" rel="${rel}">${escapeHtml(label)}</a>${escapeHtml(trailing)}`;
+    }catch(error){
+      result += escapeHtml(match[0]);
+    }
+
+    lastIndex = linkPattern.lastIndex;
+  }
+
+  return result + escapeHtml(source.slice(lastIndex));
+}
+
+function containsAmazonAffiliateLink(body){
+  const urls = String(body || '').match(/https?:\/\/[^\s)\]]+/gi) || [];
+  return urls.some(isAmazonAffiliateUrl);
+}
+
 function formatBody(body){
   return String(body || '')
     .split(/\n{2,}/)
@@ -3571,14 +4031,14 @@ function formatBody(body){
     .map(block => {
       if(/^#{2,3}\s/.test(block)){
         const level = block.startsWith('### ') ? 3 : 2;
-        return `<h${level}>${escapeHtml(block.replace(/^#{2,3}\s/, ''))}</h${level}>`;
+        return `<h${level}>${formatInlineText(block.replace(/^#{2,3}\s/, ''))}</h${level}>`;
       }
-      if(/^>\s/.test(block)) return `<blockquote>${escapeHtml(block.replace(/^>\s/, ''))}</blockquote>`;
+      if(/^>\s/.test(block)) return `<blockquote>${formatInlineText(block.replace(/^>\s/, ''))}</blockquote>`;
       if(/^[-*]\s/m.test(block)){
         const items = block.split('\n').map(line => line.replace(/^[-*]\s*/, '')).filter(Boolean);
-        return `<ul>${items.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul>`;
+        return `<ul>${items.map(item => `<li>${formatInlineText(item)}</li>`).join('')}</ul>`;
       }
-      return `<p>${escapeHtml(block).replace(/\n/g, '<br>')}</p>`;
+      return `<p>${formatInlineText(block).replace(/\n/g, '<br>')}</p>`;
     })
     .join('');
 }
@@ -3601,6 +4061,7 @@ async function routeFromLocation(){
   if(location.pathname === '/blog' || location.pathname === '/blog/') return goPublic(false);
   if(location.pathname === '/about' || location.pathname === '/about/') return goAbout();
   if(location.pathname === '/privacy' || location.pathname === '/privacy/') return goPrivacy();
+  if(location.pathname === '/affiliate-disclosure' || location.pathname === '/affiliate-disclosure/') return goAffiliateDisclosure();
   goHome(false);
 }
 
@@ -4152,13 +4613,10 @@ async function openPublicPost(id, pushHistory = true){
     .getElementById('publicPostFull')
     .innerHTML = `
 
-      <a
-        class="back-link"
-        href="/blog"
-        onclick="goPublic();return false"
-      >
-        &larr; All essays
-      </a>
+      <div class="article-nav">
+        <button class="page-home-link" onclick="goHome()" aria-label="Back to home">Home</button>
+        <a class="back-link" href="/blog" onclick="goPublic();return false">All essays</a>
+      </div>
 
       <div class="pdate">
         ${fmtDate(p.created_at)} · ${escapeHtml(p.category || 'Psychology')} · ${readingTime(p.body)} min read
@@ -4169,6 +4627,13 @@ async function openPublicPost(id, pushHistory = true){
       </h1>
 
       ${p.cover_image_url ? `<img class="post-cover" src="${escapeHtml(p.cover_image_url)}" alt="">` : ''}
+
+      ${containsAmazonAffiliateLink(p.body) ? `
+        <aside class="affiliate-notice" aria-label="Affiliate disclosure">
+          <strong>Affiliate disclosure</strong>
+          This article contains affiliate links. As an Amazon Associate I earn from qualifying purchases. If you purchase through one of these links, I may receive a commission at no additional cost to you.
+        </aside>
+      ` : ''}
 
       <div class="body-copy">
         ${paragraphs}
@@ -4356,6 +4821,42 @@ function showToast(msg){
     );
 }
 
+const CONTACT_EMAIL = 'hello@stephenleynard.com';
+
+function openContact(){
+  const modal = document.getElementById('contactModal');
+  modal.classList.add('visible');
+  modal.setAttribute('aria-hidden','false');
+  setTimeout(() => modal.querySelector('a').focus(), 0);
+}
+
+function closeContact(){
+  const modal = document.getElementById('contactModal');
+  if(!modal) return;
+  modal.classList.remove('visible');
+  modal.setAttribute('aria-hidden','true');
+}
+
+async function copyContactEmail(){
+  let copied = false;
+  try{
+    if(!navigator.clipboard || !window.isSecureContext) throw new Error('Clipboard unavailable');
+    await navigator.clipboard.writeText(CONTACT_EMAIL);
+    copied = true;
+  }catch(error){
+    const field = document.createElement('textarea');
+    field.value = CONTACT_EMAIL;
+    field.setAttribute('readonly','');
+    field.style.position = 'fixed';
+    field.style.opacity = '0';
+    document.body.appendChild(field);
+    field.select();
+    copied = document.execCommand('copy');
+    field.remove();
+  }
+  showToast(copied ? 'Email address copied' : CONTACT_EMAIL);
+}
+
 
 /* ============================================================
    INIT
@@ -4381,6 +4882,8 @@ function showToast(msg){
       goAbout();
     }else if(location.pathname === '/privacy' || location.pathname === '/privacy/'){
       goPrivacy();
+    }else if(location.pathname === '/affiliate-disclosure' || location.pathname === '/affiliate-disclosure/'){
+      goAffiliateDisclosure();
     }else{
       goHome(false);
     }
