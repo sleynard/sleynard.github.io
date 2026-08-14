@@ -36,7 +36,7 @@ export async function onRequest(context) {
   const title = `${post.title} — Mind Over Matter`;
   const description = post.summary || excerpt(post.body);
   const url = `${SITE_URL}/blog/${encodeURIComponent(post.slug)}`;
-  const image = post.cover_image_url || `${SITE_URL}/brain-share-v2.png`;
+  const image = post.cover_image_url || `${SITE_URL}/brain-share-v3.png`;
   const metadata = `<!-- ARTICLE_META_START -->
 <meta name="description" content="${escapeHtml(description)}">
 <meta property="og:type" content="article">
