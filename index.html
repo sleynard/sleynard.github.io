@@ -19,17 +19,17 @@
 <meta property="og:title" content="Mind Over Matter — Stephen Leynard">
 <meta property="og:description" content="Essays on psychology, behavior, and the quiet mechanics of thought by Stephen Leynard.">
 <meta property="og:url" content="https://stephenleynard.com/">
-<meta property="og:image" content="https://stephenleynard.com/brain-share.png">
-<meta property="og:image:secure_url" content="https://stephenleynard.com/brain-share.png">
+<meta property="og:image" content="https://stephenleynard.com/brain-share-v2.png">
+<meta property="og:image:secure_url" content="https://stephenleynard.com/brain-share-v2.png">
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Gold brain logo for Mind Over Matter">
+<meta property="og:image:alt" content="Mind Over Matter — essays on psychology, behavior, and thought">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Mind Over Matter — Stephen Leynard">
 <meta name="twitter:description" content="Essays on psychology, behavior, and the quiet mechanics of thought by Stephen Leynard.">
-<meta name="twitter:image" content="https://stephenleynard.com/brain-share.png">
-<meta name="twitter:image:alt" content="Gold brain logo for Mind Over Matter">
+<meta name="twitter:image" content="https://stephenleynard.com/brain-share-v2.png">
+<meta name="twitter:image:alt" content="Mind Over Matter — essays on psychology, behavior, and thought">
 <link rel="canonical" href="https://stephenleynard.com/">
 <!-- ARTICLE_META_END -->
 <link rel="icon" type="image/png" href="/brain-logo-v2.png">
@@ -1471,6 +1471,574 @@
     .related-grid{ grid-template-columns:1fr; }
   }
 
+  /* ============================================================
+     2026 EDITORIAL REDESIGN
+     A warmer, more dimensional system shared by every view.
+     ============================================================ */
+  :root{
+    --nav-h:72px;
+    --radius:12px;
+    --radius-lg:20px;
+    --radius-xl:28px;
+    --nav-glass:rgba(10,9,7,.86);
+    --panel-glass:rgba(23,21,15,.84);
+    --shadow-card:0 1px 0 rgba(255,255,255,.035),0 18px 50px rgba(0,0,0,.28);
+    --shadow-pop:0 24px 70px rgba(0,0,0,.48);
+  }
+
+  :root[data-theme="light"]{
+    --nav-glass:rgba(247,243,233,.88);
+    --panel-glass:rgba(255,252,245,.88);
+    --shadow-card:0 1px 0 rgba(255,255,255,.7),0 18px 50px rgba(44,35,21,.10);
+    --shadow-pop:0 24px 70px rgba(44,35,21,.18);
+  }
+
+  html{ scroll-behavior:smooth; }
+
+  body{
+    background:
+      radial-gradient(900px 620px at 7% 10%,var(--gold-15),transparent 70%),
+      var(--bg);
+  }
+
+  button,a,input,textarea,select{ -webkit-tap-highlight-color:transparent; }
+
+  :focus-visible{
+    outline:2px solid var(--gold);
+    outline-offset:3px;
+  }
+
+  .page.visible{ animation:page-arrive .42s ease both; }
+
+  @keyframes page-arrive{
+    from{ opacity:0; transform:translateY(6px); }
+    to{ opacity:1; transform:none; }
+  }
+
+  .topnav{
+    height:var(--nav-h);
+    padding:0 clamp(18px,4vw,54px);
+    background:var(--nav-glass);
+    border-bottom-color:color-mix(in srgb,var(--rule) 82%,transparent);
+    box-shadow:0 8px 30px rgba(0,0,0,.06);
+    backdrop-filter:blur(18px) saturate(125%);
+    -webkit-backdrop-filter:blur(18px) saturate(125%);
+  }
+
+  .topnav .brand{ gap:10px; font-size:21px; }
+  .topnav .brand-logo{ width:43px; height:43px; }
+  .nav-actions{ gap:5px; }
+
+  .nav-btn{
+    min-height:38px;
+    padding:8px 12px;
+    border-radius:999px;
+    transition:background-color .18s ease,color .18s ease,border-color .18s ease,transform .18s ease;
+  }
+
+  .nav-btn:hover{ transform:translateY(-1px); }
+  .theme-toggle{ border-radius:999px; }
+
+  .btn{
+    min-height:45px;
+    padding:11px 20px;
+    border-radius:999px;
+    gap:9px;
+    transition:transform .18s ease,box-shadow .18s ease,background-color .18s ease,border-color .18s ease,color .18s ease;
+  }
+
+  .btn:hover{ transform:translateY(-2px); }
+  .btn-primary{ box-shadow:0 10px 26px rgba(184,155,74,.18); }
+  .btn-primary:hover{ box-shadow:0 14px 32px rgba(184,155,74,.25); }
+
+  /* Homepage */
+  #view-landing .landing-wrap{
+    min-height:auto;
+    display:block;
+    padding:clamp(48px,7vw,88px) clamp(20px,5vw,70px) 110px;
+    background:
+      radial-gradient(820px 560px at 84% 12%,var(--gold-15),transparent 72%),
+      linear-gradient(180deg,var(--bg-deep) 0,var(--bg) 48%,var(--bg) 100%);
+  }
+
+  #view-landing .landing-wrap::before{
+    background-image:linear-gradient(var(--rule) 1px,transparent 1px),linear-gradient(90deg,var(--rule) 1px,transparent 1px);
+    background-size:72px 72px;
+    opacity:.24;
+    mask-image:linear-gradient(to bottom,black,transparent 58%);
+    -webkit-mask-image:linear-gradient(to bottom,black,transparent 58%);
+  }
+
+  .home-hero,
+  .home-topic-rail,
+  .home-editorial,
+  .home-pillars{
+    position:relative;
+    z-index:1;
+    max-width:1180px;
+    margin-left:auto;
+    margin-right:auto;
+  }
+
+  .home-hero{
+    min-height:min(680px,calc(100vh - 150px));
+    display:grid;
+    grid-template-columns:minmax(0,1.08fr) minmax(380px,.92fr);
+    align-items:center;
+    gap:clamp(36px,6vw,88px);
+  }
+
+  .home-hero-copy{ padding:28px 0 44px; }
+
+  .home-eyebrow,
+  .home-card-kicker{
+    color:var(--gold);
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.15em;
+    text-transform:uppercase;
+  }
+
+  .home-eyebrow{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:22px;
+  }
+
+  .home-eyebrow span{ width:32px; height:1px; background:var(--gold); }
+
+  .home-hero h1{
+    max-width:710px;
+    margin:0 0 24px;
+    font-family:var(--font-display);
+    font-size:clamp(52px,6.2vw,86px);
+    font-weight:600;
+    line-height:.98;
+    letter-spacing:-.038em;
+  }
+
+  .home-hero h1 em{
+    color:var(--gold);
+    font-weight:450;
+  }
+
+  .home-hero .lede{
+    max-width:610px;
+    margin:0 0 30px;
+    color:var(--ink-soft);
+    font-size:clamp(16px,1.5vw,18px);
+    line-height:1.75;
+  }
+
+  .home-hero .landing-actions{ justify-content:flex-start; margin:0 0 28px; }
+  .home-hero .landing-actions .btn{ padding:13px 22px; }
+  .home-hero .landing-meta{ justify-content:flex-start; font-size:12px; }
+
+  .home-hero-art{
+    min-height:500px;
+    display:grid;
+    place-items:center;
+  }
+
+  .thought-orbit{
+    position:relative;
+    width:min(34vw,450px);
+    aspect-ratio:1;
+    display:grid;
+    place-items:center;
+  }
+
+  .thought-orbit::before,
+  .thought-orbit::after{
+    content:'';
+    position:absolute;
+    border-radius:50%;
+    pointer-events:none;
+  }
+
+  .thought-orbit::before{
+    inset:8%;
+    border:1px solid color-mix(in srgb,var(--gold) 30%,transparent);
+    box-shadow:inset 0 0 80px var(--gold-15),0 0 100px rgba(184,155,74,.06);
+  }
+
+  .thought-orbit::after{
+    inset:22%;
+    background:radial-gradient(circle,var(--gold-15),transparent 67%);
+    filter:blur(4px);
+  }
+
+  .orbit-ring{
+    position:absolute;
+    border:1px solid color-mix(in srgb,var(--gold) 28%,transparent);
+    border-radius:50%;
+  }
+
+  .orbit-ring::before{
+    content:'';
+    position:absolute;
+    left:50%;
+    top:-4px;
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:var(--gold);
+    box-shadow:0 0 14px var(--gold);
+  }
+
+  .orbit-ring-one{ inset:0; animation:orbit-spin 26s linear infinite; }
+  .orbit-ring-two{ inset:15%; animation:orbit-spin 18s linear reverse infinite; }
+  .brain-halo{
+    position:absolute;
+    width:60%;
+    aspect-ratio:1;
+    border-radius:50%;
+    background:var(--gold-15);
+    filter:blur(36px);
+    animation:halo-breathe 5s ease-in-out infinite;
+  }
+
+  .hero-brain{
+    position:relative;
+    z-index:2;
+    width:62%;
+    height:62%;
+    object-fit:contain;
+    filter:saturate(.86) brightness(.92) drop-shadow(0 25px 40px rgba(0,0,0,.24));
+    animation:brain-float 5s ease-in-out infinite;
+  }
+
+  :root[data-theme="light"] .hero-brain{ filter:saturate(.9) brightness(.92) drop-shadow(0 25px 40px rgba(79,58,19,.18)); }
+
+  .orbit-word{
+    position:absolute;
+    z-index:3;
+    padding:8px 12px;
+    border:1px solid var(--rule);
+    border-radius:999px;
+    background:var(--panel-glass);
+    box-shadow:var(--shadow-card);
+    color:var(--ink-soft);
+    font-size:10px;
+    font-weight:700;
+    letter-spacing:.13em;
+    text-transform:uppercase;
+    backdrop-filter:blur(10px);
+  }
+
+  .orbit-word-one{ top:10%; left:-1%; }
+  .orbit-word-two{ right:-2%; top:37%; }
+  .orbit-word-three{ bottom:7%; left:16%; }
+
+  @keyframes orbit-spin{ to{ transform:rotate(360deg); } }
+  @keyframes brain-float{ 0%,100%{ transform:translateY(-5px) rotate(-1deg); } 50%{ transform:translateY(8px) rotate(1deg); } }
+  @keyframes halo-breathe{ 0%,100%{ opacity:.62; transform:scale(.94); } 50%{ opacity:1; transform:scale(1.08); } }
+
+  .home-topic-rail{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:15px;
+    margin-top:8px;
+    padding:18px 22px;
+    border-top:1px solid var(--rule);
+    border-bottom:1px solid var(--rule);
+    color:var(--ink-faint);
+    font-size:10px;
+    font-weight:700;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+  }
+
+  .home-topic-rail i{ width:4px; height:4px; flex:none; border-radius:50%; background:var(--gold); opacity:.7; }
+
+  .home-editorial{
+    display:grid;
+    grid-template-columns:minmax(0,1.35fr) minmax(300px,.65fr);
+    gap:20px;
+    margin-top:72px;
+  }
+
+  .home-latest,
+  .home-note{
+    position:relative;
+    overflow:hidden;
+    min-height:330px;
+    padding:clamp(28px,4vw,46px);
+    border:1px solid var(--rule);
+    border-radius:var(--radius-xl);
+    background:var(--panel);
+    box-shadow:var(--shadow-card);
+  }
+
+  .home-latest::after{
+    content:'M';
+    position:absolute;
+    right:-12px;
+    bottom:-75px;
+    color:var(--gold-15);
+    font:600 260px/1 var(--font-display);
+    pointer-events:none;
+  }
+
+  .home-latest h2{
+    position:relative;
+    z-index:1;
+    max-width:620px;
+    margin:22px 0 14px;
+    font:600 clamp(34px,4vw,54px)/1.05 var(--font-display);
+    letter-spacing:-.025em;
+  }
+
+  .home-latest .home-latest-meta{
+    position:relative;
+    z-index:1;
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px 16px;
+    color:var(--ink-faint);
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.07em;
+  }
+
+  .home-latest .home-latest-excerpt{
+    position:relative;
+    z-index:1;
+    max-width:590px;
+    margin:18px 0 24px;
+    color:var(--ink-soft);
+    font-size:15px;
+    line-height:1.7;
+  }
+
+  .home-text-link,
+  .home-latest-link{
+    position:relative;
+    z-index:1;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:0;
+    border:0;
+    background:none;
+    color:var(--gold-soft);
+    font-size:13px;
+    font-weight:700;
+  }
+
+  .home-text-link span,
+  .home-latest-link span{ transition:transform .18s ease; }
+  .home-text-link:hover span,
+  .home-latest-link:hover span{ transform:translateX(4px); }
+
+  .home-note{
+    background:linear-gradient(145deg,var(--gold-15),transparent 58%),var(--bg-deep);
+  }
+
+  .home-note blockquote{
+    margin:27px 0 24px;
+    color:var(--ink);
+    font:italic 450 clamp(24px,2.4vw,32px)/1.25 var(--font-display);
+  }
+
+  .home-note p{ color:var(--ink-soft); font-size:14px; line-height:1.7; }
+  .home-note .home-text-link{ margin-top:12px; }
+
+  .home-pillars{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:1px;
+    margin-top:70px;
+    overflow:hidden;
+    border:1px solid var(--rule);
+    border-radius:var(--radius-lg);
+    background:var(--rule);
+  }
+
+  .home-pillars article{
+    position:relative;
+    min-height:230px;
+    padding:34px;
+    background:var(--bg);
+    transition:background-color .2s ease,transform .2s ease;
+  }
+
+  .home-pillars article:hover{ background:var(--panel); }
+  .home-pillars article > span{ color:var(--gold); font-size:11px; font-weight:700; letter-spacing:.12em; }
+  .home-pillars h3{ margin:48px 0 10px; font:600 30px/1 var(--font-display); }
+  .home-pillars p{ max-width:310px; margin:0; color:var(--ink-soft); font-size:14px; line-height:1.7; }
+
+  /* Blog and articles */
+  .blog-hero{
+    position:relative;
+    overflow:hidden;
+    padding:clamp(70px,9vw,112px) max(28px,calc((100vw - 940px)/2)) 66px;
+    text-align:left;
+    background:
+      radial-gradient(600px 350px at 76% 8%,var(--gold-15),transparent 70%),
+      linear-gradient(135deg,var(--bg-deep),var(--bg));
+  }
+
+  .blog-hero::after{
+    content:'Essays';
+    position:absolute;
+    right:max(20px,calc((100vw - 1040px)/2));
+    bottom:-28px;
+    color:var(--gold-15);
+    font:italic 600 clamp(90px,15vw,190px)/1 var(--font-display);
+    pointer-events:none;
+  }
+
+  .blog-hero .rule{ margin:0 0 20px; }
+  .blog-hero h1{ position:relative; z-index:1; font-size:clamp(48px,7vw,76px); }
+  .blog-hero p{ position:relative; z-index:1; max-width:560px; margin:0; line-height:1.7; }
+
+  .blog-tools{ max-width:940px; }
+  .blog-wrap{ max-width:940px; padding-top:42px; }
+
+  .featured-post{
+    position:relative;
+    overflow:hidden;
+    padding:clamp(28px,5vw,48px);
+    margin-bottom:24px;
+    border-radius:var(--radius-xl);
+    background:linear-gradient(135deg,var(--gold-15),transparent 60%),var(--panel);
+    transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease;
+  }
+
+  .featured-post:hover{ transform:translateY(-3px); border-color:color-mix(in srgb,var(--gold) 55%,var(--rule)); box-shadow:var(--shadow-pop); }
+  .featured-post h2{ max-width:700px; font-size:clamp(34px,5vw,50px); letter-spacing:-.025em; }
+  .featured-post .pexcerpt{ max-width:690px; color:var(--ink-soft); line-height:1.7; }
+
+  .post-list{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:18px;
+  }
+
+  .post-card,
+  .post-card:first-child{
+    min-height:280px;
+    display:flex;
+    flex-direction:column;
+    padding:28px;
+    border:1px solid var(--rule);
+    border-radius:var(--radius-lg);
+    background:var(--panel);
+    box-shadow:0 1px 0 rgba(255,255,255,.02);
+    transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease;
+  }
+
+  .post-card:hover{ transform:translateY(-4px); border-color:color-mix(in srgb,var(--gold) 48%,var(--rule)); box-shadow:var(--shadow-card); }
+  .post-card h2{ font-size:clamp(25px,3vw,31px); line-height:1.12; }
+  .post-card .pexcerpt{ display:-webkit-box; overflow:hidden; -webkit-line-clamp:3; -webkit-box-orient:vertical; }
+  .post-card .read-more{ margin-top:auto; padding-top:10px; }
+  .empty-blog{ grid-column:1/-1; }
+
+  .post-full{ max-width:760px; padding-top:72px; }
+  .post-full > h1{ font-size:clamp(42px,7vw,66px); line-height:1.02; letter-spacing:-.03em; }
+  .post-body{ font-size:17px; line-height:1.85; }
+
+  /* Forms, account, admin, dialogs and feedback */
+  .login-card,
+  .account-card,
+  .editor-card,
+  .stat-card,
+  .preview-box{
+    border-radius:var(--radius-lg);
+    box-shadow:var(--shadow-card);
+  }
+
+  .login-card{ padding:clamp(28px,5vw,46px); }
+  .admin-wrap{ max-width:1120px; padding-top:56px; }
+  .stats-row{ gap:14px; }
+  .stat-card{ padding:22px; background:linear-gradient(145deg,var(--panel),var(--bg)); }
+  .editor-card{ padding:clamp(22px,4vw,38px); }
+
+  input,
+  textarea,
+  select,
+  .comment-form textarea{
+    border-radius:10px;
+    transition:border-color .18s ease,box-shadow .18s ease,background-color .18s ease;
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus,
+  .comment-form textarea:focus{
+    border-color:var(--gold);
+    box-shadow:0 0 0 3px var(--gold-15);
+  }
+
+  table{ border-radius:var(--radius-lg); overflow:hidden; box-shadow:var(--shadow-card); }
+  .modal-card{ border-radius:var(--radius-lg); box-shadow:var(--shadow-pop); }
+  .toast{ border-radius:999px; box-shadow:var(--shadow-pop); }
+  .comment-card{ padding:20px; margin-top:12px; border:1px solid var(--rule); border-radius:var(--radius); background:var(--panel); }
+
+  .site-footer{
+    padding:42px 28px;
+    background:var(--bg-deep);
+  }
+
+  @media (max-width:1000px){
+    .home-hero{ grid-template-columns:minmax(0,1fr) minmax(330px,.75fr); gap:26px; }
+    .thought-orbit{ width:min(40vw,400px); }
+    .home-editorial{ grid-template-columns:1fr 1fr; }
+  }
+
+  @media (max-width:780px){
+    #view-landing .landing-wrap{ padding:38px 18px 78px; }
+    .home-hero{ display:flex; min-height:auto; flex-direction:column; gap:0; }
+    .home-hero-copy{ width:100%; padding:24px 0 18px; }
+    .home-hero h1{ font-size:clamp(47px,13vw,68px); }
+    .home-hero-art{ width:100%; min-height:auto; padding:18px 0 34px; }
+    .thought-orbit{ width:min(86vw,390px); }
+    .home-topic-rail{ justify-content:flex-start; overflow-x:auto; scrollbar-width:none; margin-left:-18px; margin-right:-18px; padding-left:18px; padding-right:18px; }
+    .home-topic-rail::-webkit-scrollbar{ display:none; }
+    .home-topic-rail span{ white-space:nowrap; }
+    .home-editorial{ grid-template-columns:1fr; margin-top:52px; }
+    .home-latest,.home-note{ min-height:0; }
+    .home-pillars{ grid-template-columns:1fr; }
+    .home-pillars article{ min-height:0; }
+    .home-pillars h3{ margin-top:28px; }
+    .post-list{ grid-template-columns:1fr; }
+  }
+
+  @media (max-width:640px){
+    .topnav{ padding:0 15px; }
+    .topnav .brand{ gap:7px; font-size:18px; }
+    .topnav .brand-logo{ width:36px; height:36px; }
+    .mobile-menu-toggle{ width:42px; height:42px; border-radius:50%; }
+    .nav-actions{ top:calc(var(--nav-h) + 8px); border-radius:18px; background:var(--panel-glass); backdrop-filter:blur(18px); }
+    .nav-actions .nav-btn{ border-radius:12px; }
+    .home-eyebrow{ align-items:flex-start; line-height:1.45; }
+    .home-eyebrow span{ margin-top:7px; }
+    .home-hero .landing-actions{ display:grid; grid-template-columns:1fr; }
+    .home-hero .landing-actions .btn{ width:100%; justify-content:center; }
+    .home-hero .landing-meta{ align-items:flex-start; gap:9px; line-height:1.45; }
+    .home-hero .landing-meta .dot{ margin-top:7px; }
+    .orbit-word{ font-size:9px; padding:7px 9px; }
+    .home-editorial{ gap:14px; }
+    .home-latest,.home-note{ padding:27px 23px; border-radius:20px; }
+    .home-latest::after{ font-size:190px; }
+    .home-pillars{ border-radius:18px; }
+    .home-pillars article{ padding:28px 24px; }
+    .blog-hero{ padding-left:20px; padding-right:20px; }
+    .blog-hero::after{ display:none; }
+    .blog-wrap{ padding-left:18px; padding-right:18px; }
+    .featured-post{ border-radius:20px; }
+    .post-card,.post-card:first-child{ min-height:250px; padding:24px; border-radius:18px; }
+    .post-full{ padding-top:46px; }
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    html{ scroll-behavior:auto; }
+    *,*::before,*::after{ animation-duration:.01ms!important; animation-iteration-count:1!important; transition-duration:.01ms!important; }
+  }
+
 </style>
 </head>
 
@@ -1511,35 +2079,63 @@
      LANDING VIEW
      ============================================================ -->
 <div class="page" id="view-landing">
-
   <div class="landing-wrap">
-
-    <div class="landing-inner">
-
-      <div class="rule"></div>
-
-      <h1>Mind Over Matter</h1>
-
-      <p class="lede">
-        Essays on psychology, behavior, and the quiet mechanics of thought —
-        written by Stephen Leynard for anyone trying to understand their own
-        mind a little better.
-      </p>
-
-      <div class="landing-actions">
-        <button class="btn btn-primary" onclick="goPublic()">Read the blog</button>
+    <section class="home-hero" aria-labelledby="home-title">
+      <div class="home-hero-copy">
+        <div class="home-eyebrow"><span></span> Independent essays on psychology &amp; behavior</div>
+        <h1 id="home-title">Understand your mind.<br><em>Live with intention.</em></h1>
+        <p class="lede">
+          Thoughtful, plain-language essays about how we think, feel, choose,
+          and change&mdash;for anyone who wants to understand themselves a little better.
+        </p>
+        <div class="landing-actions">
+          <button class="btn btn-primary" onclick="goPublic()">Explore the essays <span aria-hidden="true">&rarr;</span></button>
+          <button class="btn btn-outline" onclick="goAbout()">About the publication</button>
+        </div>
+        <div class="landing-meta">
+          <span id="landingPostCount">0 essays published</span>
+          <span class="dot"></span>
+          <span>New writing, published thoughtfully</span>
+        </div>
       </div>
 
-      <div class="landing-meta">
-        <span id="landingPostCount">0 essays published</span>
-        <span class="dot"></span>
-        <span>Updated regularly</span>
+      <div class="home-hero-art" aria-hidden="true">
+        <div class="thought-orbit">
+          <div class="orbit-ring orbit-ring-one"></div>
+          <div class="orbit-ring orbit-ring-two"></div>
+          <div class="brain-halo"></div>
+          <img class="hero-brain" src="/brain-logo-v2.png" alt="" onerror="this.onerror=null;this.src='brain-logo-v2.png'">
+          <span class="orbit-word orbit-word-one">Observe</span>
+          <span class="orbit-word orbit-word-two">Reflect</span>
+          <span class="orbit-word orbit-word-three">Choose</span>
+        </div>
       </div>
+    </section>
 
+    <div class="home-topic-rail" aria-label="Essay topics">
+      <span>Attention</span><i></i><span>Habits</span><i></i><span>Emotion</span><i></i>
+      <span>Identity</span><i></i><span>Relationships</span><i></i><span>Growth</span>
     </div>
 
-  </div>
+    <section class="home-editorial" aria-label="Featured content">
+      <div class="home-latest" id="homeLatest" aria-live="polite">
+        <div class="home-card-kicker">Latest essay</div>
+        <h2>Gathering the latest writing&hellip;</h2>
+      </div>
+      <aside class="home-note">
+        <div class="home-card-kicker">The purpose</div>
+        <blockquote>&ldquo;Better self-understanding creates a little more room between impulse and action.&rdquo;</blockquote>
+        <p>Mind Over Matter makes psychological ideas useful, human, and easier to carry into everyday life.</p>
+        <button class="home-text-link" onclick="goAbout()">Why this publication exists <span aria-hidden="true">&rarr;</span></button>
+      </aside>
+    </section>
 
+    <section class="home-pillars" aria-label="The Mind Over Matter approach">
+      <article><span>01</span><h3>Notice</h3><p>Pay closer attention to the patterns shaping your thoughts, feelings, and decisions.</p></article>
+      <article><span>02</span><h3>Understand</h3><p>Explore the psychology beneath those patterns in clear, grounded language.</p></article>
+      <article><span>03</span><h3>Choose</h3><p>Turn insight into more deliberate responses, relationships, and ways of living.</p></article>
+    </section>
+  </div>
 </div>
 
 <!-- ============================================================
@@ -2433,6 +3029,39 @@ async function submitReaderAuth(event){
   return false;
 }
 
+function renderLandingFeature(){
+  const wrap = document.getElementById('homeLatest');
+  if(!wrap) return;
+
+  const now = Date.now();
+  const available = posts
+    .filter(p => p.published && (!p.publish_at || new Date(p.publish_at).getTime() <= now))
+    .sort((a,b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+  const latest = available[0];
+
+  if(!latest){
+    wrap.innerHTML = `
+      <div class="home-card-kicker">Latest essay</div>
+      <h2>The first essay is on its way.</h2>
+      <p class="home-latest-excerpt">New writing about psychology, behavior, and everyday life will appear here once it is published.</p>
+      <button class="home-text-link" onclick="goPublic()">Visit the blog <span aria-hidden="true">&rarr;</span></button>
+    `;
+    return;
+  }
+
+  wrap.innerHTML = `
+    <div class="home-card-kicker">Latest essay</div>
+    <h2>${escapeHtml(latest.title)}</h2>
+    <div class="home-latest-meta">
+      <span>${fmtDate(latest.created_at)}</span>
+      <span>${escapeHtml(latest.category || 'Psychology')}</span>
+      <span>${readingTime(latest.body)} min read</span>
+    </div>
+    <p class="home-latest-excerpt">${escapeHtml(latest.summary || deriveExcerpt(latest.body))}</p>
+    <a class="home-latest-link" href="${postPath(latest)}" onclick="navigateToPostById(${latest.id});return false">Read the latest essay <span aria-hidden="true">&rarr;</span></a>
+  `;
+}
+
 async function goHome(refresh = true){
 
   showPage('view-landing');
@@ -2448,10 +3077,15 @@ async function goHome(refresh = true){
     }
   }
 
+  const now = Date.now();
+  const publishedCount = posts.filter(
+    p => p.published && (!p.publish_at || new Date(p.publish_at).getTime() <= now)
+  ).length;
+
   document.getElementById('landingPostCount').textContent =
-    posts.filter(
-      p => p.published
-    ).length + ' essays published';
+    publishedCount + (publishedCount === 1 ? ' essay published' : ' essays published');
+
+  renderLandingFeature();
 }
 
 async function goPublic(refresh = true){
