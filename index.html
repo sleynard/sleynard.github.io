@@ -3,6 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>
+  (function(){
+    const recoveredRoute = new URLSearchParams(location.search).get('__route');
+    if(recoveredRoute && recoveredRoute.startsWith('/') && !recoveredRoute.startsWith('//')){
+      history.replaceState({}, '', recoveredRoute);
+    }
+  })();
+</script>
 <title>Mind Over Matter — Stephen Leynard</title>
 <!-- ARTICLE_META_START -->
 <meta name="description" content="Essays on psychology, behavior, and the quiet mechanics of thought by Stephen Leynard.">
