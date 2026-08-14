@@ -32,10 +32,15 @@
 <meta name="twitter:image:alt" content="Gold brain logo for Mind Over Matter">
 <link rel="canonical" href="https://stephenleynard.com/">
 <!-- ARTICLE_META_END -->
-<link rel="icon" type="image/png" href="brain-logo.png">
-<link rel="apple-touch-icon" href="brain-logo.png">
+<link rel="icon" type="image/png" href="/brain-logo.png">
+<link rel="apple-touch-icon" href="/brain-logo.png">
 <script>
   (function(){
+    if(location.protocol === 'file:'){
+      document.querySelectorAll('link[href="/brain-logo.png"]').forEach(link => {
+        link.href = 'brain-logo.png';
+      });
+    }
     const saved = localStorage.getItem('mindovermatter_theme');
     const theme = saved === 'light' || saved === 'dark'
       ? saved
@@ -1477,9 +1482,8 @@
 <nav class="topnav">
 
   <div class="brand" onclick="goHome()">
-    <img class="brand-logo" src="brain-logo.png" alt="">
+    <img class="brand-logo" src="/brain-logo.png" alt="" onerror="if(location.protocol==='file:'){this.onerror=null;this.src='brain-logo.png'}">
     <span class="brand-title"><span class="mark">Mind</span> Over Matter</span>
-    <span class="byline" id="navByline">Stephen Leynard</span>
   </div>
 
   <button class="nav-btn mobile-menu-toggle" id="mobileMenuToggle" type="button" onclick="toggleMobileNav(event)" aria-label="Open navigation menu" aria-expanded="false" aria-controls="navActions">
@@ -1512,8 +1516,6 @@
 
     <div class="landing-inner">
 
-      <div class="kicker">stephenleynard.com</div>
-
       <div class="rule"></div>
 
       <h1>Mind Over Matter</h1>
@@ -1532,10 +1534,6 @@
         <span id="landingPostCount">0 essays published</span>
         <span class="dot"></span>
         <span>Updated regularly</span>
-      </div>
-
-      <div class="landing-signature">
-        — Stephen Leynard
       </div>
 
     </div>
