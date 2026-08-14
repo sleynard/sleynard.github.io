@@ -12,8 +12,11 @@ export async function onRequest() {
   const urls = [
     `<url><loc>${SITE_URL}/</loc></url>`,
     `<url><loc>${SITE_URL}/blog</loc></url>`,
+    `<url><loc>${SITE_URL}/books</loc></url>`,
+    `<url><loc>${SITE_URL}/resources</loc></url>`,
     `<url><loc>${SITE_URL}/about</loc></url>`,
     `<url><loc>${SITE_URL}/privacy</loc></url>`,
+    `<url><loc>${SITE_URL}/affiliate-disclosure</loc></url>`,
     ...posts.map(post => `<url><loc>${xml(`${SITE_URL}/blog/${post.slug}`)}</loc><lastmod>${xml(post.updated_at)}</lastmod></url>`)
   ].join('');
   return new Response(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls}</urlset>`, { headers: { 'content-type': 'application/xml; charset=UTF-8', 'cache-control': 'public, max-age=300' } });
