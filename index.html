@@ -4981,7 +4981,7 @@ function syncNavButtons(id){
   const accountButton = document.getElementById('navAccountBtn');
   accountButton.classList.toggle('active', isAccount);
   accountButton.innerHTML = isSignedIn()
-    ? '<span class="user-menu-label">My reader account</span>'
+    ? '<span class="user-menu-label">My Reader Account</span>'
     : 'Reader sign in';
   accountButton.setAttribute('aria-label',isSignedIn() ? 'Open my reader account' : 'Reader sign in');
   accountButton.setAttribute('title',isSignedIn() ? 'Open my reader account' : 'Reader sign in');
