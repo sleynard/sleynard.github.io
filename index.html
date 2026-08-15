@@ -14,8 +14,11 @@
 <title>Mind Over Matter | Psychology Essays by Stephen Leynard</title>
 <!-- ARTICLE_META_START -->
 <meta name="description" content="Mind Over Matter is an independent psychology publication by Stephen Leynard, featuring original essays on human thought, behaviour, and everyday life.">
+<meta name="author" content="Stephen Leynard">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Mind Over Matter">
+<meta property="og:locale" content="en_CA">
 <meta property="og:title" content="Mind Over Matter | Psychology Essays by Stephen Leynard">
 <meta property="og:description" content="An independent psychology publication featuring original essays on human thought, behaviour, and everyday life.">
 <meta property="og:url" content="https://stephenleynard.com/">
@@ -49,7 +52,8 @@
       "alternateName": "Mind Over Matter by Stephen Leynard",
       "description": "An independent psychology publication featuring original essays on human thought, behaviour, and everyday life.",
       "inLanguage": "en-CA",
-      "publisher": { "@id": "https://stephenleynard.com/#stephen-leynard" }
+      "publisher": { "@id": "https://stephenleynard.com/#stephen-leynard" },
+      "copyrightHolder": { "@id": "https://stephenleynard.com/#stephen-leynard" }
     },
     {
       "@type": "Person",
@@ -72,6 +76,7 @@
       "name": "Mind Over Matter",
       "description": "Original essays on psychology, human behaviour, and everyday life.",
       "inLanguage": "en-CA",
+      "isAccessibleForFree": true,
       "author": { "@id": "https://stephenleynard.com/#stephen-leynard" },
       "publisher": { "@id": "https://stephenleynard.com/#stephen-leynard" }
     }
@@ -1340,7 +1345,72 @@
   .comment-body{ color:var(--ink-soft); line-height:1.65; white-space:pre-wrap; }
 
   .account-card{
-    max-width:430px;
+    max-width:540px;
+  }
+
+  .signup-consent{
+    display:none;
+    margin:2px 0 18px;
+    padding:16px;
+    border:1px solid var(--rule);
+    border-radius:var(--radius);
+    background:var(--bg);
+  }
+
+  .signup-consent.visible{ display:block; }
+
+  .consent-label{
+    display:grid;
+    grid-template-columns:20px minmax(0,1fr);
+    align-items:start;
+    gap:11px;
+    color:var(--ink-soft);
+    font-size:13px;
+    line-height:1.6;
+    cursor:pointer;
+  }
+
+  .consent-label input{
+    width:18px;
+    height:18px;
+    margin:2px 0 0;
+    accent-color:var(--gold);
+  }
+
+  .consent-label strong{ color:var(--ink); }
+
+  .reader-preferences{
+    display:none;
+    margin-top:22px;
+    padding-top:22px;
+    border-top:1px solid var(--rule);
+    text-align:left;
+  }
+
+  .reader-preferences.visible{ display:block; }
+  .reader-preferences h2{ margin:0 0 7px; font:600 26px/1.2 var(--font-display); }
+  .reader-preferences > p{ margin:0 0 18px; color:var(--ink-soft); font-size:13px; line-height:1.65; }
+
+  .preference-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:18px;
+    padding:15px 0;
+    border-top:1px solid var(--rule);
+  }
+
+  .preference-row:first-of-type{ border-top:0; }
+  .preference-row label{ color:var(--ink); font-size:14px; font-weight:700; }
+  .preference-row small{ display:block; margin-top:4px; color:var(--ink-faint); font-weight:400; line-height:1.45; }
+  .preference-row input{ width:19px; height:19px; flex:none; accent-color:var(--gold); }
+  .preference-row input:disabled{ opacity:.45; }
+
+  .preference-status{
+    min-height:20px;
+    margin:10px 0 0;
+    color:var(--ink-faint);
+    font-size:12px;
   }
 
   .auth-switch{
@@ -1948,6 +2018,36 @@
   .home-pillars article > span{ color:var(--gold); font-size:11px; font-weight:700; letter-spacing:.12em; }
   .home-pillars h3{ margin:48px 0 10px; font:600 30px/1 var(--font-display); }
   .home-pillars p{ max-width:310px; margin:0; color:var(--ink-soft); font-size:14px; line-height:1.7; }
+
+  .home-subscribe{
+    position:relative;
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    align-items:center;
+    gap:36px;
+    margin-top:24px;
+    padding:clamp(28px,5vw,48px);
+    overflow:hidden;
+    border:1px solid var(--rule);
+    border-radius:var(--radius-lg);
+    background:linear-gradient(130deg,var(--gold-15),transparent 58%),var(--panel);
+  }
+
+  .home-subscribe::after{
+    content:'Updates';
+    position:absolute;
+    right:24px;
+    bottom:-31px;
+    color:var(--gold-15);
+    font:italic 600 clamp(70px,11vw,120px)/1 var(--font-display);
+    pointer-events:none;
+  }
+
+  .home-subscribe-copy,
+  .home-subscribe-action{ position:relative; z-index:1; }
+  .home-subscribe h2{ margin:8px 0 10px; font:600 clamp(29px,4vw,42px)/1.1 var(--font-display); }
+  .home-subscribe p{ max-width:650px; margin:0; color:var(--ink-soft); font-size:14px; line-height:1.7; }
+  .home-subscribe .btn{ white-space:nowrap; }
 
   /* Blog and articles */
   .blog-hero{
@@ -2650,6 +2750,8 @@
     .home-pillars{ grid-template-columns:1fr; }
     .home-pillars article{ min-height:0; }
     .home-pillars h3{ margin-top:28px; }
+    .home-subscribe{ grid-template-columns:1fr; gap:22px; }
+    .home-subscribe-action .btn{ width:100%; justify-content:center; }
     .post-list{ grid-template-columns:1fr; }
     .about-card{ grid-template-columns:1fr; align-items:start; }
     .about-portrait{ width:min(100%,310px); margin:0 auto; }
@@ -2688,6 +2790,8 @@
     .orbit-word{ font-size:9px; padding:7px 9px; }
     .home-editorial{ gap:14px; }
     .home-latest,.home-note{ padding:27px 23px; border-radius:20px; }
+    .home-subscribe{ padding:27px 23px; border-radius:20px; }
+    .preference-row{ align-items:flex-start; }
     .home-latest::after{ font-size:190px; }
     .home-pillars{ border-radius:18px; }
     .home-pillars article{ padding:28px 24px; }
@@ -3082,6 +3186,17 @@
       <article><span>02</span><h3>Understand</h3><p>Explore the psychology beneath those patterns in clear, grounded language.</p></article>
       <article><span>03</span><h3>Choose</h3><p>Turn insight into more deliberate responses, relationships, and ways of living.</p></article>
     </section>
+
+    <section class="home-subscribe" aria-labelledby="homeSubscribeHeading">
+      <div class="home-subscribe-copy">
+        <div class="home-card-kicker">Publication updates</div>
+        <h2 id="homeSubscribeHeading">Read what comes next.</h2>
+        <p>Create a free reader account to join the conversation and, if you choose, receive an email when a new essay or book recommendation is published. Email updates are optional and can be turned off at any time.</p>
+      </div>
+      <div class="home-subscribe-action">
+        <button class="btn btn-primary" type="button" onclick="goReaderSignup()">Create a reader account <span aria-hidden="true">&rarr;</span></button>
+      </div>
+    </section>
   </div>
 </div>
 
@@ -3358,9 +3473,13 @@
       <h2>Account information</h2>
       <p>Your email address is used for secure sign-in and is not shown publicly. Your chosen display name, comments, and likes may appear publicly beside the articles you interact with.</p>
       <h2>Where it is stored</h2>
-      <p>Account and community information is stored in Supabase. Your browser also remembers your theme and sign-in session on your device.</p>
+      <p>Account, community, and email-preference information is stored in Supabase. Your email subscription is private and is not displayed to other readers. Publication emails are delivered through Resend. Your browser also remembers your theme and sign-in session on your device.</p>
+      <h2>Publication emails</h2>
+      <p>Email updates are optional. You will receive them only if you actively select the email option while creating an account or later enable it in your reader account. Every publication email includes an unsubscribe link, and you can also choose whether to receive essays, book recommendations, both, or neither from your account.</p>
+      <h2>Readership measurement</h2>
+      <p>Mind Over Matter uses Cloudflare Web Analytics to understand general readership, such as page views and referring sites. It is configured as privacy-focused site measurement and does not create advertising profiles on this website.</p>
       <h2>Your choices</h2>
-      <p>You can remove your own likes and comments. To ask for your reader account to be deleted, contact <a href="mailto:hello@stephenleynard.com" onclick="openContact();return false" style="color:var(--gold)">hello@stephenleynard.com</a>.</p>
+      <p>You can remove your own likes and comments and change or withdraw your email consent at any time. To ask for your reader account to be deleted, contact <a href="mailto:hello@stephenleynard.com" onclick="openContact();return false" style="color:var(--gold)">hello@stephenleynard.com</a>.</p>
     </div>
   </article>
 </div>
@@ -3391,8 +3510,32 @@
           <label for="readerPassword">Password</label>
           <input type="password" id="readerPassword" minlength="8" autocomplete="current-password" required placeholder="••••••••">
         </div>
+        <div class="signup-consent" id="readerNewsletterSignup">
+          <label class="consent-label" for="readerNewsletterOptIn">
+            <input type="checkbox" id="readerNewsletterOptIn">
+            <span><strong>Email me publication updates.</strong> Send me an email when Mind Over Matter publishes a new essay or book recommendation. This is optional; I can unsubscribe at any time.</span>
+          </label>
+        </div>
         <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center" id="readerAuthSubmit">Sign in</button>
       </form>
+      <section class="reader-preferences" id="readerPreferences" aria-labelledby="readerPreferencesHeading">
+        <h2 id="readerPreferencesHeading">Email preferences</h2>
+        <p>Choose whether Mind Over Matter may email you about new publications. Your choice does not affect your reader account.</p>
+        <div class="preference-row">
+          <div><label for="readerNewsletterEnabled">Publication emails</label><small>Receive only the update types selected below.</small></div>
+          <input type="checkbox" id="readerNewsletterEnabled" onchange="updateNewsletterPreferenceUI()">
+        </div>
+        <div class="preference-row">
+          <div><label for="readerNewsletterEssays">New essays</label><small>An email when a new essay is published.</small></div>
+          <input type="checkbox" id="readerNewsletterEssays">
+        </div>
+        <div class="preference-row">
+          <div><label for="readerNewsletterBooks">Book recommendations</label><small>An email when a new recommendation is published.</small></div>
+          <input type="checkbox" id="readerNewsletterBooks">
+        </div>
+        <button class="btn btn-primary" type="button" id="readerPreferencesSave" onclick="saveNewsletterPreferences()">Save email preferences</button>
+        <p class="preference-status" id="readerPreferencesStatus" role="status" aria-live="polite"></p>
+      </section>
       <div class="auth-switch">
         <span id="readerAuthSwitchCopy">New here?</span>
         <button type="button" onclick="toggleReaderAuthMode()" id="readerAuthSwitch">Create an account</button>
@@ -4130,6 +4273,32 @@ async function supabaseRequest(path, options = {}){
   return text ? JSON.parse(text) : null;
 }
 
+async function notifySubscribers(contentType, id){
+  if(location.protocol === 'file:') return { skipped:true, reason:'local-preview' };
+  const accessToken = await getAccessToken();
+  if(!accessToken) throw new Error('Please sign in again');
+  const response = await fetch('/api/notify', {
+    method:'POST',
+    headers:{
+      Authorization:`Bearer ${accessToken}`,
+      'Content-Type':'application/json'
+    },
+    body:JSON.stringify({ content_type:contentType, id })
+  });
+  const raw = await response.text();
+  let result = null;
+  try{ result = raw ? JSON.parse(raw) : null; }catch(error){}
+  if(!response.ok) throw new Error(result?.error || 'Email update could not be sent');
+  return result || { ok:true, sent:0 };
+}
+
+function publicationToast(label, delivery){
+  if(delivery?.duplicate) return `${label} published; subscribers were already notified`;
+  if(delivery?.skipped) return `${label} published; email delivery runs on the live site`;
+  const count = Number(delivery?.sent || 0);
+  return `${label} published${count ? ` and emailed to ${count} reader${count === 1 ? '' : 's'}` : '; no subscribed readers yet'}`;
+}
+
 async function loadPosts(){
   const path = `posts?select=${POST_COLUMNS}&order=created_at.desc`;
   const useAuth = isSignedIn();
@@ -4343,15 +4512,20 @@ function isAuthed(){
 
 function goReaderAccount(){
   pushRoute('/account');
+  const form = document.querySelector('#view-account form');
+  const preferences = document.getElementById('readerPreferences');
   if(isSignedIn()){
     const session = getAuthSession();
     document.getElementById('readerAuthTitle').textContent = 'Your reader account';
     document.getElementById('readerAuthCopy').textContent = session?.user?.email || 'Signed in';
     document.getElementById('displayNameField').style.display = 'none';
-    document.querySelector('#view-account form').style.display = 'none';
+    form.style.display = 'none';
+    preferences.classList.add('visible');
     document.querySelector('#view-account .auth-switch').innerHTML = '<button type="button" onclick="logout()">Sign out</button>';
+    loadNewsletterPreferences();
   }else{
-    document.querySelector('#view-account form').style.display = 'block';
+    form.style.display = 'block';
+    preferences.classList.remove('visible');
     document.querySelector('#view-account .auth-switch').innerHTML = '<span id="readerAuthSwitchCopy">New here?</span> <button type="button" onclick="toggleReaderAuthMode()" id="readerAuthSwitch">Create an account</button>';
     setReaderAuthMode('signin');
   }
@@ -4361,14 +4535,21 @@ function goReaderAccount(){
     : 'Reader Sign In | Mind Over Matter';
 }
 
+function goReaderSignup(){
+  goReaderAccount();
+  if(!isSignedIn()) setReaderAuthMode('signup');
+}
+
 function setReaderAuthMode(mode){
   readerAuthMode = mode;
   const signingUp = mode === 'signup';
   document.getElementById('readerAuthTitle').textContent = signingUp ? 'Create a reader account' : 'Reader sign in';
   document.getElementById('readerAuthCopy').textContent = signingUp
-    ? 'Create an account to like posts and join the conversation.'
+    ? 'Create an account to like posts, join the conversation, and optionally receive publication emails.'
     : 'Sign in to like posts and join the conversation.';
   document.getElementById('displayNameField').style.display = signingUp ? 'block' : 'none';
+  document.getElementById('readerNewsletterSignup').classList.toggle('visible', signingUp);
+  document.getElementById('readerPassword').setAttribute('autocomplete', signingUp ? 'new-password' : 'current-password');
   document.getElementById('readerAuthSubmit').textContent = signingUp ? 'Create account' : 'Sign in';
   document.getElementById('readerAuthSwitchCopy').textContent = signingUp ? 'Already registered?' : 'New here?';
   document.getElementById('readerAuthSwitch').textContent = signingUp ? 'Sign in' : 'Create an account';
@@ -4384,6 +4565,7 @@ async function submitReaderAuth(event){
   const email = document.getElementById('readerEmail').value.trim();
   const password = document.getElementById('readerPassword').value;
   const displayName = document.getElementById('readerDisplayName').value.trim();
+  const newsletterOptIn = document.getElementById('readerNewsletterOptIn').checked;
   const errorBox = document.getElementById('readerAuthError');
   const button = document.getElementById('readerAuthSubmit');
   errorBox.classList.remove('visible');
@@ -4392,7 +4574,15 @@ async function submitReaderAuth(event){
 
   try{
     const session = readerAuthMode === 'signup'
-      ? await authRequest('signup', { email, password, data:{ display_name:displayName || email.split('@')[0] } })
+      ? await authRequest('signup', {
+          email,
+          password,
+          data:{
+            display_name:displayName || email.split('@')[0],
+            newsletter_opt_in:newsletterOptIn,
+            newsletter_consent_version:'2026-08-15'
+          }
+        })
       : await authRequest('token?grant_type=password', { email, password });
 
     if(session.access_token){
@@ -4404,6 +4594,7 @@ async function submitReaderAuth(event){
       returnPost ? openPublicPost(Number(returnPost)) : goPublic();
     }else{
       showToast('Check your email to confirm your account');
+      document.getElementById('readerNewsletterOptIn').checked = false;
       setReaderAuthMode('signin');
     }
   }catch(error){
@@ -4415,6 +4606,70 @@ async function submitReaderAuth(event){
     button.textContent = readerAuthMode === 'signup' ? 'Create account' : 'Sign in';
   }
   return false;
+}
+
+function updateNewsletterPreferenceUI(){
+  const enabled = document.getElementById('readerNewsletterEnabled').checked;
+  document.getElementById('readerNewsletterEssays').disabled = !enabled;
+  document.getElementById('readerNewsletterBooks').disabled = !enabled;
+}
+
+async function loadNewsletterPreferences(){
+  const status = document.getElementById('readerPreferencesStatus');
+  if(!isSignedIn()) return;
+  status.textContent = 'Loading your email preferences…';
+  try{
+    const userId = getAuthSession().user.id;
+    const rows = await supabaseRequest(
+      `newsletter_subscriptions?select=subscribed,essays,books&user_id=eq.${encodeURIComponent(userId)}&limit=1`,
+      { auth:true }
+    );
+    if(!rows.length) throw new Error('Newsletter preference not found');
+    const preference = rows[0];
+    document.getElementById('readerNewsletterEnabled').checked = Boolean(preference.subscribed);
+    document.getElementById('readerNewsletterEssays').checked = preference.essays !== false;
+    document.getElementById('readerNewsletterBooks').checked = preference.books !== false;
+    updateNewsletterPreferenceUI();
+    status.textContent = preference.subscribed
+      ? 'Publication emails are currently on.'
+      : 'Publication emails are currently off.';
+  }catch(error){
+    console.error(error);
+    status.textContent = 'Email preferences are temporarily unavailable.';
+  }
+}
+
+async function saveNewsletterPreferences(){
+  if(!isSignedIn()) return goReaderAccount();
+  const status = document.getElementById('readerPreferencesStatus');
+  const button = document.getElementById('readerPreferencesSave');
+  const subscribed = document.getElementById('readerNewsletterEnabled').checked;
+  const essays = document.getElementById('readerNewsletterEssays').checked;
+  const books = document.getElementById('readerNewsletterBooks').checked;
+  button.disabled = true;
+  status.textContent = 'Saving…';
+  try{
+    const userId = getAuthSession().user.id;
+    await supabaseRequest(
+      `newsletter_subscriptions?user_id=eq.${encodeURIComponent(userId)}`,
+      {
+        method:'PATCH',
+        auth:true,
+        headers:{ Prefer:'return=representation' },
+        body:JSON.stringify({ subscribed, essays, books })
+      }
+    );
+    updateNewsletterPreferenceUI();
+    status.textContent = subscribed
+      ? 'Saved. You will receive the publication emails selected above.'
+      : 'Saved. Publication emails are off.';
+    showToast('Email preferences saved');
+  }catch(error){
+    console.error(error);
+    status.textContent = 'Your preferences could not be saved. Please try again.';
+  }finally{
+    button.disabled = false;
+  }
 }
 
 function renderLandingFeature(){
@@ -5034,7 +5289,18 @@ async function toggleStatus(id){
     });
     await loadPosts();
     renderDashboard();
-    showToast(published ? 'Post published' : 'Moved to draft');
+    if(published && (!p.publish_at || new Date(p.publish_at).getTime() <= Date.now())){
+      showToast('Post published; preparing subscriber email…');
+      try{
+        const delivery = await notifySubscribers('essay', id);
+        showToast(publicationToast('Post', delivery));
+      }catch(emailError){
+        console.error(emailError);
+        showToast('Post published, but its email update was not sent');
+      }
+    }else{
+      showToast(published ? 'Post scheduled' : 'Moved to draft');
+    }
   }catch(error){
     console.error(error);
     showToast('Could not update post');
@@ -5155,15 +5421,19 @@ async function saveBookEditor(){
     if(!payload.title) throw new Error('Give the book a title first');
     if(!payload.author) throw new Error('Add the author name first');
 
+    const previous = currentBookEditId === null
+      ? null
+      : books.find(item => item.id === currentBookEditId);
+    let result;
     if(currentBookEditId === null){
-      await supabaseRequest('books', {
+      result = await supabaseRequest('books', {
         method:'POST',
         auth:true,
         headers:{ Prefer:'return=representation' },
         body:JSON.stringify(payload)
       });
     }else{
-      await supabaseRequest(`books?id=eq.${encodeURIComponent(currentBookEditId)}`, {
+      result = await supabaseRequest(`books?id=eq.${encodeURIComponent(currentBookEditId)}`, {
         method:'PATCH',
         auth:true,
         headers:{ Prefer:'return=representation' },
@@ -5171,7 +5441,20 @@ async function saveBookEditor(){
       });
     }
 
-    showToast('Book saved');
+    const savedBook = result?.[0];
+    const shouldNotify = Boolean(payload.published && !previous?.published && savedBook?.id);
+    if(shouldNotify){
+      showToast('Book published; preparing subscriber email…');
+      try{
+        const delivery = await notifySubscribers('book', savedBook.id);
+        showToast(publicationToast('Book', delivery));
+      }catch(emailError){
+        console.error(emailError);
+        showToast('Book published, but its email update was not sent');
+      }
+    }else{
+      showToast('Book saved');
+    }
     await goDashboard();
   }catch(error){
     console.error(error);
@@ -5184,14 +5467,26 @@ async function toggleBookStatus(id){
   if(!book) return;
 
   try{
+    const published = !book.published;
     await supabaseRequest(`books?id=eq.${encodeURIComponent(id)}`, {
       method:'PATCH',
       auth:true,
-      body:JSON.stringify({ published:!book.published })
+      body:JSON.stringify({ published })
     });
     await loadBooks();
     renderAdminBooks();
-    showToast(book.published ? 'Book moved to draft' : 'Book published');
+    if(published){
+      showToast('Book published; preparing subscriber email…');
+      try{
+        const delivery = await notifySubscribers('book', id);
+        showToast(publicationToast('Book', delivery));
+      }catch(emailError){
+        console.error(emailError);
+        showToast('Book published, but its email update was not sent');
+      }
+    }else{
+      showToast('Book moved to draft');
+    }
   }catch(error){
     console.error(error);
     showToast('Could not update book');
@@ -5510,15 +5805,19 @@ async function saveEditor(){
   }
 
   try{
+    const previous = currentEditId === null
+      ? null
+      : posts.find(post => post.id === currentEditId);
+    let result;
     if(currentEditId === null){
-      await supabaseRequest('posts', {
+      result = await supabaseRequest('posts', {
         method:'POST',
         auth:true,
         headers:{ Prefer:'return=representation' },
         body:JSON.stringify(payload)
       });
     }else{
-      await supabaseRequest(
+      result = await supabaseRequest(
         `posts?id=eq.${encodeURIComponent(currentEditId)}`,
         {
           method:'PATCH',
@@ -5530,7 +5829,21 @@ async function saveEditor(){
     }
 
     localStorage.removeItem(AUTOSAVE_KEY);
-    showToast('Post saved');
+    const savedPost = result?.[0];
+    const isReleased = !payload.publish_at || new Date(payload.publish_at).getTime() <= Date.now();
+    const shouldNotify = Boolean(payload.published && !previous?.published && isReleased && savedPost?.id);
+    if(shouldNotify){
+      showToast('Post published; preparing subscriber email…');
+      try{
+        const delivery = await notifySubscribers('essay', savedPost.id);
+        showToast(publicationToast('Post', delivery));
+      }catch(emailError){
+        console.error(emailError);
+        showToast('Post published, but its email update was not sent');
+      }
+    }else{
+      showToast(payload.published && !isReleased ? 'Post scheduled' : 'Post saved');
+    }
     await goDashboard();
   }catch(error){
     console.error(error);
