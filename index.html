@@ -1419,6 +1419,7 @@
     align-items:center;
     gap:17px;
     white-space:nowrap;
+    color:var(--ink-soft);
   }
   .footer-links button{
     border:0;
@@ -1500,6 +1501,9 @@
       top:calc(var(--nav-h) + 8px);
       left:12px;
       right:12px;
+      max-height:calc(100dvh - var(--nav-h) - 18px);
+      overflow-y:auto;
+      overscroll-behavior:contain;
       display:flex;
       flex-direction:column;
       align-items:stretch;
@@ -2351,7 +2355,8 @@
     position:relative;
     display:grid;
     place-items:center;
-    height:176px;
+    height:250px;
+    padding:18px;
     overflow:hidden;
     border-bottom:1px solid var(--rule);
     background:
@@ -2359,13 +2364,19 @@
       linear-gradient(145deg,var(--panel-raise),var(--bg-deep));
   }
 
-  .book-cover img{
-    width:100%;
-    height:100%;
-    object-fit:cover;
+  .book-cover > img:not(.book-cover-mark){
+    position:absolute;
+    inset:18px;
+    width:calc(100% - 36px);
+    height:calc(100% - 36px);
+    object-fit:contain;
+    border-radius:5px;
+    filter:drop-shadow(0 12px 18px rgba(0,0,0,.3));
   }
 
   .book-cover-mark{
+    position:relative;
+    z-index:1;
     width:58px;
     height:58px;
     object-fit:contain;
@@ -2523,13 +2534,25 @@
   }
 
   .resource-links a{
+    display:inline-flex;
+    align-items:center;
+    min-height:38px;
+    padding:7px 10px;
+    border:1px solid var(--rule);
+    border-radius:999px;
+    background:color-mix(in srgb,var(--gold) 6%,transparent);
     color:var(--gold-soft);
     font-size:12px;
     font-weight:700;
     text-decoration:none;
+    transition:background-color .18s ease,border-color .18s ease,color .18s ease;
   }
 
-  .resource-links a:hover{ text-decoration:underline; text-underline-offset:3px; }
+  .resource-links a:hover{
+    border-color:color-mix(in srgb,var(--gold) 52%,var(--rule));
+    background:var(--gold-15);
+    text-decoration:none;
+  }
 
   .resource-note{
     margin-top:36px;
@@ -2639,9 +2662,14 @@
     .resource-urgent{ grid-template-columns:1fr; }
   }
 
-  @media (max-width:950px) and (min-width:701px){
-    .footer-inner{ grid-template-columns:1fr auto; }
-    .footer-brand{ grid-column:1/-1; }
+  @media (max-width:1120px) and (min-width:701px){
+    .footer-inner{ grid-template-columns:minmax(0,1fr) auto; gap:16px 24px; }
+    .footer-brand{
+      grid-column:1/-1;
+      flex-wrap:wrap;
+      white-space:normal;
+    }
+    .footer-disclaimer{ overflow:visible; text-overflow:clip; }
   }
 
   @media (max-width:640px){
@@ -2685,9 +2713,21 @@
     .directory-tools{ grid-template-columns:1fr; }
     .book-grid,.resource-grid{ grid-template-columns:1fr; }
     .book-card{ min-height:0; }
+    #view-books .directory-hero{ gap:16px; padding-bottom:20px; }
+    #view-books .directory-hero h1{ margin:9px 0 13px; font-size:clamp(40px,12vw,52px); }
+    #view-books .directory-hero p{ font-size:15px; line-height:1.62; }
+    #view-books .directory-side-note{ padding:16px 17px; font-size:11.75px; line-height:1.55; }
+    #view-books .directory-tools{ margin-top:20px; }
+    #view-books .book-cover{ height:300px; padding:20px; }
+    #view-books .book-cover > img:not(.book-cover-mark){
+      inset:20px;
+      width:calc(100% - 40px);
+      height:calc(100% - 40px);
+    }
     .resource-urgent{ padding:22px 20px; }
     .resource-urgent-actions{ display:grid; grid-template-columns:1fr; }
     .resource-section-head{ align-items:flex-start; flex-direction:column; gap:5px; }
+    .resource-links a{ min-height:44px; padding:9px 12px; }
     .admin-section-head{ align-items:stretch; flex-direction:column; }
     .admin-section-head .btn{ width:100%; }
     .admin-head-actions{ display:grid; grid-template-columns:1fr; width:100%; }
@@ -2908,9 +2948,21 @@
     .footer-inner{ display:flex; flex-direction:column; align-items:flex-start; gap:16px; line-height:1.6; }
     .footer-brand{ align-items:flex-start; flex-direction:column; gap:4px; white-space:normal; }
     .footer-disclaimer{ overflow:visible; }
-    .footer-links{ gap:8px 16px; }
+    .footer-links{
+      width:100%;
+      flex-wrap:wrap;
+      gap:4px 16px;
+      white-space:normal;
+    }
     .footer-links a,
-    .footer-links button{ min-height:38px; display:inline-flex; align-items:center; }
+    .footer-links button{ min-height:44px; display:inline-flex; align-items:center; }
+    .footer-copyright{ flex-wrap:wrap; white-space:normal; }
+    .page-home-link{ min-height:44px; padding:8px 0; }
+  }
+
+  @media (max-width:430px){
+    .landing-meta .dot{ display:none; }
+    .home-hero .landing-meta{ flex-direction:column; gap:3px; }
   }
 
   @media (max-width:370px){
@@ -2918,6 +2970,7 @@
     .topnav .brand-logo{ width:32px; height:32px; }
     .home-hero h1{ font-size:40px; }
     .thought-orbit{ width:270px; }
+    #view-books .book-cover{ height:276px; }
     .landing-meta .dot{ display:none; }
     .home-hero .landing-meta{ flex-direction:column; gap:3px; }
     .stats-row{ grid-template-columns:1fr; }
@@ -3775,7 +3828,7 @@
     <h1>Mind Over Matter</h1>
 
     <p>
-      Essays on psychology and behavior by Stephen Leynard —
+      Essays on psychology and behaviour by Stephen Leynard —
       written plainly and shared independently.
     </p>
 
@@ -4270,6 +4323,18 @@ function syncNavButtons(id){
     .style.display = isSignedIn()
       ? 'inline-flex'
       : 'none';
+
+  [
+    [document.getElementById('navHomeBtn'), isHome],
+    [document.getElementById('navBlogBtn'), isPublicArea],
+    [document.getElementById('navBooksBtn'), isBooks],
+    [document.getElementById('navResourcesBtn'), isResources],
+    [document.getElementById('navAboutBtn'), isAbout],
+    [accountButton, isAccount]
+  ].forEach(([button, active]) => {
+    if(active) button.setAttribute('aria-current', 'page');
+    else button.removeAttribute('aria-current');
+  });
 }
 
 function isAuthed(){
@@ -4277,6 +4342,7 @@ function isAuthed(){
 }
 
 function goReaderAccount(){
+  pushRoute('/account');
   if(isSignedIn()){
     const session = getAuthSession();
     document.getElementById('readerAuthTitle').textContent = 'Your reader account';
@@ -4290,6 +4356,9 @@ function goReaderAccount(){
     setReaderAuthMode('signin');
   }
   showPage('view-account');
+  document.title = isSignedIn()
+    ? 'Reader Account | Mind Over Matter'
+    : 'Reader Sign In | Mind Over Matter';
 }
 
 function setReaderAuthMode(mode){
@@ -4362,7 +4431,7 @@ function renderLandingFeature(){
     wrap.innerHTML = `
       <div class="home-card-kicker">Essay archive</div>
       <h2>No essays are currently published.</h2>
-      <p class="home-latest-excerpt">When essays are published, this space will collect writing about psychology, behavior, and everyday life.</p>
+      <p class="home-latest-excerpt">When essays are published, this space will collect writing about psychology, behaviour, and everyday life.</p>
       <button class="home-text-link" onclick="goPublic()">Visit the blog <span aria-hidden="true">&rarr;</span></button>
     `;
     return;
@@ -4414,6 +4483,7 @@ async function goPublic(refresh = true){
   pushRoute('/blog');
 
   showPage('view-blog-list');
+  document.title = 'Psychology Essays | Mind Over Matter';
 
   try{
     if(refresh) await loadPosts();
@@ -4451,16 +4521,19 @@ function goResources(){
 function goAbout(){
   pushRoute('/about');
   showPage('view-about');
+  document.title = 'About Stephen Leynard | Mind Over Matter';
 }
 
 function goPrivacy(){
   pushRoute('/privacy');
   showPage('view-privacy');
+  document.title = 'Privacy | Mind Over Matter';
 }
 
 function goAffiliateDisclosure(){
   pushRoute('/affiliate-disclosure');
   showPage('view-affiliate-disclosure');
+  document.title = 'Affiliate Disclosure | Mind Over Matter';
 }
 
 function goAdminEntry(){
@@ -4785,6 +4858,7 @@ async function routeFromLocation(){
   if(location.pathname === '/about' || location.pathname === '/about/') return goAbout();
   if(location.pathname === '/privacy' || location.pathname === '/privacy/') return goPrivacy();
   if(location.pathname === '/affiliate-disclosure' || location.pathname === '/affiliate-disclosure/') return goAffiliateDisclosure();
+  if(location.pathname === '/account' || location.pathname === '/account/') return goReaderAccount();
   goHome(false);
 }
 
@@ -5200,7 +5274,7 @@ function renderBooks(){
     return;
   }
 
-  grid.innerHTML = list.map(book => {
+  grid.innerHTML = list.map((book,index) => {
     const cover = safeHttpUrl(book.cover_image_url);
     const link = safeHttpUrl(book.link_url);
     const rel = link && isAmazonAffiliateUrl(link)
@@ -5209,7 +5283,7 @@ function renderBooks(){
     return `
       <article class="book-card">
         <div class="book-cover">
-          ${cover ? `<img src="${escapeHtml(cover)}" alt="Cover of ${escapeHtml(book.title)}" loading="lazy" onerror="this.hidden=true;this.nextElementSibling.hidden=false">` : ''}
+          ${cover ? `<img src="${escapeHtml(cover)}" alt="Cover of ${escapeHtml(book.title)}" loading="${index === 0 ? 'eager' : 'lazy'}" decoding="async" ${index === 0 ? 'fetchpriority="high"' : ''} onerror="this.hidden=true;this.nextElementSibling.hidden=false">` : ''}
           <img class="book-cover-mark" src="/brain-logo-v2.png" alt="" ${cover ? 'hidden' : ''} onerror="if(location.protocol==='file:'){this.onerror=null;this.src='brain-logo-v2.png'}">
         </div>
         <div class="book-card-body">
