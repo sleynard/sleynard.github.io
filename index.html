@@ -1345,7 +1345,7 @@
   .comment-body{ color:var(--ink-soft); line-height:1.65; white-space:pre-wrap; }
 
   .account-card{
-    max-width:540px;
+    max-width:600px;
   }
 
   .signup-consent{
@@ -1381,36 +1381,132 @@
 
   .reader-preferences{
     display:none;
-    margin-top:22px;
-    padding-top:22px;
+    margin-top:24px;
+    padding-top:26px;
     border-top:1px solid var(--rule);
     text-align:left;
   }
 
   .reader-preferences.visible{ display:block; }
-  .reader-preferences h2{ margin:0 0 7px; font:600 26px/1.2 var(--font-display); }
-  .reader-preferences > p{ margin:0 0 18px; color:var(--ink-soft); font-size:13px; line-height:1.65; }
+  .preference-intro{ margin-bottom:20px; }
+  .preference-intro .eyebrow{ margin-bottom:8px; }
+  .reader-preferences h2{ margin:0 0 8px; font:600 29px/1.15 var(--font-display); }
+  .preference-intro p{ margin:0; color:var(--ink-soft); font-size:13.5px; line-height:1.65; }
 
-  .preference-row{
+  .preference-master,
+  .preference-choice{
     display:flex;
     justify-content:space-between;
     align-items:center;
     gap:18px;
+    cursor:pointer;
+  }
+
+  .preference-master{
+    padding:18px;
+    border:1px solid color-mix(in srgb,var(--gold) 34%,var(--rule));
+    border-radius:var(--radius-lg);
+    background:linear-gradient(135deg,var(--gold-15),transparent 74%),var(--bg);
+  }
+
+  .preference-copy strong,
+  .preference-choice strong{ display:block; color:var(--ink); font-size:14px; }
+  .preference-copy small,
+  .preference-choice small{ display:block; margin-top:5px; color:var(--ink-faint); font-size:12px; font-weight:400; line-height:1.5; }
+
+  .preference-switch{
+    position:relative;
+    width:50px;
+    height:28px;
+    flex:none;
+  }
+
+  .preference-switch input{
+    position:absolute;
+    width:1px;
+    height:1px;
+    opacity:0;
+  }
+
+  .preference-switch span{
+    position:absolute;
+    inset:0;
+    border:1px solid var(--rule);
+    border-radius:999px;
+    background:var(--panel-raise);
+    transition:background-color .18s ease,border-color .18s ease;
+  }
+
+  .preference-switch span::after{
+    content:'';
+    position:absolute;
+    top:3px;
+    left:3px;
+    width:20px;
+    height:20px;
+    border-radius:50%;
+    background:var(--switch-knob);
+    box-shadow:0 2px 7px rgba(0,0,0,.28);
+    transition:transform .18s ease;
+  }
+
+  .preference-switch input:checked + span{
+    border-color:var(--gold);
+    background:var(--gold);
+  }
+
+  .preference-switch input:checked + span::after{ transform:translateX(22px); }
+  .preference-switch input:focus-visible + span{ outline:3px solid var(--gold-15); outline-offset:3px; }
+
+  .preference-topics{
+    margin-top:18px;
+    padding:5px 18px;
+    border:1px solid var(--rule);
+    border-radius:var(--radius-lg);
+    background:var(--panel);
+  }
+
+  .preference-topics-label{
+    padding:14px 0 10px;
+    color:var(--ink-faint);
+    font-size:10px;
+    font-weight:700;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+  }
+
+  .preference-choice{
     padding:15px 0;
     border-top:1px solid var(--rule);
   }
 
-  .preference-row:first-of-type{ border-top:0; }
-  .preference-row label{ color:var(--ink); font-size:14px; font-weight:700; }
-  .preference-row small{ display:block; margin-top:4px; color:var(--ink-faint); font-weight:400; line-height:1.45; }
-  .preference-row input{ width:19px; height:19px; flex:none; accent-color:var(--gold); }
-  .preference-row input:disabled{ opacity:.45; }
+  .preference-choice input{
+    width:20px;
+    height:20px;
+    flex:none;
+    accent-color:var(--gold);
+  }
+
+  .preference-off-note{
+    margin-top:16px;
+    padding:15px 17px;
+    border:1px dashed var(--rule);
+    border-radius:var(--radius-lg);
+    color:var(--ink-soft);
+    font-size:12.5px;
+    line-height:1.6;
+  }
+
+  .preference-actions{ margin-top:18px; }
+  .preference-actions .btn{ width:100%; justify-content:center; }
 
   .preference-status{
     min-height:20px;
-    margin:10px 0 0;
+    margin:11px 0 0;
     color:var(--ink-faint);
     font-size:12px;
+    line-height:1.5;
+    text-align:center;
   }
 
   .auth-switch{
@@ -1468,9 +1564,9 @@
     max-width:1180px;
     margin:0 auto;
     display:grid;
-    grid-template-columns:minmax(0,1fr) auto auto;
+    grid-template-columns:auto minmax(0,1fr) auto;
     align-items:center;
-    gap:24px;
+    gap:clamp(18px,2.6vw,34px);
   }
 
   .footer-brand{
@@ -1482,12 +1578,12 @@
   }
 
   .footer-brand strong{ color:var(--ink); }
-  .footer-disclaimer{ overflow:hidden; text-overflow:ellipsis; }
 
   .footer-links{
     display:flex;
     align-items:center;
-    gap:17px;
+    justify-content:center;
+    gap:clamp(10px,1.35vw,17px);
     white-space:nowrap;
     color:var(--ink-soft);
   }
@@ -1763,13 +1859,16 @@
     font-family:var(--font-display);
     font-size:clamp(52px,6.2vw,86px);
     font-weight:600;
-    line-height:.98;
+    line-height:1.02;
     letter-spacing:-.038em;
   }
 
   .home-hero h1 em{
+    display:block;
+    margin-top:.14em;
     color:var(--gold);
     font-weight:450;
+    line-height:1.04;
   }
 
   .home-hero .lede{
@@ -2170,13 +2269,58 @@
   .article-nav{
     display:flex;
     align-items:center;
+    justify-content:space-between;
     flex-wrap:wrap;
-    gap:8px 18px;
-    margin-bottom:28px;
+    gap:12px 18px;
+    margin-bottom:30px;
+    padding-bottom:18px;
+    border-bottom:1px solid var(--rule);
   }
 
   .article-nav .page-home-link,
   .post-full .article-nav .back-link{ margin:0; }
+
+  .article-nav .page-home-link::before{ display:none; }
+
+  .essay-back-link{
+    display:inline-flex;
+    align-items:center;
+    gap:9px;
+    min-height:42px;
+    padding:9px 15px;
+    border:1px solid color-mix(in srgb,var(--gold) 48%,var(--rule));
+    border-radius:999px;
+    background:var(--panel);
+    color:var(--ink);
+    font-size:12.5px;
+    font-weight:700;
+    transition:background-color .18s ease,border-color .18s ease,color .18s ease,transform .18s ease;
+  }
+
+  .essay-back-link::before{
+    content:'\2190';
+    color:var(--gold-soft);
+    font-size:15px;
+    font-weight:500;
+    transition:transform .18s ease;
+  }
+
+  .essay-back-link:hover,
+  .essay-back-link:focus-visible{
+    border-color:var(--gold);
+    background:var(--gold-15);
+    color:var(--gold-soft);
+  }
+
+  .essay-back-link:hover::before{ transform:translateX(-3px); }
+
+  .article-footer-nav{
+    display:flex;
+    justify-content:flex-start;
+    margin-top:34px;
+    padding-top:24px;
+    border-top:1px solid var(--rule);
+  }
 
   .affiliate-notice{
     margin:0 0 28px;
@@ -2221,8 +2365,8 @@
     position:relative;
     overflow:hidden;
     display:grid;
-    grid-template-columns:1fr;
-    align-items:start;
+    grid-template-columns:minmax(260px,.72fr) minmax(0,1.28fr);
+    align-items:center;
     gap:clamp(32px,4vw,46px);
     padding:clamp(26px,4.5vw,52px);
     border:1px solid var(--rule);
@@ -2246,7 +2390,7 @@
   .about-portrait{
     position:relative;
     z-index:1;
-    width:min(100%,350px);
+    width:min(100%,330px);
     margin:0 auto;
   }
 
@@ -2280,7 +2424,7 @@
     position:relative;
     z-index:1;
     width:min(100%,720px);
-    margin:0 auto;
+    margin:0;
   }
 
   .about-copy h1{
@@ -2312,45 +2456,46 @@
     margin-top:26px;
   }
 
-  .about-disclaimer{
+  .about-notes-grid{
     display:grid;
-    grid-template-columns:minmax(190px,.42fr) minmax(0,1fr);
-    gap:clamp(24px,4vw,48px);
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:18px;
     margin-top:22px;
+  }
+
+  .about-disclaimer,
+  .about-editorial-note{
+    display:block;
+    margin:0;
     padding:clamp(24px,3vw,34px);
     border:1px solid var(--rule);
     border-radius:var(--radius-lg);
-    background:linear-gradient(135deg,var(--gold-15),transparent 62%),var(--bg-deep);
+    background:var(--panel);
   }
 
-  .about-disclaimer h2{
+  .about-disclaimer{
+    background:linear-gradient(135deg,var(--gold-15),transparent 68%),var(--bg-deep);
+  }
+
+  .about-disclaimer h2,
+  .about-editorial-note h2{
     margin:8px 0 0;
     font:600 27px/1.1 var(--font-display);
   }
 
-  .about-disclaimer p{
-    margin:0;
-    align-self:center;
+  .about-note-copy{
+    margin-top:20px;
+  }
+
+  .about-note-copy p{
+    margin:0 0 12px;
     color:var(--ink-soft);
     font-size:14px;
     line-height:1.75;
   }
 
-  .about-editorial-note{
-    display:grid;
-    grid-template-columns:minmax(150px,.3fr) minmax(0,1fr);
-    gap:clamp(18px,3vw,36px);
-    margin-top:18px;
-    padding:22px 4px 0;
-    border-top:1px solid var(--rule);
-  }
-
-  .about-editorial-note p{
-    margin:0;
-    color:var(--ink-faint);
-    font-size:13px;
-    line-height:1.72;
-  }
+  .about-note-copy p:last-child{ margin-bottom:0; }
+  .about-editorial-note .about-note-copy p{ color:var(--ink-faint); font-size:13.5px; }
 
   /* Books and support resources */
   .directory-wrap{
@@ -2455,13 +2600,23 @@
     position:relative;
     display:grid;
     place-items:center;
+    width:100%;
     height:250px;
     padding:18px;
     overflow:hidden;
+    border:0;
     border-bottom:1px solid var(--rule);
+    color:var(--ink);
+    font:inherit;
+    cursor:pointer;
     background:
       radial-gradient(circle at 24% 18%,var(--gold-15),transparent 46%),
       linear-gradient(145deg,var(--panel-raise),var(--bg-deep));
+  }
+
+  .book-cover:focus-visible{
+    outline:3px solid var(--gold);
+    outline-offset:-3px;
   }
 
   .book-cover > img:not(.book-cover-mark){
@@ -2482,6 +2637,29 @@
     object-fit:contain;
     opacity:.78;
     filter:drop-shadow(0 8px 18px rgba(0,0,0,.25));
+  }
+
+  .book-cover-action{
+    position:absolute;
+    right:13px;
+    bottom:13px;
+    z-index:2;
+    padding:7px 10px;
+    border:1px solid color-mix(in srgb,var(--gold) 52%,var(--rule));
+    border-radius:999px;
+    background:color-mix(in srgb,var(--panel) 88%,transparent);
+    color:var(--gold-soft);
+    font-size:10.5px;
+    font-weight:700;
+    letter-spacing:.04em;
+    box-shadow:0 6px 18px rgba(0,0,0,.2);
+    backdrop-filter:blur(10px);
+    transition:transform .18s ease,background-color .18s ease;
+  }
+
+  .book-cover:hover .book-cover-action{
+    transform:translateY(-2px);
+    background:var(--panel);
   }
 
   .book-card-body{
@@ -2505,6 +2683,22 @@
     letter-spacing:-.02em;
   }
 
+  .book-title-button{
+    padding:0;
+    border:0;
+    background:none;
+    color:inherit;
+    font:inherit;
+    letter-spacing:inherit;
+    text-align:left;
+    cursor:pointer;
+  }
+
+  .book-title-button:hover,
+  .book-title-button:focus-visible{
+    color:var(--gold-soft);
+  }
+
   .book-author{
     color:var(--ink-faint);
     font-size:12.5px;
@@ -2516,11 +2710,147 @@
     color:var(--ink-soft);
     font-size:13.5px;
     line-height:1.7;
+    display:-webkit-box;
+    overflow:hidden;
+    -webkit-box-orient:vertical;
+    -webkit-line-clamp:5;
   }
 
-  .book-card .btn{
-    width:100%;
+  .book-card-actions{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:9px;
     margin-top:auto;
+  }
+
+  .book-card-actions.single{ grid-template-columns:1fr; }
+
+  .book-card-actions .btn{
+    width:100%;
+    margin:0;
+    padding-inline:12px;
+    justify-content:center;
+    text-align:center;
+  }
+
+  body.book-review-open{ overflow:hidden; }
+
+  .book-review-dialog{
+    position:relative;
+    width:min(900px,100%);
+    max-height:calc(100dvh - 40px);
+    overflow:auto;
+    border:1px solid var(--rule);
+    border-radius:18px;
+    background:var(--panel);
+    box-shadow:var(--shadow-pop);
+  }
+
+  .book-review-close{
+    position:sticky;
+    top:14px;
+    z-index:4;
+    display:grid;
+    place-items:center;
+    width:40px;
+    height:40px;
+    margin:14px 14px -54px auto;
+    border:1px solid var(--rule);
+    border-radius:50%;
+    background:color-mix(in srgb,var(--panel) 92%,transparent);
+    color:var(--ink);
+    font-size:24px;
+    line-height:1;
+    cursor:pointer;
+    backdrop-filter:blur(10px);
+  }
+
+  .book-review-close:hover,
+  .book-review-close:focus-visible{
+    border-color:var(--gold);
+    color:var(--gold-soft);
+  }
+
+  .book-review-layout{
+    display:grid;
+    grid-template-columns:minmax(220px,290px) minmax(0,1fr);
+    gap:34px;
+    padding:34px;
+  }
+
+  .book-review-visual{
+    align-self:start;
+    display:grid;
+    place-items:center;
+    min-height:360px;
+    padding:22px;
+    border:1px solid var(--rule);
+    border-radius:14px;
+    background:
+      radial-gradient(circle at 24% 18%,var(--gold-15),transparent 46%),
+      linear-gradient(145deg,var(--panel-raise),var(--bg-deep));
+  }
+
+  .book-review-visual > img:not(.book-cover-mark){
+    width:100%;
+    max-height:400px;
+    object-fit:contain;
+    border-radius:5px;
+    filter:drop-shadow(0 15px 24px rgba(0,0,0,.32));
+  }
+
+  .book-review-content{ min-width:0; }
+
+  .book-review-content h2{
+    max-width:92%;
+    margin:9px 0 7px;
+    font:600 clamp(34px,5vw,48px)/1.05 var(--font-display);
+    letter-spacing:-.03em;
+  }
+
+  .book-review-author{
+    color:var(--ink-faint);
+    font-size:13px;
+    font-weight:600;
+  }
+
+  .book-review-rule{
+    width:54px;
+    height:2px;
+    margin:23px 0;
+    background:var(--gold);
+  }
+
+  .book-review-body{
+    color:var(--ink-soft);
+    font-size:15px;
+    line-height:1.8;
+  }
+
+  .book-review-body p{ margin:0 0 17px; }
+  .book-review-body p:last-child{ margin-bottom:0; }
+  .book-review-body a{
+    color:var(--gold-soft);
+    text-decoration:underline;
+    text-underline-offset:3px;
+  }
+
+  .book-review-actions{
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:12px;
+    margin-top:27px;
+    padding-top:22px;
+    border-top:1px solid var(--rule);
+  }
+
+  .book-review-affiliate-note{
+    flex-basis:100%;
+    margin:0;
+    color:var(--ink-faint);
+    font-size:10.5px;
+    line-height:1.5;
   }
 
   .book-disclosure{
@@ -2655,13 +2985,43 @@
   }
 
   .resource-note{
-    margin-top:36px;
+    display:grid;
+    grid-template-columns:auto minmax(0,1fr);
+    align-items:start;
+    gap:18px;
+    margin-top:46px;
     padding:20px 22px;
     border:1px solid var(--rule);
+    border-left:3px solid var(--gold);
     border-radius:var(--radius-lg);
+    background:var(--panel);
+    box-shadow:0 12px 34px rgba(0,0,0,.08);
+  }
+
+  .resource-note-label{
+    padding-top:2px;
+    color:var(--gold-soft);
+    font-size:10.5px;
+    font-weight:700;
+    letter-spacing:.11em;
+    line-height:1.5;
+    text-transform:uppercase;
+    white-space:nowrap;
+  }
+
+  .resource-note-copy{
+    margin:0;
     color:var(--ink-faint);
     font-size:12px;
     line-height:1.7;
+  }
+
+  #view-resources{
+    background:var(--bg);
+  }
+
+  #view-resources .directory-wrap{
+    padding-bottom:58px;
   }
 
   .admin-secondary-section{
@@ -2686,6 +3046,46 @@
     flex-wrap:wrap;
     gap:9px;
   }
+
+  .admin-insights{
+    margin:0 0 30px;
+    padding:24px;
+    border:1px solid var(--rule);
+    border-radius:var(--radius-lg);
+    background:linear-gradient(135deg,var(--gold-15),transparent 70%),var(--panel);
+    box-shadow:var(--shadow-card);
+  }
+
+  .admin-insights-head{
+    display:flex;
+    align-items:end;
+    justify-content:space-between;
+    gap:18px;
+    margin-bottom:18px;
+  }
+
+  .admin-insights-head h2{ margin:5px 0 0; font:600 27px/1.1 var(--font-display); }
+  .admin-insights-links{ display:flex; flex-wrap:wrap; gap:8px 14px; }
+  .admin-insights-links a{ color:var(--gold-soft); font-size:11.5px; font-weight:700; }
+
+  .admin-insights-grid{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    overflow:hidden;
+    border:1px solid var(--rule);
+    border-radius:var(--radius);
+    background:var(--rule);
+    gap:1px;
+  }
+
+  .admin-insight{
+    padding:17px;
+    background:var(--bg-deep);
+  }
+
+  .admin-insight strong{ display:block; color:var(--ink); font:600 27px/1 var(--font-display); }
+  .admin-insight span{ display:block; margin-top:7px; color:var(--ink-faint); font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
+  .admin-insights-status{ margin:13px 0 0; color:var(--ink-faint); font-size:11.5px; }
 
   /* Forms, account, admin, dialogs and feedback */
   .login-card,
@@ -2757,14 +3157,15 @@
     .about-portrait{ width:min(100%,310px); margin:0 auto; }
     .about-card::after{ font-size:112px; bottom:-38px; }
     .about-copy{ text-align:left; }
-    .about-disclaimer{ grid-template-columns:1fr; gap:16px; }
-    .about-editorial-note{ grid-template-columns:1fr; gap:8px; }
+    .about-notes-grid{ grid-template-columns:1fr; gap:14px; }
     .directory-hero{ grid-template-columns:1fr; gap:20px; }
     .book-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .book-review-layout{ grid-template-columns:minmax(180px,240px) minmax(0,1fr); gap:24px; padding:26px; }
+    .book-review-visual{ min-height:310px; }
     .resource-urgent{ grid-template-columns:1fr; }
   }
 
-  @media (max-width:1120px) and (min-width:701px){
+  @media (max-width:900px) and (min-width:701px){
     .footer-inner{ grid-template-columns:minmax(0,1fr) auto; gap:16px 24px; }
     .footer-brand{
       grid-column:1/-1;
@@ -2791,7 +3192,8 @@
     .home-editorial{ gap:14px; }
     .home-latest,.home-note{ padding:27px 23px; border-radius:20px; }
     .home-subscribe{ padding:27px 23px; border-radius:20px; }
-    .preference-row{ align-items:flex-start; }
+    .preference-master{ align-items:flex-start; padding:17px 16px; }
+    .preference-topics{ padding:4px 16px; }
     .home-latest::after{ font-size:190px; }
     .home-pillars{ border-radius:18px; }
     .home-pillars article{ padding:28px 24px; }
@@ -2801,6 +3203,8 @@
     .featured-post{ border-radius:20px; }
     .post-card,.post-card:first-child{ min-height:250px; padding:24px; border-radius:18px; }
     .post-full{ padding-top:46px; }
+    .article-nav{ align-items:flex-start; }
+    .essay-back-link{ min-height:44px; }
     .about-wrap{ padding:34px 18px 72px; }
     .page-home-link{ margin-bottom:18px; }
     .about-card{ gap:28px; padding:20px; border-radius:20px; }
@@ -2811,6 +3215,7 @@
     .about-actions{ display:grid; grid-template-columns:1fr; }
     .about-actions .btn{ width:100%; justify-content:center; }
     .about-disclaimer{ padding:23px 20px; border-radius:18px; }
+    .about-editorial-note{ padding:23px 20px; border-radius:18px; }
     .directory-wrap{ padding:34px 16px 72px; }
     .directory-hero{ padding-bottom:26px; }
     .directory-hero h1{ font-size:clamp(42px,13vw,58px); }
@@ -2828,13 +3233,27 @@
       width:calc(100% - 40px);
       height:calc(100% - 40px);
     }
+    .book-card-actions{ grid-template-columns:1fr; }
+    #bookReviewModal{ align-items:center; padding:12px; }
+    .book-review-dialog{ max-height:calc(100dvh - 24px); border-radius:17px; }
+    .book-review-layout{ grid-template-columns:1fr; gap:24px; padding:22px; }
+    .book-review-visual{ width:min(100%,290px); min-height:330px; margin:0 auto; }
+    .book-review-content h2{ max-width:calc(100% - 42px); font-size:clamp(34px,10vw,43px); }
+    .book-review-actions{ display:grid; grid-template-columns:1fr; }
+    .book-review-actions .btn{ width:100%; justify-content:center; }
     .resource-urgent{ padding:22px 20px; }
     .resource-urgent-actions{ display:grid; grid-template-columns:1fr; }
     .resource-section-head{ align-items:flex-start; flex-direction:column; gap:5px; }
     .resource-links a{ min-height:44px; padding:9px 12px; }
+    .resource-note{ grid-template-columns:1fr; gap:8px; margin-top:34px; padding:19px 18px; }
+    .resource-note-label{ white-space:normal; }
+    #view-resources .directory-wrap{ padding-bottom:44px; }
     .admin-section-head{ align-items:stretch; flex-direction:column; }
     .admin-section-head .btn{ width:100%; }
     .admin-head-actions{ display:grid; grid-template-columns:1fr; width:100%; }
+    .admin-insights{ padding:20px 17px; }
+    .admin-insights-head{ align-items:flex-start; flex-direction:column; }
+    .admin-insights-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); }
   }
 
   @media (prefers-reduced-motion:reduce){
@@ -2918,9 +3337,11 @@
     .home-hero h1{
       margin-bottom:19px;
       font-size:clamp(43px,12.2vw,57px);
-      line-height:1;
+      line-height:1.03;
       letter-spacing:-.035em;
     }
+
+    .home-hero h1 em{ margin-top:.16em; }
 
     .home-hero .lede{ margin-bottom:24px; font-size:16px; line-height:1.68; }
     .home-hero .landing-actions{ gap:9px; margin-bottom:22px; }
@@ -2997,6 +3418,7 @@
     }
 
     .login-card{ max-width:430px; padding:30px 22px 25px; border-radius:20px; }
+    .account-card{ max-width:600px; }
     .login-card h1{ font-size:28px; }
     .login-card p{ font-size:14px; line-height:1.6; }
     .field{ margin-bottom:15px; }
@@ -3134,7 +3556,7 @@
     <section class="home-hero" aria-labelledby="home-title">
       <div class="home-hero-copy">
         <div class="home-eyebrow"><span></span> Independent psychology publication</div>
-        <h1 id="home-title">Explore psychology.<br><em>Live with intention.</em></h1>
+        <h1 id="home-title">Explore psychology.<em>Live with intention.</em></h1>
         <p class="lede">
           Mind Over Matter is an independent publication by Stephen Leynard, featuring
           original essays on human thought, behaviour, and everyday life.
@@ -3164,8 +3586,8 @@
     </section>
 
     <div class="home-topic-rail" aria-label="Essay topics">
-      <span>Attention</span><i></i><span>Habits</span><i></i><span>Emotion</span><i></i>
-      <span>Identity</span><i></i><span>Relationships</span><i></i><span>Growth</span>
+      <span>Addiction</span><i></i><span>Digital behaviour</span><i></i><span>Emotion</span><i></i>
+      <span>Habits</span><i></i><span>Mattering</span><i></i><span>Relationships</span>
     </div>
 
     <section class="home-editorial" aria-label="Featured content">
@@ -3181,10 +3603,10 @@
       </aside>
     </section>
 
-    <section class="home-pillars" aria-label="The Mind Over Matter approach">
-      <article><span>01</span><h3>Notice</h3><p>Pay closer attention to the patterns shaping your thoughts, feelings, and decisions.</p></article>
-      <article><span>02</span><h3>Understand</h3><p>Explore the psychology beneath those patterns in clear, grounded language.</p></article>
-      <article><span>03</span><h3>Choose</h3><p>Turn insight into more deliberate responses, relationships, and ways of living.</p></article>
+    <section class="home-pillars" aria-label="Read, learn, and share">
+      <article><span>01</span><h3>Read</h3><p>Engage with original essays examining psychology, behaviour, and the questions that shape everyday life.</p></article>
+      <article><span>02</span><h3>Learn</h3><p>Expand what you know through clear explanations, thoughtful analysis, and supporting research.</p></article>
+      <article><span>03</span><h3>Share</h3><p>Continue the conversation by sharing an essay with someone who may find it useful.</p></article>
     </section>
 
     <section class="home-subscribe" aria-labelledby="homeSubscribeHeading">
@@ -3230,18 +3652,29 @@
       </div>
     </section>
 
-    <aside class="about-disclaimer" aria-labelledby="disclaimerHeading">
-      <div>
-        <div class="eyebrow">Educational information</div>
-        <h2 id="disclaimerHeading">A note for readers</h2>
-      </div>
-      <p>Content on Mind Over Matter is provided for educational and informational purposes only. These essays reflect the author&rsquo;s personal interpretations and opinions, and readers are encouraged to consider other perspectives, evaluate sources independently, and form their own informed conclusions. The content is not medical or mental-health advice and should not replace care from a qualified health or mental-health professional for personal concerns.</p>
-    </aside>
+    <div class="about-notes-grid">
+      <aside class="about-disclaimer" aria-labelledby="disclaimerHeading">
+        <div>
+          <div class="eyebrow">Educational information</div>
+          <h2 id="disclaimerHeading">A note for readers</h2>
+        </div>
+        <div class="about-note-copy">
+          <p>Mind Over Matter is provided for educational and informational purposes. Essays express Stephen&rsquo;s personal interpretations and opinions; readers are encouraged to consider other perspectives, examine sources, and form their own conclusions.</p>
+          <p>Nothing published here is medical or mental-health advice, or a substitute for care from a qualified health or mental-health professional.</p>
+        </div>
+      </aside>
 
-    <aside class="about-editorial-note" aria-labelledby="editorialStandardsHeading">
-      <div class="eyebrow" id="editorialStandardsHeading">Editorial standards</div>
-      <p>Artificial-intelligence tools assisted with this website&rsquo;s design and development. They are not used to draft or write the essays, which are authored by Stephen Leynard and reflect his original thought, analysis, and voice. Where appropriate and practicable, supporting sources are cited in APA style.</p>
-    </aside>
+      <aside class="about-editorial-note" aria-labelledby="editorialStandardsHeading">
+        <div>
+          <div class="eyebrow">Editorial standards</div>
+          <h2 id="editorialStandardsHeading">How the work is produced</h2>
+        </div>
+        <div class="about-note-copy">
+          <p>AI tools assisted with this website&rsquo;s design and development, but they are not used to draft or write the essays.</p>
+          <p>Every essay is authored by Stephen and reflects his original thought, analysis, and voice. Supporting sources are cited in APA style where appropriate and practicable.</p>
+        </div>
+      </aside>
+    </div>
   </article>
 </div>
 
@@ -3278,7 +3711,7 @@
       </div>
       <aside class="directory-side-note">
         <strong>Selection note</strong>
-        Inclusion reflects Stephen&rsquo;s personal recommendation, not a professional endorsement. Readers are encouraged to evaluate each work for themselves.
+        Every title here has been read and personally recommended by Stephen. Recommendations reflect personal judgment, not professional endorsement. Some links may be affiliate links; qualifying purchases may earn a commission at no additional cost to you.
       </aside>
     </header>
 
@@ -3456,7 +3889,10 @@
       </div>
     </section>
 
-    <aside class="resource-note">Last reviewed 14 August 2026. Service details can change; use the linked official source to confirm current availability. This directory is educational information, not medical or mental-health advice, diagnosis, treatment, or a substitute for professional care.</aside>
+    <aside class="resource-note">
+      <div class="resource-note-label">Last reviewed <time datetime="2026-08-14">14 August 2026</time></div>
+      <p class="resource-note-copy">Service details can change; use the linked official source to confirm current availability. This directory is educational information, not medical or mental-health advice, diagnosis, treatment, or a substitute for professional care.</p>
+    </aside>
   </main>
 </div>
 
@@ -3519,22 +3955,43 @@
         <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center" id="readerAuthSubmit">Sign in</button>
       </form>
       <section class="reader-preferences" id="readerPreferences" aria-labelledby="readerPreferencesHeading">
-        <h2 id="readerPreferencesHeading">Email preferences</h2>
-        <p>Choose whether Mind Over Matter may email you about new publications. Your choice does not affect your reader account.</p>
-        <div class="preference-row">
-          <div><label for="readerNewsletterEnabled">Publication emails</label><small>Receive only the update types selected below.</small></div>
-          <input type="checkbox" id="readerNewsletterEnabled" onchange="updateNewsletterPreferenceUI()">
+        <div class="preference-intro">
+          <div class="eyebrow">Reader account</div>
+          <h2 id="readerPreferencesHeading">Choose what reaches your inbox</h2>
+          <p>Publication emails are optional and separate from your reader account. You can change this setting whenever you like.</p>
         </div>
-        <div class="preference-row">
-          <div><label for="readerNewsletterEssays">New essays</label><small>An email when a new essay is published.</small></div>
-          <input type="checkbox" id="readerNewsletterEssays">
+
+        <label class="preference-master" for="readerNewsletterEnabled">
+          <span class="preference-copy">
+            <strong>Publication emails</strong>
+            <small>Receive an update when something new is published.</small>
+          </span>
+          <span class="preference-switch">
+            <input type="checkbox" id="readerNewsletterEnabled" onchange="updateNewsletterPreferenceUI()">
+            <span aria-hidden="true"></span>
+          </span>
+        </label>
+
+        <div class="preference-topics" id="readerNewsletterTopics">
+          <div class="preference-topics-label">Send me</div>
+          <label class="preference-choice" for="readerNewsletterEssays">
+            <span><strong>New essays</strong><small>An email when a new essay is published.</small></span>
+            <input type="checkbox" id="readerNewsletterEssays">
+          </label>
+          <label class="preference-choice" for="readerNewsletterBooks">
+            <span><strong>Book recommendations</strong><small>An email when a new recommendation is added.</small></span>
+            <input type="checkbox" id="readerNewsletterBooks">
+          </label>
         </div>
-        <div class="preference-row">
-          <div><label for="readerNewsletterBooks">Book recommendations</label><small>An email when a new recommendation is published.</small></div>
-          <input type="checkbox" id="readerNewsletterBooks">
+
+        <div class="preference-off-note" id="readerNewsletterOffNote" hidden>
+          Publication emails are off. Your reader account, likes, and comments are unaffected.
         </div>
-        <button class="btn btn-primary" type="button" id="readerPreferencesSave" onclick="saveNewsletterPreferences()">Save email preferences</button>
-        <p class="preference-status" id="readerPreferencesStatus" role="status" aria-live="polite"></p>
+
+        <div class="preference-actions">
+          <button class="btn btn-primary" type="button" id="readerPreferencesSave" onclick="saveNewsletterPreferences()">Save preferences</button>
+          <p class="preference-status" id="readerPreferencesStatus" role="status" aria-live="polite"></p>
+        </div>
       </section>
       <div class="auth-switch">
         <span id="readerAuthSwitchCopy">New here?</span>
@@ -3663,6 +4120,26 @@
       </div>
 
     </div>
+
+    <section class="admin-insights" aria-labelledby="adminInsightsHeading">
+      <div class="admin-insights-head">
+        <div>
+          <div class="eyebrow">Live site activity</div>
+          <h2 id="adminInsightsHeading">Reader engagement</h2>
+        </div>
+        <div class="admin-insights-links">
+          <a href="https://dash.cloudflare.com/" target="_blank" rel="noopener noreferrer">Cloudflare traffic &rarr;</a>
+          <a href="https://resend.com/emails" target="_blank" rel="noopener noreferrer">Email activity &rarr;</a>
+        </div>
+      </div>
+      <div class="admin-insights-grid">
+        <div class="admin-insight"><strong id="insightReaders">&mdash;</strong><span>Reader accounts</span></div>
+        <div class="admin-insight"><strong id="insightLikes">&mdash;</strong><span>Post likes</span></div>
+        <div class="admin-insight"><strong id="insightComments">&mdash;</strong><span>Comments</span></div>
+        <div class="admin-insight"><strong id="insightEmails">&mdash;</strong><span>Emails sent</span></div>
+      </div>
+      <p class="admin-insights-status" id="adminInsightsStatus" role="status" aria-live="polite">Loading live totals from Supabase&hellip;</p>
+    </section>
 
     <div class="table-card">
 
@@ -4007,7 +4484,6 @@
   <div class="footer-inner">
     <div class="footer-brand">
       <strong>Mind Over Matter</strong>
-      <span class="footer-disclaimer">Educational information and personal perspectives—not medical or mental-health advice.</span>
     </div>
     <nav class="footer-links" aria-label="Footer navigation">
       <a href="/" onclick="goHome();return false">Home</a>
@@ -4037,6 +4513,16 @@
     </div>
     <button class="btn-text" type="button" style="margin-top:14px" onclick="closeContact()">Close</button>
   </div>
+</div>
+
+<!-- ============================================================
+     BOOK REVIEW
+     ============================================================ -->
+<div class="modal-backdrop" id="bookReviewModal" role="dialog" aria-modal="true" aria-labelledby="bookReviewTitle" aria-hidden="true" onclick="if(event.target===this) closeBookReview()">
+  <article class="book-review-dialog">
+    <button class="book-review-close" type="button" aria-label="Close book review" onclick="closeBookReview()">&times;</button>
+    <div id="bookReviewContent"></div>
+  </article>
 </div>
 
 <!-- ============================================================
@@ -4100,6 +4586,9 @@ const SUPABASE_KEY = 'sb_publishable_cWKtBkdbEFnbtJYV0Ttt0w_rn42Hx-k';
 const POST_COLUMNS = 'id,created_at,updated_at,title,body,published,slug,category,summary,featured,publish_at,cover_image_url';
 const BOOK_COLUMNS = 'id,created_at,updated_at,title,author,category,description,link_url,cover_image_url,published,featured,sort_order';
 const AUTOSAVE_KEY = 'mindovermatter_editor_autosave';
+const BLOG_SCROLL_KEY = 'mindovermatter_blog_scroll';
+
+if('scrollRestoration' in history) history.scrollRestoration = 'manual';
 
 function currentTheme(){
   return document.documentElement.dataset.theme === 'light' ? 'light' : 'dark';
@@ -4273,6 +4762,25 @@ async function supabaseRequest(path, options = {}){
   return text ? JSON.parse(text) : null;
 }
 
+async function supabaseCount(path, { auth = false } = {}){
+  const headers = {
+    apikey:SUPABASE_KEY,
+    Prefer:'count=exact',
+    Range:'0-0'
+  };
+
+  if(auth){
+    const accessToken = await getAccessToken();
+    if(!accessToken) throw new Error('Please sign in again');
+    headers.Authorization = `Bearer ${accessToken}`;
+  }
+
+  const response = await fetch(SUPABASE_REST_URL + path, { headers });
+  if(!response.ok) throw new Error(`Could not load activity total (${response.status})`);
+  const total = response.headers.get('content-range')?.split('/').pop();
+  return Number.isFinite(Number(total)) ? Number(total) : 0;
+}
+
 async function notifySubscribers(contentType, id){
   if(location.protocol === 'file:') return { skipped:true, reason:'local-preview' };
   const accessToken = await getAccessToken();
@@ -4347,6 +4855,8 @@ let blogSearchTerm = '';
 let activeCategory = 'All';
 let blogCategories = ['All'];
 let autosaveTimer = null;
+let lastBookReviewTrigger = null;
+let restoreBlogAfterPost = false;
 
 function pushRoute(path, state = {}){
   if(location.protocol === 'file:') return;
@@ -4409,6 +4919,7 @@ document.addEventListener('keydown', event => {
   if(event.key === 'Escape'){
     closeMobileNav();
     closeContact();
+    closeBookReview();
     closeDeleteModal();
     closeBookDeleteModal();
   }
@@ -4470,8 +4981,10 @@ function syncNavButtons(id){
   const accountButton = document.getElementById('navAccountBtn');
   accountButton.classList.toggle('active', isAccount);
   accountButton.innerHTML = isSignedIn()
-    ? `<span class="user-menu-label">${escapeHtml(getAuthSession()?.user?.email || 'Account')}</span>`
+    ? '<span class="user-menu-label">My reader account</span>'
     : 'Reader sign in';
+  accountButton.setAttribute('aria-label',isSignedIn() ? 'Open my reader account' : 'Reader sign in');
+  accountButton.setAttribute('title',isSignedIn() ? 'Open my reader account' : 'Reader sign in');
 
   document
     .getElementById('navAdminBtn')
@@ -4612,6 +5125,8 @@ function updateNewsletterPreferenceUI(){
   const enabled = document.getElementById('readerNewsletterEnabled').checked;
   document.getElementById('readerNewsletterEssays').disabled = !enabled;
   document.getElementById('readerNewsletterBooks').disabled = !enabled;
+  document.getElementById('readerNewsletterTopics').hidden = !enabled;
+  document.getElementById('readerNewsletterOffNote').hidden = enabled;
 }
 
 async function loadNewsletterPreferences(){
@@ -4631,8 +5146,8 @@ async function loadNewsletterPreferences(){
     document.getElementById('readerNewsletterBooks').checked = preference.books !== false;
     updateNewsletterPreferenceUI();
     status.textContent = preference.subscribed
-      ? 'Publication emails are currently on.'
-      : 'Publication emails are currently off.';
+      ? 'Publication emails are on. Choose the updates you want, then save.'
+      : 'Publication emails are off.';
   }catch(error){
     console.error(error);
     status.textContent = 'Email preferences are temporarily unavailable.';
@@ -4661,7 +5176,7 @@ async function saveNewsletterPreferences(){
     );
     updateNewsletterPreferenceUI();
     status.textContent = subscribed
-      ? 'Saved. You will receive the publication emails selected above.'
+      ? 'Saved. Your selected publication emails are on.'
       : 'Saved. Publication emails are off.';
     showToast('Email preferences saved');
   }catch(error){
@@ -4707,6 +5222,7 @@ function renderLandingFeature(){
 
 async function goHome(refresh = true){
 
+  restoreBlogAfterPost = false;
   showPage('view-landing');
 
   pushRoute('/');
@@ -4731,9 +5247,44 @@ async function goHome(refresh = true){
   renderLandingFeature();
 }
 
-async function goPublic(refresh = true){
+function captureBlogScrollPosition(){
+  const scrollY = Math.max(0,Math.round(window.scrollY || 0));
+  sessionStorage.setItem(BLOG_SCROLL_KEY,String(scrollY));
+
+  if(location.pathname === '/blog' || location.pathname === '/blog/'){
+    history.replaceState({ ...history.state, blogScrollY:scrollY },'',location.href);
+  }
+
+  return scrollY;
+}
+
+function savedBlogScrollPosition(){
+  const statePosition = Number(history.state?.blogScrollY);
+  if(Number.isFinite(statePosition) && statePosition >= 0) return statePosition;
+
+  const storedPosition = Number(sessionStorage.getItem(BLOG_SCROLL_KEY));
+  return Number.isFinite(storedPosition) && storedPosition >= 0 ? storedPosition : 0;
+}
+
+function restoreBlogScrollPosition(){
+  const scrollY = savedBlogScrollPosition();
+  const root = document.documentElement;
+  const previousBehavior = root.style.scrollBehavior;
+  root.style.scrollBehavior = 'auto';
+
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    window.scrollTo(0,scrollY);
+    setTimeout(() => {
+      window.scrollTo(0,scrollY);
+      root.style.scrollBehavior = previousBehavior;
+    },80);
+  }));
+}
+
+async function goPublic(refresh = true, options = {}){
 
   currentPublicPostId = null;
+  const shouldRestoreScroll = Boolean(options.restoreScroll);
 
   pushRoute('/blog');
 
@@ -4743,6 +5294,8 @@ async function goPublic(refresh = true){
   try{
     if(refresh) await loadPosts();
     renderPublicList();
+    if(shouldRestoreScroll) restoreBlogScrollPosition();
+    restoreBlogAfterPost = false;
   }catch(error){
     console.error(error);
     renderLoadError('publicPostList');
@@ -4750,7 +5303,12 @@ async function goPublic(refresh = true){
   }
 }
 
+function returnToEssayList(){
+  goPublic(true,{ restoreScroll:restoreBlogAfterPost || Boolean(history.state?.fromBlog) });
+}
+
 async function goBooks(refresh = true){
+  restoreBlogAfterPost = false;
   pushRoute('/books');
   showPage('view-books');
   document.title = 'Psychology Book Recommendations | Mind Over Matter';
@@ -4768,24 +5326,28 @@ async function goBooks(refresh = true){
 }
 
 function goResources(){
+  restoreBlogAfterPost = false;
   pushRoute('/resources');
   showPage('view-resources');
   document.title = 'Mental Health and Crisis Resources | Mind Over Matter';
 }
 
 function goAbout(){
+  restoreBlogAfterPost = false;
   pushRoute('/about');
   showPage('view-about');
   document.title = 'About Stephen Leynard | Mind Over Matter';
 }
 
 function goPrivacy(){
+  restoreBlogAfterPost = false;
   pushRoute('/privacy');
   showPage('view-privacy');
   document.title = 'Privacy | Mind Over Matter';
 }
 
 function goAffiliateDisclosure(){
+  restoreBlogAfterPost = false;
   pushRoute('/affiliate-disclosure');
   showPage('view-affiliate-disclosure');
   document.title = 'Affiliate Disclosure | Mind Over Matter';
@@ -4901,6 +5463,7 @@ async function goDashboard(){
       bookLoadFailed = true;
     }
     renderDashboard();
+    loadAdminInsights();
   }catch(error){
     console.error(error);
     showToast('Could not load posts');
@@ -4976,6 +5539,36 @@ function renderStats(){
 
   document.getElementById('statMonth').textContent =
     thisMonth;
+}
+
+async function loadAdminInsights(){
+  const status = document.getElementById('adminInsightsStatus');
+  if(!status || !isAuthed()) return;
+
+  status.textContent = 'Loading live totals from Supabase…';
+
+  try{
+    const [readers, likes, comments, deliveries] = await Promise.all([
+      supabaseCount('profiles?select=id', { auth:true }),
+      supabaseCount('post_likes?select=post_id', { auth:true }),
+      supabaseCount('comments?select=id', { auth:true }),
+      supabaseRequest('newsletter_deliveries?select=recipient_count&status=eq.sent', { auth:true })
+    ]);
+
+    const emails = (deliveries || []).reduce(
+      (total, delivery) => total + Number(delivery.recipient_count || 0),
+      0
+    );
+
+    document.getElementById('insightReaders').textContent = readers.toLocaleString();
+    document.getElementById('insightLikes').textContent = likes.toLocaleString();
+    document.getElementById('insightComments').textContent = comments.toLocaleString();
+    document.getElementById('insightEmails').textContent = emails.toLocaleString();
+    status.textContent = `Live Supabase totals · refreshed ${new Date().toLocaleTimeString([], { hour:'numeric', minute:'2-digit' })}`;
+  }catch(error){
+    console.error(error);
+    status.textContent = 'Live totals are temporarily unavailable. Use the dashboard links above for detailed activity.';
+  }
 }
 
 function fmtDate(iso){
@@ -5093,13 +5686,20 @@ function formatBody(body){
 }
 
 function navigateToPost(post){
-  pushRoute(postPath(post), { postId:post.id });
+  const blogListIsVisible = document.getElementById('view-blog-list')?.classList.contains('visible');
+  const blogScrollY = blogListIsVisible
+    ? captureBlogScrollPosition()
+    : savedBlogScrollPosition();
+  const fromBlog = blogListIsVisible || restoreBlogAfterPost || Boolean(history.state?.fromBlog);
+  restoreBlogAfterPost = fromBlog;
+
+  pushRoute(postPath(post), { postId:post.id, fromBlog, blogScrollY });
   openPublicPost(post.id, false);
 }
 
-window.addEventListener('popstate', () => routeFromLocation());
+window.addEventListener('popstate', () => routeFromLocation(true));
 
-async function routeFromLocation(){
+async function routeFromLocation(restoreBlogPosition = false){
   const match = location.pathname.match(/^\/blog\/([^/]+)\/?$/);
   if(match){
     if(!posts.length) await loadPosts();
@@ -5107,7 +5707,9 @@ async function routeFromLocation(){
     const post = posts.find(item => item.slug === slug);
     if(post) return openPublicPost(post.id, false);
   }
-  if(location.pathname === '/blog' || location.pathname === '/blog/') return goPublic(false);
+  if(location.pathname === '/blog' || location.pathname === '/blog/'){
+    return goPublic(false,{ restoreScroll:restoreBlogPosition });
+  }
   if(location.pathname === '/books' || location.pathname === '/books/') return goBooks();
   if(location.pathname === '/resources' || location.pathname === '/resources/') return goResources();
   if(location.pathname === '/about' || location.pathname === '/about/') return goAbout();
@@ -5572,25 +6174,94 @@ function renderBooks(){
   grid.innerHTML = list.map((book,index) => {
     const cover = safeHttpUrl(book.cover_image_url);
     const link = safeHttpUrl(book.link_url);
-    const rel = link && isAmazonAffiliateUrl(link)
+    const amazonLink = link && isAmazonAffiliateUrl(link);
+    const rel = amazonLink
       ? 'sponsored nofollow noopener noreferrer'
       : 'noopener noreferrer';
     return `
       <article class="book-card">
-        <div class="book-cover">
+        <button class="book-cover" type="button" onclick="openBookReview(${book.id})" aria-label="Read Stephen's review of ${escapeHtml(book.title)}" aria-haspopup="dialog">
           ${cover ? `<img src="${escapeHtml(cover)}" alt="Cover of ${escapeHtml(book.title)}" loading="${index === 0 ? 'eager' : 'lazy'}" decoding="async" ${index === 0 ? 'fetchpriority="high"' : ''} onerror="this.hidden=true;this.nextElementSibling.hidden=false">` : ''}
           <img class="book-cover-mark" src="/brain-logo-v2.png" alt="" ${cover ? 'hidden' : ''} onerror="if(location.protocol==='file:'){this.onerror=null;this.src='brain-logo-v2.png'}">
-        </div>
+          <span class="book-cover-action">Read review</span>
+        </button>
         <div class="book-card-body">
           <div class="book-category">${book.featured ? 'Featured &middot; ' : ''}${escapeHtml(book.category || 'General psychology')}</div>
-          <h2>${escapeHtml(book.title)}</h2>
+          <h2><button class="book-title-button" type="button" onclick="openBookReview(${book.id})">${escapeHtml(book.title)}</button></h2>
           <div class="book-author">by ${escapeHtml(book.author)}</div>
           ${book.description ? `<p class="book-description">${escapeHtml(book.description)}</p>` : '<p class="book-description">Recommended reading from the Mind Over Matter library.</p>'}
-          ${link ? `<a class="btn btn-outline" href="${escapeHtml(link)}" target="_blank" rel="${rel}">View book <span aria-hidden="true">&rarr;</span></a>` : ''}
+          <div class="book-card-actions ${link ? '' : 'single'}">
+            <button class="btn btn-primary" type="button" onclick="openBookReview(${book.id})">Read review</button>
+            ${link ? `<a class="btn btn-outline" href="${escapeHtml(link)}" target="_blank" rel="${rel}">${amazonLink ? 'View on Amazon' : 'View book'} <span aria-hidden="true">&rarr;</span></a>` : ''}
+          </div>
         </div>
       </article>
     `;
   }).join('');
+}
+
+function openBookReview(id){
+  const book = books.find(item => Number(item.id) === Number(id) && item.published);
+  if(!book){
+    showToast('Book review unavailable');
+    return;
+  }
+
+  const modal = document.getElementById('bookReviewModal');
+  const content = document.getElementById('bookReviewContent');
+  const cover = safeHttpUrl(book.cover_image_url);
+  const link = safeHttpUrl(book.link_url);
+  const amazonLink = link && isAmazonAffiliateUrl(link);
+  const rel = amazonLink
+    ? 'sponsored nofollow noopener noreferrer'
+    : 'noopener noreferrer';
+  const review = String(book.description || '').trim();
+
+  lastBookReviewTrigger = document.activeElement instanceof HTMLElement
+    ? document.activeElement
+    : null;
+
+  content.innerHTML = `
+    <div class="book-review-layout">
+      <div class="book-review-visual">
+        ${cover ? `<img src="${escapeHtml(cover)}" alt="Cover of ${escapeHtml(book.title)}" onerror="this.hidden=true;this.nextElementSibling.hidden=false">` : ''}
+        <img class="book-cover-mark" src="/brain-logo-v2.png" alt="" ${cover ? 'hidden' : ''} onerror="if(location.protocol==='file:'){this.onerror=null;this.src='brain-logo-v2.png'}">
+      </div>
+      <div class="book-review-content">
+        <div class="book-category">${book.featured ? 'Featured &middot; ' : ''}${escapeHtml(book.category || 'General psychology')}</div>
+        <h2 id="bookReviewTitle">${escapeHtml(book.title)}</h2>
+        <div class="book-review-author">by ${escapeHtml(book.author)}</div>
+        <div class="book-review-rule" aria-hidden="true"></div>
+        <div class="book-review-body">
+          ${review ? formatBody(review) : '<p>A full review has not been added yet.</p>'}
+        </div>
+        ${link ? `
+          <div class="book-review-actions">
+            <a class="btn btn-primary" href="${escapeHtml(link)}" target="_blank" rel="${rel}">${amazonLink ? 'View on Amazon' : 'View book'} <span aria-hidden="true">&rarr;</span></a>
+            ${amazonLink ? '<p class="book-review-affiliate-note">Affiliate link · I may earn a commission from qualifying purchases at no additional cost to you.</p>' : ''}
+          </div>
+        ` : ''}
+      </div>
+    </div>
+  `;
+
+  modal.classList.add('visible');
+  modal.setAttribute('aria-hidden','false');
+  document.body.classList.add('book-review-open');
+  setTimeout(() => modal.querySelector('.book-review-close')?.focus(),0);
+}
+
+function closeBookReview(){
+  const modal = document.getElementById('bookReviewModal');
+  if(!modal) return;
+  const wasVisible = modal.classList.contains('visible');
+  modal.classList.remove('visible');
+  modal.setAttribute('aria-hidden','true');
+  document.body.classList.remove('book-review-open');
+
+  if(wasVisible && lastBookReviewTrigger){
+    setTimeout(() => lastBookReviewTrigger?.focus(),0);
+  }
 }
 
 
@@ -5981,8 +6652,8 @@ async function openPublicPost(id, pushHistory = true){
     .innerHTML = `
 
       <div class="article-nav">
-        <button class="page-home-link" onclick="goHome()" aria-label="Back to home">Home</button>
-        <a class="back-link" href="/blog" onclick="goPublic();return false">All essays</a>
+        <a class="essay-back-link" href="/blog" onclick="returnToEssayList();return false">Back to all essays</a>
+        <button class="page-home-link" onclick="goHome()" aria-label="Go to the home page">Home page</button>
       </div>
 
       <div class="pdate">
@@ -6018,6 +6689,10 @@ async function openPublicPost(id, pushHistory = true){
       </section>
 
       ${renderRelatedPosts(p)}
+
+      <div class="article-footer-nav">
+        <a class="essay-back-link" href="/blog" onclick="returnToEssayList();return false">Back to all essays</a>
+      </div>
 
     `;
 
