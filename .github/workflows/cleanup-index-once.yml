@@ -1,0 +1,196 @@
+name: One-time index legal cleanup
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/cleanup-index-once.yml
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    if: github.event.head_commit.message == 'Add one-time index cleanup workflow'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Clean index.html legal and privacy UI
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          path = Path('index.html')
+          text = path.read_text(encoding='utf-8')
+          original = text
+
+          def replace_once(old, new, label):
+              global text
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f'{label}: expected exactly 1 match, found {count}')
+              text = text.replace(old, new, 1)
+
+          def regex_once(pattern, replacement, label, flags=0):
+              global text
+              updated, count = re.subn(pattern, replacement, text, count=1, flags=flags)
+              if count != 1:
+                  raise SystemExit(f'{label}: expected exactly 1 match, found {count}')
+              text = updated
+
+          # Remove the two obsolete SPA legal documents. The canonical legal documents
+          # are served at /privacy and /affiliate-disclosure by Cloudflare Functions.
+          regex_once(
+              r'\n<!-- ============================================================\n     AFFILIATE DISCLOSURE\n     ============================================================ -->.*?(?=\n<!-- ============================================================\n     BOOK RECOMMENDATIONS)',
+              '\n',
+              'affiliate SPA section',
+              re.S,
+          )
+          regex_once(
+              r'\n<!-- ============================================================\n     PRIVACY\n     ============================================================ -->.*?(?=\n<!-- ============================================================\n     READER ACCOUNT)',
+              '\n',
+              'privacy SPA section',
+              re.S,
+          )
+
+          # Make legal navigation ordinary, canonical links with no SPA interception.
+          replace_once(
+              '''      <a href="/privacy" onclick="goPrivacy();return false">Privacy</a>\n      <a href="/affiliate-disclosure" onclick="goAffiliateDisclosure();return false">Disclosure</a>''',
+              '''      <a href="/privacy">Privacy Policy</a>\n      <a href="/terms">Terms of Use</a>\n      <a href="/affiliate-disclosure">Affiliate Disclosure</a>''',
+              'footer legal links',
+          )
+          replace_once(
+              '<a href="/affiliate-disclosure" onclick="goAffiliateDisclosure();return false">Read the full disclosure.</a>',
+              '<a href="/affiliate-disclosure">Read the full Affiliate Disclosure.</a>',
+              'book affiliate disclosure link',
+          )
+
+          # Remove dead SPA functions and route branches for standalone legal pages.
+          regex_once(
+              r'\nfunction goPrivacy\(\)\{.*?\n\}\n\nfunction goAffiliateDisclosure\(\)\{.*?\n\}\n',
+              '\n',
+              'legacy legal navigation functions',
+              re.S,
+          )
+          replace_once(
+              "  if(location.pathname === '/privacy' || location.pathname === '/privacy/') return goPrivacy();\n  if(location.pathname === '/affiliate-disclosure' || location.pathname === '/affiliate-disclosure/') return goAffiliateDisclosure();\n",
+              '',
+              'routeFromLocation legal branches',
+          )
+          replace_once(
+              "    }else if(location.pathname === '/privacy' || location.pathname === '/privacy/')\{\n      goPrivacy\(\);\n    }else if(location.pathname === '/affiliate-disclosure' || location.pathname === '/affiliate-disclosure/')\{\n      goAffiliateDisclosure\(\);",
+              '',
+              'placeholder',
+          ) if False else None
+
+          # The init block uses literal JavaScript; remove those branches explicitly.
+          init_old = """    }else if(location.pathname === '/privacy' || location.pathname === '/privacy/'){
+              goPrivacy();
+            }else if(location.pathname === '/affiliate-disclosure' || location.pathname === '/affiliate-disclosure/'){
+              goAffiliateDisclosure();
+          """
+          if init_old not in text:
+              # Preserve exact indentation from the source file.
+              init_old = """    }else if(location.pathname === '/privacy' || location.pathname === '/privacy/'){
+      goPrivacy();
+    }else if(location.pathname === '/affiliate-disclosure' || location.pathname === '/affiliate-disclosure/'){
+      goAffiliateDisclosure();
+"""
+          replace_once(init_old, '', 'init legal branches')
+
+          # Add concise, just-in-time privacy/terms information at account creation.
+          replace_once(
+              '<input type="text" id="readerDisplayName" maxlength="60" autocomplete="nickname" placeholder="How your name appears">',
+              '<input type="text" id="readerDisplayName" maxlength="60" autocomplete="nickname" placeholder="How your name appears" aria-describedby="readerDisplayNameHelp">\n          <small class="field-help" id="readerDisplayNameHelp">This display name may appear publicly beside comments you post.</small>',
+              'display-name privacy notice',
+          )
+
+          signup_old = '''        <div class="signup-consent" id="readerNewsletterSignup">
+          <label class="consent-label" for="readerNewsletterOptIn">
+            <input type="checkbox" id="readerNewsletterOptIn">
+            <span><strong>Email me publication updates.</strong> Send me an email when Mind Over Matter publishes a new essay or book recommendation. This is optional; I can unsubscribe at any time.</span>
+          </label>
+        </div>'''
+          signup_new = signup_old + '''
+        <p class="signup-legal-note" id="readerSignupLegalNotice">By creating a reader account, you agree to the <a href="/terms">Terms of Use</a> and acknowledge the <a href="/privacy">Privacy Policy</a>. Publication emails are optional and require the separate choice above.</p>'''
+          replace_once(signup_old, signup_new, 'signup legal notice')
+
+          replace_once(
+              '.consent-label strong{ color:var(--ink); }',
+              '''.consent-label strong{ color:var(--ink); }
+
+  .field-help{
+    display:block;
+    margin-top:6px;
+    color:var(--ink-faint);
+    font-size:11.5px;
+    line-height:1.55;
+    text-transform:none;
+    letter-spacing:0;
+  }
+
+  .signup-legal-note{
+    margin:14px 0 0;
+    color:var(--ink-faint);
+    font-size:11.5px;
+    line-height:1.6;
+    text-align:left;
+  }
+
+  .signup-legal-note a{
+    color:var(--gold-soft);
+    text-decoration:underline;
+    text-underline-offset:2px;
+  }''',
+              'signup disclosure styles',
+          )
+
+          # Validate the resulting source before committing it.
+          forbidden = [
+              'id="view-privacy"',
+              'id="view-affiliate-disclosure"',
+              'goPrivacy()',
+              'goAffiliateDisclosure()',
+              'SUPABASE_SECRET_KEY',
+              'SUPABASE_SERVICE_ROLE_KEY',
+              'RESEND_API_KEY',
+              'sb_secret_',
+          ]
+          leftovers = [item for item in forbidden if item in text]
+          if leftovers:
+              raise SystemExit('Validation failed; forbidden leftovers: ' + ', '.join(leftovers))
+
+          required = [
+              '<a href="/privacy">Privacy Policy</a>',
+              '<a href="/terms">Terms of Use</a>',
+              '<a href="/affiliate-disclosure">Affiliate Disclosure</a>',
+              'id="readerSignupLegalNotice"',
+              'id="readerDisplayNameHelp"',
+              "const SUPABASE_KEY = 'sb_publishable_",
+          ]
+          missing = [item for item in required if item not in text]
+          if missing:
+              raise SystemExit('Validation failed; required content missing: ' + ', '.join(missing))
+
+          if text == original:
+              raise SystemExit('No changes were made')
+
+          path.write_text(text, encoding='utf-8')
+          print(f'index.html cleaned: {len(original):,} -> {len(text):,} bytes')
+          PY
+
+          git diff --check
+          git diff --stat
+
+      - name: Commit cleaned index
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Clean legal navigation and privacy disclosures"
+          git push
