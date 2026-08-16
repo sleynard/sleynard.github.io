@@ -1,0 +1,197 @@
+name: Apply navigation security hardening
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-navigation-hardening.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  harden-and-verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply navigation hardening
+        run: python scripts/harden-navigation-security.py
+
+      - name: Validate hardened source
+        run: |
+          set -euo pipefail
+          git diff --check
+          grep -Fq 'NAVIGATION_HARDENING_2026_08_16' index.html
+          grep -Fq '[hidden]{ display:none!important; }' index.html
+          grep -Fq 'function hideAllPages()' index.html
+          grep -Fq 'async function verifyOwnerSession()' index.html
+          grep -Fq 'href="/account"' index.html
+          grep -Fq 'href="/admin" hidden' index.html
+          grep -Fq "const useAuth = isOwner();" index.html
+          grep -Fq 'const accountShell = path ===' functions/_middleware.js
+          grep -Fq 'const adminShell = path ===' functions/_middleware.js
+          ! grep -Fq 'PrivateRouteGuard' functions/_middleware.js
+
+      - name: Commit hardened router and cleanup
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html functions/_middleware.js
+          git rm --ignore-unmatch scripts/harden-navigation-security.py .github/workflows/apply-navigation-hardening.yml .github/workflows/visual-responsive-audit.yml
+          git diff --cached --check
+          git commit -m "Harden navigation and isolate private routes"
+          git push
+
+      - name: Wait for custom domain deployment
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 48); do
+            if curl --fail --silent --show-error --location --retry 2 https://stephenleynard.com/ -o /tmp/home.html; then
+              if grep -Fq 'NAVIGATION_HARDENING_2026_08_16' /tmp/home.html; then
+                echo 'Custom domain is serving the hardened router.'
+                exit 0
+              fi
+            fi
+            sleep 5
+          done
+          echo 'Hardened router did not reach the custom domain during verification.' >&2
+          exit 1
+
+      - name: Install Chromium audit tooling
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Audit logged-out routing and private-shell isolation
+        run: |
+          cat > /tmp/navigation-audit.mjs <<'JS'
+          import { chromium } from 'playwright';
+
+          const browser = await chromium.launch({headless:true});
+          const failures = [];
+          const sizes = [
+            {name:'iphone', width:390, height:844, isMobile:true},
+            {name:'android', width:412, height:915, isMobile:true},
+            {name:'tablet', width:768, height:1024, isMobile:false},
+            {name:'desktop', width:1365, height:900, isMobile:false},
+          ];
+
+          function fail(scope,msg){ failures.push(`${scope}: ${msg}`); }
+
+          async function assertSingleVisiblePage(page, scope, expected){
+            const state = await page.evaluate(() => ({
+              visible:[...document.querySelectorAll('.page')].filter(el => !el.hidden && getComputedStyle(el).display !== 'none').map(el => el.id),
+              classVisible:[...document.querySelectorAll('.page.visible')].map(el => el.id),
+            }));
+            if(state.visible.length !== 1 || state.visible[0] !== expected) fail(scope,`expected only ${expected}; visible=${JSON.stringify(state.visible)}`);
+            if(state.classVisible.length !== 1 || state.classVisible[0] !== expected) fail(scope,`visible class mismatch ${JSON.stringify(state.classVisible)}`);
+          }
+
+          for(const vp of sizes){
+            const context = await browser.newContext({viewport:{width:vp.width,height:vp.height}, isMobile:vp.isMobile});
+            const page = await context.newPage();
+
+            // Public homepage must not receive private shells at all.
+            await page.goto('https://stephenleynard.com/',{waitUntil:'networkidle',timeout:60000});
+            await assertSingleVisiblePage(page,`${vp.name} home`,'view-landing');
+            const publicPrivate = await page.evaluate(() => ({
+              account:!!document.getElementById('view-account'),
+              login:!!document.getElementById('view-login'),
+              dashboard:!!document.getElementById('view-dashboard'),
+              adminHidden:document.getElementById('navAdminBtn')?.hidden ?? true,
+            }));
+            if(publicPrivate.account || publicPrivate.login || publicPrivate.dashboard) fail(`${vp.name} home`,'public shell contains private account/admin views');
+            if(!publicPrivate.adminHidden) fail(`${vp.name} home`,'admin nav is visible to logged-out visitor');
+
+            // One click must navigate to each public route and expose one page only.
+            for(const [buttonId,path,expected] of [
+              ['navBlogBtn','/blog','view-blog-list'],
+              ['navBooksBtn','/books','view-books'],
+              ['navResourcesBtn','/resources','view-resources'],
+              ['navAboutBtn','/about','view-about'],
+              ['navHomeBtn','/','view-landing'],
+            ]){
+              if(vp.isMobile){
+                const menu = page.locator('#mobileMenuToggle');
+                if(await menu.isVisible()) await menu.click();
+              }
+              await page.locator(`#${buttonId}`).click();
+              await page.waitForURL(url => url.pathname === path,{timeout:15000});
+              await page.waitForTimeout(100);
+              await assertSingleVisiblePage(page,`${vp.name} ${path}`,expected);
+            }
+
+            // Account is a true route load and must not contain admin DOM.
+            if(vp.isMobile){
+              const menu = page.locator('#mobileMenuToggle');
+              if(await menu.isVisible()) await menu.click();
+            }
+            await Promise.all([
+              page.waitForURL(url => url.pathname === '/account',{timeout:15000}),
+              page.locator('#navAccountBtn').click(),
+            ]);
+            await page.waitForLoadState('networkidle');
+            await assertSingleVisiblePage(page,`${vp.name} account`,'view-account');
+            const accountIsolation = await page.evaluate(() => ({
+              login:!!document.getElementById('view-login'),
+              dashboard:!!document.getElementById('view-dashboard'),
+              editor:!!document.getElementById('view-editor'),
+              bookEditor:!!document.getElementById('view-book-editor'),
+              adminHidden:document.getElementById('navAdminBtn')?.hidden ?? true,
+            }));
+            if(accountIsolation.login || accountIsolation.dashboard || accountIsolation.editor || accountIsolation.bookEditor) fail(`${vp.name} account`,'reader account shell contains admin views');
+            if(!accountIsolation.adminHidden) fail(`${vp.name} account`,'admin nav visible on reader account');
+
+            // Direct logged-out admin route may show the admin sign-in only, never the dashboard.
+            await page.goto('https://stephenleynard.com/admin',{waitUntil:'networkidle',timeout:60000});
+            await assertSingleVisiblePage(page,`${vp.name} admin logged out`,'view-login');
+            const adminState = await page.evaluate(() => ({
+              dashboardVisible:!!document.querySelector('#view-dashboard:not([hidden])'),
+              account:!!document.getElementById('view-account'),
+              adminNavHidden:document.getElementById('navAdminBtn')?.hidden ?? true,
+            }));
+            if(adminState.dashboardVisible) fail(`${vp.name} admin logged out`,'dashboard rendered without verified owner session');
+            if(adminState.account) fail(`${vp.name} admin logged out`,'admin shell contains reader account view');
+            if(!adminState.adminNavHidden) fail(`${vp.name} admin logged out`,'admin navigation exposed before owner verification');
+
+            // Refresh repeatedly: exactly one route view must survive each refresh.
+            for(const [url,expected] of [
+              ['https://stephenleynard.com/','view-landing'],
+              ['https://stephenleynard.com/blog','view-blog-list'],
+              ['https://stephenleynard.com/books','view-books'],
+              ['https://stephenleynard.com/account','view-account'],
+              ['https://stephenleynard.com/admin','view-login'],
+            ]){
+              await page.goto(url,{waitUntil:'networkidle',timeout:60000});
+              for(let n=0;n<3;n++){
+                await page.reload({waitUntil:'networkidle',timeout:60000});
+                await assertSingleVisiblePage(page,`${vp.name} refresh ${new URL(url).pathname} #${n+1}`,expected);
+              }
+            }
+
+            await context.close();
+          }
+
+          // JavaScript-disabled checks prove the raw HTML itself fails closed.
+          for(const url of ['https://stephenleynard.com/','https://stephenleynard.com/account','https://stephenleynard.com/admin']){
+            const context = await browser.newContext({javaScriptEnabled:false,viewport:{width:390,height:844}});
+            const page = await context.newPage();
+            await page.goto(url,{waitUntil:'domcontentloaded',timeout:60000});
+            const visible = await page.evaluate(() => [...document.querySelectorAll('.page')].filter(el => getComputedStyle(el).display !== 'none').map(el=>el.id));
+            if(visible.length) fail(`no-js ${new URL(url).pathname}`,`raw HTML exposed page views: ${JSON.stringify(visible)}`);
+            await context.close();
+          }
+
+          await browser.close();
+          if(failures.length){
+            console.error('Navigation/security audit failures:\n' + failures.map(x => ' - ' + x).join('\n'));
+            process.exit(1);
+          }
+          console.log('Navigation/security audit passed on iPhone, Android, tablet, desktop, repeated refreshes, and JavaScript-disabled raw HTML.');
+          JS
+          node /tmp/navigation-audit.mjs
