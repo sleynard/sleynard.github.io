@@ -6,11 +6,16 @@ export async function onRequest({ request, env }) {
     .replace(
       /<meta name="robots" content="[^"]*">/i,
       '<meta name="robots" content="noindex,nofollow">'
+    )
+    .replace(
+      /<link rel="canonical" href="[^"]*">/i,
+      '<link rel="canonical" href="https://stephenleynard.com/account">'
     );
   return new Response(html, {
     headers: {
       'content-type': 'text/html; charset=UTF-8',
       'cache-control': 'private, no-store',
+      'x-robots-tag': 'noindex, nofollow',
       'x-content-type-options': 'nosniff',
       'x-frame-options': 'DENY',
       'referrer-policy': 'strict-origin-when-cross-origin',
