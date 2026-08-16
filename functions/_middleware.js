@@ -41,6 +41,11 @@ const PRIVATE_SELECTORS = [
   '#bookDeleteModal'
 ];
 
+const DUPLICATE_LEGAL_SELECTORS = [
+  '#view-privacy',
+  '#view-affiliate-disclosure'
+];
+
 class RemoveElement {
   element(element) {
     element.remove();
@@ -66,26 +71,47 @@ class SetAttribute {
   }
 }
 
-class RemoveOnclick {
+class CanonicalLegalLink {
+  constructor(label) {
+    this.label = label;
+  }
   element(element) {
     element.removeAttribute('onclick');
+    if (this.label) element.setInnerContent(this.label);
   }
 }
 
-class AddTermsLink {
+class AddTermsAfterPrivacy {
   element(element) {
-    element.append('<a href="/terms">Terms</a>', { html: true });
+    element.after('<a href="/terms">Terms of Use</a>', { html: true });
   }
 }
 
-class RedirectPrivateNavigation {
+class AddSignupLegalNotice {
   element(element) {
     element.append(
+      '<p style="margin:12px 0 0;color:var(--ink-faint);font-size:11.5px;line-height:1.6">By creating a reader account, you agree to the <a href="/terms" style="color:var(--gold-soft);text-decoration:underline">Terms of Use</a> and acknowledge the <a href="/privacy" style="color:var(--gold-soft);text-decoration:underline">Privacy Policy</a>. Publication emails remain optional.</p>',
+      { html: true }
+    );
+  }
+}
+
+class NavigationGuard {
+  constructor(includePrivateRedirects) {
+    this.includePrivateRedirects = includePrivateRedirects;
+  }
+  element(element) {
+    const privateRedirects = this.includePrivateRedirects
+      ? `var account=window.goReaderAccount;if(typeof account==='function'){window.goReaderAccount=function(){if(!document.getElementById('view-account')){location.assign('/account');return;}return account.apply(this,arguments);};}\n` +
+        `var admin=window.goAdminEntry;if(typeof admin==='function'){window.goAdminEntry=function(){if(!document.getElementById('view-login')){location.assign('/admin');return;}return admin.apply(this,arguments);};}\n`
+      : '';
+
+    element.append(
       `<script>(function(){\n` +
-      `var account=window.goReaderAccount;window.goReaderAccount=function(){if(!document.getElementById('view-account')){location.href='/account';return;}return account.apply(this,arguments);};\n` +
-      `var admin=window.goAdminEntry;window.goAdminEntry=function(){if(!document.getElementById('view-login')){location.href='/admin';return;}return admin.apply(this,arguments);};\n` +
-      `window.goPrivacy=function(){location.href='/privacy';};\n` +
-      `window.goAffiliateDisclosure=function(){location.href='/affiliate-disclosure';};\n` +
+      privateRedirects +
+      `window.goPrivacy=function(){location.assign('/privacy');};\n` +
+      `window.goAffiliateDisclosure=function(){location.assign('/affiliate-disclosure');};\n` +
+      `document.addEventListener('click',function(event){var link=event.target.closest&&event.target.closest('a[href="/privacy"],a[href="/terms"],a[href="/affiliate-disclosure"]');if(!link)return;event.preventDefault();event.stopImmediatePropagation();location.assign(link.getAttribute('href'));},true);\n` +
       `})();</script>`,
       { html: true }
     );
@@ -105,19 +131,31 @@ export async function onRequest(context) {
   const url = new URL(context.request.url);
   const path = normalizedPath(url.pathname);
   const privateShell = path === '/account' || path === '/admin';
+  const standaloneLegalPage = path === '/privacy' || path === '/terms' || path === '/affiliate-disclosure';
   const routeMeta = PUBLIC_ROUTES[path];
 
   let rewriter = new HTMLRewriter();
 
-  if (!privateShell) {
+  if (!standaloneLegalPage) {
+    for (const selector of DUPLICATE_LEGAL_SELECTORS) {
+      rewriter = rewriter.on(selector, new RemoveElement());
+    }
+
+    rewriter = rewriter
+      .on('.footer-links a[href="/privacy"]', new CanonicalLegalLink('Privacy Policy'))
+      .on('.footer-links a[href="/privacy"]', new AddTermsAfterPrivacy())
+      .on('.footer-links a[href="/affiliate-disclosure"]', new CanonicalLegalLink('Affiliate Disclosure'))
+      .on('body', new NavigationGuard(!privateShell));
+  }
+
+  if (path === '/account') {
+    rewriter = rewriter.on('#readerNewsletterSignup', new AddSignupLegalNotice());
+  }
+
+  if (!privateShell && !standaloneLegalPage) {
     for (const selector of PRIVATE_SELECTORS) {
       rewriter = rewriter.on(selector, new RemoveElement());
     }
-    rewriter = rewriter
-      .on('a[href="/privacy"]', new RemoveOnclick())
-      .on('a[href="/affiliate-disclosure"]', new RemoveOnclick())
-      .on('.footer-links', new AddTermsLink())
-      .on('body', new RedirectPrivateNavigation());
   }
 
   if (routeMeta) {
