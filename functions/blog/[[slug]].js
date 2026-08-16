@@ -16,6 +16,15 @@ function excerpt(value = '') {
   return text.length > 190 ? `${text.slice(0, 187).trim()}…` : text;
 }
 
+function stripPrivateViews(html) {
+  const ids = ['view-account', 'view-login', 'view-dashboard', 'view-book-editor', 'view-editor', 'deleteModal', 'bookDeleteModal'];
+  for (const id of ids) {
+    const pattern = new RegExp(`<([a-z][a-z0-9-]*)\\b[^>]*\\bid=["']${id}["'][^>]*>[\\s\\S]*?<\\/\\1>`, 'i');
+    html = html.replace(pattern, '');
+  }
+  return html;
+}
+
 export async function onRequest(context) {
   const slugParts = Array.isArray(context.params.slug)
     ? context.params.slug
@@ -32,7 +41,7 @@ export async function onRequest(context) {
   if (!post) return new Response('Article not found', { status: 404 });
 
   const assetResponse = await context.env.ASSETS.fetch(new URL('/', context.request.url));
-  let html = await assetResponse.text();
+  let html = stripPrivateViews(await assetResponse.text());
   const title = `${post.title} — Mind Over Matter`;
   const description = post.summary || excerpt(post.body);
   const url = `${SITE_URL}/blog/${encodeURIComponent(post.slug)}`;
