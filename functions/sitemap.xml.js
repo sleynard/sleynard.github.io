@@ -23,6 +23,7 @@ export async function onRequest() {
     `<url><loc>${SITE_URL}/resources</loc></url>`,
     `<url><loc>${SITE_URL}/about</loc></url>`,
     `<url><loc>${SITE_URL}/privacy</loc></url>`,
+    `<url><loc>${SITE_URL}/terms</loc></url>`,
     `<url><loc>${SITE_URL}/affiliate-disclosure</loc></url>`,
     ...posts.map(post => `<url><loc>${xml(`${SITE_URL}/blog/${post.slug}`)}</loc><lastmod>${xml(post.updated_at)}</lastmod></url>`)
   ].join('');
