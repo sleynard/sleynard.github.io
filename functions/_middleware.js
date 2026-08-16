@@ -84,6 +84,8 @@ class RedirectPrivateNavigation {
       `<script>(function(){\n` +
       `var account=window.goReaderAccount;window.goReaderAccount=function(){if(!document.getElementById('view-account')){location.href='/account';return;}return account.apply(this,arguments);};\n` +
       `var admin=window.goAdminEntry;window.goAdminEntry=function(){if(!document.getElementById('view-login')){location.href='/admin';return;}return admin.apply(this,arguments);};\n` +
+      `window.goPrivacy=function(){location.href='/privacy';};\n` +
+      `window.goAffiliateDisclosure=function(){location.href='/affiliate-disclosure';};\n` +
       `})();</script>`,
       { html: true }
     );
