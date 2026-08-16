@@ -1,0 +1,80 @@
+name: Homepage polish once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/home-polish-once.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  polish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply homepage spacing polish
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('index.html')
+          text = path.read_text()
+
+          replacements = [
+              (
+                  "  #view-landing .landing-wrap::before{\n    background-image:linear-gradient(var(--rule) 1px,transparent 1px),linear-gradient(90deg,var(--rule) 1px,transparent 1px);\n    background-size:72px 72px;\n    opacity:.24;\n    mask-image:linear-gradient(to bottom,black,transparent 58%);\n    -webkit-mask-image:linear-gradient(to bottom,black,transparent 58%);\n  }",
+                  "  #view-landing .landing-wrap::before{\n    display:none;\n  }"
+              ),
+              (
+                  "  .home-hero,\n  .home-topic-rail,\n  .home-editorial,\n  .home-pillars{",
+                  "  .home-hero,\n  .home-topic-rail,\n  .home-editorial,\n  .home-pillars,\n  .home-subscribe{"
+              ),
+              (
+                  "    margin-top:72px;",
+                  "    margin-top:64px;"
+              ),
+              (
+                  "    margin-top:70px;",
+                  "    margin-top:64px;"
+              ),
+              (
+                  "    margin-top:24px;\n    padding:clamp(28px,5vw,48px);",
+                  "    margin-top:64px;\n    padding:clamp(28px,5vw,48px);"
+              ),
+              (
+                  "    background:linear-gradient(130deg,var(--gold-15),transparent 58%),var(--panel);\n  }",
+                  "    background:linear-gradient(130deg,var(--gold-15),transparent 58%),var(--panel);\n    box-shadow:var(--shadow-card);\n  }"
+              ),
+              (
+                  "    .home-editorial{ margin-top:43px; }",
+                  "    .home-editorial{ margin-top:44px; }"
+              ),
+              (
+                  "    .home-pillars{ margin-top:43px; }",
+                  "    .home-pillars{ margin-top:44px; }\n    .home-subscribe{ margin-top:44px; }"
+              ),
+          ]
+
+          for old, new in replacements:
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f'Expected exactly one match, found {count}: {old[:80]!r}')
+              text = text.replace(old, new, 1)
+
+          path.write_text(text)
+          PY
+
+      - name: Validate and commit
+        run: |
+          git diff --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/home-polish-once.yml
+          git add index.html
+          git commit -m "Polish homepage spacing and background"
+          git push
