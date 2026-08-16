@@ -7,8 +7,15 @@ function xml(value = '') {
 }
 
 export async function onRequest() {
-  const response = await fetch(`${SUPABASE_REST_URL}posts?select=slug,updated_at&published=eq.true&order=created_at.desc`, { headers: { apikey: SUPABASE_KEY } });
-  const posts = response.ok ? await response.json() : [];
+  const response = await fetch(
+    `${SUPABASE_REST_URL}posts?select=slug,updated_at,publish_at&published=eq.true&order=created_at.desc`,
+    { headers: { apikey: SUPABASE_KEY } }
+  );
+  const now = Date.now();
+  const posts = response.ok
+    ? (await response.json()).filter(post => !post.publish_at || new Date(post.publish_at).getTime() <= now)
+    : [];
+
   const urls = [
     `<url><loc>${SITE_URL}/</loc></url>`,
     `<url><loc>${SITE_URL}/blog</loc></url>`,
@@ -19,5 +26,9 @@ export async function onRequest() {
     `<url><loc>${SITE_URL}/affiliate-disclosure</loc></url>`,
     ...posts.map(post => `<url><loc>${xml(`${SITE_URL}/blog/${post.slug}`)}</loc><lastmod>${xml(post.updated_at)}</lastmod></url>`)
   ].join('');
-  return new Response(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls}</urlset>`, { headers: { 'content-type': 'application/xml; charset=UTF-8', 'cache-control': 'public, max-age=300' } });
+
+  return new Response(
+    `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls}</urlset>`,
+    { headers: { 'content-type': 'application/xml; charset=UTF-8', 'cache-control': 'public, max-age=300' } }
+  );
 }
