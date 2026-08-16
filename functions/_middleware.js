@@ -66,6 +66,12 @@ class SetAttribute {
   }
 }
 
+class RemoveOnclick {
+  element(element) {
+    element.removeAttribute('onclick');
+  }
+}
+
 class AddTermsLink {
   element(element) {
     element.append('<a href="/terms">Terms</a>', { html: true });
@@ -106,6 +112,8 @@ export async function onRequest(context) {
       rewriter = rewriter.on(selector, new RemoveElement());
     }
     rewriter = rewriter
+      .on('a[href="/privacy"]', new RemoveOnclick())
+      .on('a[href="/affiliate-disclosure"]', new RemoveOnclick())
       .on('.footer-links', new AddTermsLink())
       .on('body', new RedirectPrivateNavigation());
   }
