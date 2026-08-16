@@ -1379,6 +1379,30 @@
 
   .consent-label strong{ color:var(--ink); }
 
+  .field-help{
+    display:block;
+    margin-top:6px;
+    color:var(--ink-faint);
+    font-size:11.5px;
+    line-height:1.55;
+    text-transform:none;
+    letter-spacing:0;
+  }
+
+  .signup-legal-note{
+    margin:14px 0 0;
+    color:var(--ink-faint);
+    font-size:11.5px;
+    line-height:1.6;
+    text-align:left;
+  }
+
+  .signup-legal-note a{
+    color:var(--gold-soft);
+    text-decoration:underline;
+    text-underline-offset:2px;
+  }
+
   .reader-preferences{
     display:none;
     margin-top:24px;
@@ -3676,23 +3700,6 @@
   </article>
 </div>
 
-<!-- ============================================================
-     AFFILIATE DISCLOSURE
-     ============================================================ -->
-<div class="page" id="view-affiliate-disclosure">
-  <article class="post-full">
-    <button class="page-home-link" onclick="goHome()" aria-label="Back to home">Home</button>
-    <div class="eyebrow">Transparency</div>
-    <h1>Affiliate disclosure</h1>
-    <p class="post-lede">A clear explanation of how affiliate links may support Mind Over Matter.</p>
-    <div class="post-body">
-      <p>Some essays may contain affiliate links. If you click an affiliate link and make a purchase, Stephen may receive a commission at no additional cost to you.</p>
-      <div class="affiliate-required-statement">As an Amazon Associate I earn from qualifying purchases.</div>
-      <p>Affiliate relationships do not determine the opinions, analysis, or recommendations published here. Product discussions reflect independent judgment, and any statement presented as personal experience is based on genuine experience.</p>
-      <p>Prices, availability, returns, and customer service are controlled by the retailer and may change. Amazon does not sponsor, endorse, or operate Mind Over Matter.</p>
-    </div>
-  </article>
-</div>
 
 <!-- ============================================================
      BOOK RECOMMENDATIONS
@@ -3725,7 +3732,7 @@
     <div class="category-chips" id="bookCategoryChips" aria-label="Filter books by topic"></div>
     <div class="book-grid" id="bookGrid" aria-live="polite"></div>
 
-    <p class="book-disclosure">Some book links may be affiliate links. As an Amazon Associate I earn from qualifying purchases. Recommendations remain editorially independent. <a href="/affiliate-disclosure" onclick="goAffiliateDisclosure();return false">Read the full disclosure.</a></p>
+    <p class="book-disclosure">Some book links may be affiliate links. As an Amazon Associate I earn from qualifying purchases. Recommendations remain editorially independent. <a href="/affiliate-disclosure">Read the full Affiliate Disclosure.</a></p>
   </main>
 </div>
 
@@ -3894,29 +3901,6 @@
   </main>
 </div>
 
-<!-- ============================================================
-     PRIVACY
-     ============================================================ -->
-<div class="page" id="view-privacy">
-  <article class="post-full">
-    <button class="page-home-link" onclick="goHome()" aria-label="Back to home">Home</button>
-    <div class="eyebrow">Reader privacy</div>
-    <h1>Privacy</h1>
-    <p class="post-lede">A short explanation of what is stored when you create a Mind Over Matter reader account.</p>
-    <div class="post-body">
-      <h2>Account information</h2>
-      <p>Your email address is used for secure sign-in and is not shown publicly. Your chosen display name, comments, and likes may appear publicly beside the articles you interact with.</p>
-      <h2>Where it is stored</h2>
-      <p>Account, community, and email-preference information is stored in Supabase. Your email subscription is private and is not displayed to other readers. Publication emails are delivered through Resend. Your browser also remembers your theme and sign-in session on your device.</p>
-      <h2>Publication emails</h2>
-      <p>Email updates are optional. You will receive them only if you actively select the email option while creating an account or later enable it in your reader account. Every publication email includes an unsubscribe link, and you can also choose whether to receive essays, book recommendations, both, or neither from your account.</p>
-      <h2>Readership measurement</h2>
-      <p>Mind Over Matter uses Cloudflare Web Analytics to understand general readership, such as page views and referring sites. It is configured as privacy-focused site measurement and does not create advertising profiles on this website.</p>
-      <h2>Your choices</h2>
-      <p>You can remove your own likes and comments and change or withdraw your email consent at any time. To ask for your reader account to be deleted, contact <a href="mailto:hello@stephenleynard.com" onclick="openContact();return false" style="color:var(--gold)">hello@stephenleynard.com</a>.</p>
-    </div>
-  </article>
-</div>
 
 <!-- ============================================================
      READER ACCOUNT
@@ -3934,7 +3918,8 @@
       <form onsubmit="return submitReaderAuth(event)">
         <div class="field" id="displayNameField" style="display:none">
           <label for="readerDisplayName">Display name</label>
-          <input type="text" id="readerDisplayName" maxlength="60" autocomplete="nickname" placeholder="How your name appears">
+          <input type="text" id="readerDisplayName" maxlength="60" autocomplete="nickname" placeholder="How your name appears" aria-describedby="readerDisplayNameHelp">
+          <small class="field-help" id="readerDisplayNameHelp">This display name may appear publicly beside comments you post.</small>
         </div>
         <div class="field">
           <label for="readerEmail">Email</label>
@@ -3949,6 +3934,7 @@
             <input type="checkbox" id="readerNewsletterOptIn">
             <span><strong>Email me publication updates.</strong> Send me an email when Mind Over Matter publishes a new essay or book recommendation. This is optional; I can unsubscribe at any time.</span>
           </label>
+          <p class="signup-legal-note" id="readerSignupLegalNotice">By creating a reader account, you agree to the <a href="/terms">Terms of Use</a> and acknowledge the <a href="/privacy">Privacy Policy</a>. Publication emails are optional and require the separate choice above.</p>
         </div>
         <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center" id="readerAuthSubmit">Sign in</button>
       </form>
@@ -4489,8 +4475,9 @@
       <a href="/books" onclick="goBooks();return false">Books</a>
       <a href="/resources" onclick="goResources();return false">Resources</a>
       <a href="/about" onclick="goAbout();return false">About</a>
-      <a href="/privacy" onclick="goPrivacy();return false">Privacy</a>
-      <a href="/affiliate-disclosure" onclick="goAffiliateDisclosure();return false">Disclosure</a>
+      <a href="/privacy">Privacy Policy</a>
+      <a href="/terms">Terms of Use</a>
+      <a href="/affiliate-disclosure">Affiliate Disclosure</a>
       <button type="button" onclick="openContact()">Contact</button>
     </nav>
     <div class="footer-copyright"><span>© <span id="footerYear"></span> Stephen Leynard</span><span aria-hidden="true">·</span><span>All rights reserved.</span></div>
@@ -5337,19 +5324,6 @@ function goAbout(){
   document.title = 'About Stephen Leynard | Mind Over Matter';
 }
 
-function goPrivacy(){
-  restoreBlogAfterPost = false;
-  pushRoute('/privacy');
-  showPage('view-privacy');
-  document.title = 'Privacy | Mind Over Matter';
-}
-
-function goAffiliateDisclosure(){
-  restoreBlogAfterPost = false;
-  pushRoute('/affiliate-disclosure');
-  showPage('view-affiliate-disclosure');
-  document.title = 'Affiliate Disclosure | Mind Over Matter';
-}
 
 function goAdminEntry(){
 
@@ -5711,8 +5685,6 @@ async function routeFromLocation(restoreBlogPosition = false){
   if(location.pathname === '/books' || location.pathname === '/books/') return goBooks();
   if(location.pathname === '/resources' || location.pathname === '/resources/') return goResources();
   if(location.pathname === '/about' || location.pathname === '/about/') return goAbout();
-  if(location.pathname === '/privacy' || location.pathname === '/privacy/') return goPrivacy();
-  if(location.pathname === '/affiliate-disclosure' || location.pathname === '/affiliate-disclosure/') return goAffiliateDisclosure();
   if(location.pathname === '/account' || location.pathname === '/account/') return goReaderAccount();
   goHome(false);
 }
@@ -6938,10 +6910,6 @@ async function copyContactEmail(){
       goResources();
     }else if(location.pathname === '/about' || location.pathname === '/about/'){
       goAbout();
-    }else if(location.pathname === '/privacy' || location.pathname === '/privacy/'){
-      goPrivacy();
-    }else if(location.pathname === '/affiliate-disclosure' || location.pathname === '/affiliate-disclosure/'){
-      goAffiliateDisclosure();
     }else if(location.pathname === '/account' || location.pathname === '/account/'){
       goReaderAccount();
     }else{
