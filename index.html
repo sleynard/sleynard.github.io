@@ -3531,6 +3531,35 @@
     .post-card:active,.featured-post:active{ border-color:var(--gold); }
   }
 
+
+  /* Admin publish controls, editor navigation, and reader account controls */
+  .publish-state{
+    display:inline-flex;align-items:center;gap:8px;min-height:34px;padding:5px 10px 5px 7px;
+    border:1px solid var(--rule);border-radius:999px;background:transparent;color:var(--ink-soft);
+    font-size:12px;font-weight:700;letter-spacing:.02em;
+    transition:border-color .15s ease,background .15s ease,color .15s ease,transform .15s ease;
+  }
+  .publish-state:hover{border-color:var(--gold);color:var(--gold-soft);transform:translateY(-1px)}
+  .publish-check{width:19px;height:19px;display:grid;place-items:center;flex:none;border:1px solid var(--ink-faint);border-radius:5px;font-size:13px;font-weight:800;line-height:1}
+  .publish-state.is-published{color:var(--gold-soft);border-color:var(--gold);background:var(--gold-15)}
+  .publish-state.is-published .publish-check{background:var(--gold);border-color:var(--gold);color:var(--on-accent)}
+  .publish-state.is-draft .publish-check{background:transparent}
+  .view-count-cell{font-variant-numeric:tabular-nums;font-weight:700;color:var(--ink-soft);white-space:nowrap}
+  .editor-nav-row{display:flex;align-items:center;margin:0 0 14px}
+  .editor-back-link{display:inline-flex;align-items:center;gap:7px;min-height:34px;padding:6px 11px;border:1px solid var(--rule);border-radius:999px;background:transparent;color:var(--ink-soft);font-size:12.5px;font-weight:650;transition:border-color .15s ease,color .15s ease,background .15s ease}
+  .editor-back-link:hover{border-color:var(--gold);color:var(--gold-soft);background:var(--gold-15)}
+  .reader-danger-zone{margin-top:30px;padding-top:24px;border-top:1px solid var(--rule);text-align:left}
+  .reader-danger-zone[hidden],.reader-delete-confirm[hidden]{display:none!important}
+  .reader-danger-zone h3{margin:7px 0 7px;font:600 22px/1.2 var(--font-display);color:var(--ink)}
+  .reader-danger-zone p{margin:0;color:var(--ink-soft);font-size:13px;line-height:1.6}
+  .reader-danger-actions{display:flex;align-items:center;gap:10px;margin-top:14px;flex-wrap:wrap}
+  .btn-danger-outline{border:1px solid var(--danger);background:var(--danger-15);color:var(--danger-text)}
+  .btn-danger-outline:hover{border-color:var(--danger);color:var(--danger-text);background:var(--danger-15)}
+  .reader-delete-confirm{margin-top:14px;padding:15px;border:1px solid var(--danger);border-radius:12px;background:var(--danger-15)}
+  .reader-delete-confirm strong{display:block;margin-bottom:5px;color:var(--ink)}
+  .reader-delete-status{min-height:18px;margin-top:9px!important;color:var(--danger-text)!important}
+  @media(max-width:700px){.publish-state{min-height:40px;font-size:11.5px}.reader-danger-actions{display:grid;grid-template-columns:1fr}.reader-danger-actions .btn{width:100%;justify-content:center}}
+
 </style>
 </head>
 
@@ -3975,6 +4004,22 @@
           <button class="btn btn-primary" type="button" id="readerPreferencesSave" onclick="saveNewsletterPreferences()">Save preferences</button>
           <p class="preference-status" id="readerPreferencesStatus" role="status" aria-live="polite"></p>
         </div>
+
+        <div class="reader-danger-zone" id="readerDangerZone" hidden>
+          <div class="eyebrow">Account controls</div>
+          <h3>Delete reader account</h3>
+          <p>Permanently removes your reader profile, comments, likes, newsletter preferences, and sign-in account. This cannot be undone.</p>
+          <div class="reader-danger-actions"><button class="btn btn-danger-outline" type="button" onclick="requestReaderAccountDeletion()">Delete my account</button></div>
+          <div class="reader-delete-confirm" id="readerDeleteConfirm" hidden>
+            <strong>Delete your account permanently?</strong>
+            <p>Your reader data will be removed and you will be signed out immediately.</p>
+            <div class="reader-danger-actions">
+              <button class="btn btn-danger-outline" type="button" id="readerDeleteConfirmBtn" onclick="deleteReaderAccount()">Yes, delete permanently</button>
+              <button class="btn btn-outline" type="button" onclick="cancelReaderAccountDeletion()">Cancel</button>
+            </div>
+            <p class="reader-delete-status" id="readerDeleteStatus" role="status" aria-live="polite"></p>
+          </div>
+        </div>
       </section>
       <div class="auth-switch">
         <span id="readerAuthSwitchCopy">New here?</span>
@@ -4148,8 +4193,9 @@
 
         <thead>
           <tr>
-            <th style="width:46%">Post</th>
+            <th style="width:42%">Post</th>
             <th>Status</th>
+            <th>Views</th>
             <th>Created</th>
             <th style="text-align:right">Actions</th>
           </tr>
@@ -4194,8 +4240,7 @@
      ============================================================ -->
 <div class="page" id="view-book-editor">
   <div class="editor-wrap">
-    <button class="page-home-link" onclick="goHome()" aria-label="Back to home">Home</button>
-    <button class="btn-text" onclick="goDashboard()">&larr; Back to dashboard</button>
+    <div class="editor-nav-row"><button class="editor-back-link" type="button" onclick="goDashboard()" aria-label="Back to dashboard"><span aria-hidden="true">←</span> Dashboard</button></div>
 
     <div class="editor-card" style="margin-top:14px;">
       <div class="eyebrow" id="bookEditorEyebrow">Add book</div>
@@ -4277,11 +4322,7 @@
 
   <div class="editor-wrap">
 
-    <button class="page-home-link" onclick="goHome()" aria-label="Back to home">Home</button>
-
-    <button class="btn-text" onclick="goDashboard()">
-      &larr; Back to dashboard
-    </button>
+    <div class="editor-nav-row"><button class="editor-back-link" type="button" onclick="goDashboard()" aria-label="Back to dashboard"><span aria-hidden="true">←</span> Dashboard</button></div>
 
     <div class="editor-card" style="margin-top:14px;">
 
@@ -4566,11 +4607,13 @@ const ADMIN_USER_ID = 'e21f3af3-0afb-41e4-a84f-5b8f10d7f37b';
 const THEME_KEY = 'mindovermatter_theme';
 const SUPABASE_AUTH_URL = 'https://ljseqpciuohncchdcewa.supabase.co/auth/v1/';
 const SUPABASE_REST_URL = 'https://ljseqpciuohncchdcewa.supabase.co/rest/v1/';
+const SUPABASE_FUNCTIONS_URL = 'https://ljseqpciuohncchdcewa.supabase.co/functions/v1/';
 const SUPABASE_KEY = 'sb_publishable_cWKtBkdbEFnbtJYV0Ttt0w_rn42Hx-k';
-const POST_COLUMNS = 'id,created_at,updated_at,title,body,published,slug,category,summary,featured,publish_at,cover_image_url';
+const POST_COLUMNS = 'id,created_at,updated_at,title,body,published,slug,category,summary,featured,publish_at,cover_image_url,view_count';
 const BOOK_COLUMNS = 'id,created_at,updated_at,title,author,category,description,link_url,cover_image_url,published,featured,sort_order';
 const AUTOSAVE_KEY = 'mindovermatter_editor_autosave';
 const BLOG_SCROLL_KEY = 'mindovermatter_blog_scroll';
+const POST_VIEW_SESSION_KEY = 'mindovermatter_viewed_posts';
 
 if('scrollRestoration' in history) history.scrollRestoration = 'manual';
 
@@ -5011,6 +5054,8 @@ function goReaderAccount(){
   pushRoute('/account');
   const form = document.querySelector('#view-account form');
   const preferences = document.getElementById('readerPreferences');
+  const dangerZone = document.getElementById('readerDangerZone');
+  const deleteConfirm = document.getElementById('readerDeleteConfirm');
   if(isSignedIn()){
     const session = getAuthSession();
     document.getElementById('readerAuthTitle').textContent = 'Your reader account';
@@ -5018,11 +5063,15 @@ function goReaderAccount(){
     document.getElementById('displayNameField').style.display = 'none';
     form.style.display = 'none';
     preferences.classList.add('visible');
+    if(dangerZone) dangerZone.hidden = isOwner();
+    if(deleteConfirm) deleteConfirm.hidden = true;
     document.querySelector('#view-account .auth-switch').innerHTML = '<button type="button" onclick="logout()">Sign out</button>';
     loadNewsletterPreferences();
   }else{
     form.style.display = 'block';
     preferences.classList.remove('visible');
+    if(dangerZone) dangerZone.hidden = true;
+    if(deleteConfirm) deleteConfirm.hidden = true;
     document.querySelector('#view-account .auth-switch').innerHTML = '<span id="readerAuthSwitchCopy">New here?</span> <button type="button" onclick="toggleReaderAuthMode()" id="readerAuthSwitch">Create an account</button>';
     setReaderAuthMode('signin');
   }
@@ -5111,6 +5160,51 @@ function updateNewsletterPreferenceUI(){
   document.getElementById('readerNewsletterBooks').disabled = !enabled;
   document.getElementById('readerNewsletterTopics').hidden = !enabled;
   document.getElementById('readerNewsletterOffNote').hidden = enabled;
+}
+
+
+function requestReaderAccountDeletion(){
+  if(!isSignedIn()) return goReaderAccount();
+  if(isOwner()) return showToast('The site owner account cannot be deleted here.');
+  const box = document.getElementById('readerDeleteConfirm');
+  const status = document.getElementById('readerDeleteStatus');
+  if(status) status.textContent = '';
+  if(box) box.hidden = false;
+}
+
+function cancelReaderAccountDeletion(){
+  const box = document.getElementById('readerDeleteConfirm');
+  const status = document.getElementById('readerDeleteStatus');
+  if(box) box.hidden = true;
+  if(status) status.textContent = '';
+}
+
+async function deleteReaderAccount(){
+  if(isOwner()) return showToast('The site owner account cannot be deleted here.');
+  const token = await getAccessToken();
+  if(!token) return goReaderAccount();
+  const button = document.getElementById('readerDeleteConfirmBtn');
+  const status = document.getElementById('readerDeleteStatus');
+  if(button) button.disabled = true;
+  if(status) status.textContent = 'Deleting your account…';
+  try{
+    const response = await fetch(SUPABASE_FUNCTIONS_URL + 'delete-reader-account', {
+      method:'POST',
+      headers:{Authorization:`Bearer ${token}`,'Content-Type':'application/json'},
+      body:'{}'
+    });
+    let payload = {};
+    try{ payload = await response.json(); }catch(_error){}
+    if(!response.ok) throw new Error(payload.error || 'Your account could not be deleted.');
+    clearAuthSession();
+    sessionStorage.removeItem('mindovermatter_return_post');
+    showToast('Your reader account has been deleted.');
+    location.assign('/');
+  }catch(error){
+    console.error(error);
+    if(status) status.textContent = error.message || 'Your account could not be deleted. Please try again.';
+    if(button) button.disabled = false;
+  }
 }
 
 async function loadNewsletterPreferences(){
@@ -5325,6 +5419,8 @@ function goAbout(){
 
 
 function goAdminEntry(){
+
+  pushRoute('/admin');
 
   if(isAuthed()){
     goDashboard();
@@ -5685,6 +5781,7 @@ async function routeFromLocation(restoreBlogPosition = false){
   if(location.pathname === '/resources' || location.pathname === '/resources/') return goResources();
   if(location.pathname === '/about' || location.pathname === '/about/') return goAbout();
   if(location.pathname === '/account' || location.pathname === '/account/') return goReaderAccount();
+  if(location.pathname === '/admin' || location.pathname === '/admin/') return goAdminEntry();
   goHome(false);
 }
 
@@ -5714,7 +5811,7 @@ function renderTable(){
 
     body.innerHTML = `
       <tr class="empty-row">
-        <td colspan="4">
+        <td colspan="5">
           No posts here yet.
         </td>
       </tr>
@@ -5741,9 +5838,13 @@ function renderTable(){
         </td>
 
         <td>
-          <span class="badge ${p.published ? 'published' : 'draft'}">
-            ${p.published ? 'published' : 'draft'}
-          </span>
+          <button class="publish-state ${p.published ? 'is-published' : 'is-draft'}" type="button" title="${p.published ? 'Published — click to move to draft' : 'Draft — click to publish'}" aria-label="${p.published ? 'Published. Move post to draft' : 'Draft. Publish post'}" onclick="toggleStatus(${p.id})">
+            <span class="publish-check" aria-hidden="true">${p.published ? '✓' : ''}</span><span>${p.published ? 'Published' : 'Draft'}</span>
+          </button>
+        </td>
+
+        <td class="view-count-cell" title="Article views">
+          ${Number(p.view_count || 0).toLocaleString()}
         </td>
 
         <td class="date-cell">
@@ -5753,44 +5854,6 @@ function renderTable(){
         <td>
 
           <div class="actions-cell">
-
-            <button
-              class="btn-icon"
-              title="${p.published ? 'Move to draft' : 'Publish'}"
-              onclick="toggleStatus(${p.id})"
-            >
-
-              ${
-                p.published
-                ? `
-                  <svg
-                    width="15"
-                    height="15"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                  >
-                    <path d="M3 3l18 18M10.6 10.6a2 2 0 0 0 2.8 2.8M9.4 5.5A9.6 9.6 0 0 1 12 5c5 0 9 4.5 10 7-.5 1.2-1.4 2.7-2.7 4M6.2 6.7C4 8.3 2.5 10.4 2 12c1 2.5 5 7 10 7 1.2 0 2.4-.2 3.5-.6"/>
-                  </svg>
-                `
-                : `
-                  <svg
-                    width="15"
-                    height="15"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                  >
-                    <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/>
-                    <circle cx="12" cy="12" r="3"/>
-                  </svg>
-                `
-              }
-
-            </button>
-
             <button
               class="btn-icon"
               title="Edit"
@@ -5919,11 +5982,10 @@ function renderAdminBooks(){
         <div class="ptitle">${escapeHtml(book.title)}</div>
         <div class="pexcerpt">${escapeHtml(book.author)}</div>
       </td>
-      <td><span class="badge ${book.published ? 'published' : 'draft'}">${book.published ? 'published' : 'draft'}</span></td>
+      <td><button class="publish-state ${book.published ? 'is-published' : 'is-draft'}" type="button" title="${book.published ? 'Published — click to move to draft' : 'Draft — click to publish'}" aria-label="${book.published ? 'Published. Move book to draft' : 'Draft. Publish book'}" onclick="toggleBookStatus(${book.id})"><span class="publish-check" aria-hidden="true">${book.published ? '✓' : ''}</span><span>${book.published ? 'Published' : 'Draft'}</span></button></td>
       <td class="date-cell">${escapeHtml(book.category || 'General psychology')}</td>
       <td>
         <div class="actions-cell">
-          <button class="btn-icon" title="${book.published ? 'Move to draft' : 'Publish'}" aria-label="${book.published ? 'Move book to draft' : 'Publish book'}" onclick="toggleBookStatus(${book.id})">${book.published ? '&#9675;' : '&#9679;'}</button>
           <button class="btn-icon" title="Edit" aria-label="Edit book" onclick="openBookEditor(${book.id})">&#9998;</button>
           <button class="btn-icon danger" title="Delete" aria-label="Delete book" onclick="requestBookDelete(${book.id})">&times;</button>
         </div>
@@ -6605,6 +6667,34 @@ function renderPublicList(){
     `).join('');
 }
 
+
+function viewedPostIdsThisSession(){
+  try{
+    const value = JSON.parse(sessionStorage.getItem(POST_VIEW_SESSION_KEY) || '[]');
+    return Array.isArray(value) ? value.map(String) : [];
+  }catch(_error){
+    return [];
+  }
+}
+
+async function recordPostView(post){
+  if(location.protocol === 'file:' || !post?.published || isOwner()) return;
+  const id = String(post.id);
+  const viewed = viewedPostIdsThisSession();
+  if(viewed.includes(id)) return;
+  try{
+    const result = await supabaseRequest('rpc/increment_post_view', {
+      method:'POST',
+      body:JSON.stringify({ p_post_id:Number(post.id) })
+    });
+    const count = Number(result);
+    if(Number.isFinite(count)) post.view_count = count;
+    sessionStorage.setItem(POST_VIEW_SESSION_KEY, JSON.stringify([...viewed,id]));
+  }catch(error){
+    console.error('Could not record article view', error);
+  }
+}
+
 function navigateToPostById(id){
   const post = posts.find(item => item.id === id);
   if(post) navigateToPost(post);
@@ -6680,6 +6770,7 @@ async function openPublicPost(id, pushHistory = true){
     `;
 
   showPage('view-blog-post');
+  recordPostView(p);
   document.title = `${p.title} — Mind Over Matter`;
   updateReadingProgress();
   window.removeEventListener('scroll', updateReadingProgress);
@@ -6911,6 +7002,8 @@ async function copyContactEmail(){
       goAbout();
     }else if(location.pathname === '/account' || location.pathname === '/account/'){
       goReaderAccount();
+    }else if(location.pathname === '/admin' || location.pathname === '/admin/'){
+      goAdminEntry();
     }else{
       goHome(false);
     }
