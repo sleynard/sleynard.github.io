@@ -1,4 +1,4 @@
-name: Homepage polish once
+name: Site polish and account controls once
 
 on:
   push:
@@ -10,71 +10,322 @@ permissions:
   contents: write
 
 jobs:
-  polish:
+  update-site:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Apply homepage spacing polish
+      - name: Apply site changes
         run: |
           python - <<'PY'
           from pathlib import Path
+          import re
 
-          path = Path('index.html')
-          text = path.read_text()
+          index_path = Path('index.html')
+          text = index_path.read_text()
 
-          replacements = [
-              (
-                  "  #view-landing .landing-wrap::before{\n    background-image:linear-gradient(var(--rule) 1px,transparent 1px),linear-gradient(90deg,var(--rule) 1px,transparent 1px);\n    background-size:72px 72px;\n    opacity:.24;\n    mask-image:linear-gradient(to bottom,black,transparent 58%);\n    -webkit-mask-image:linear-gradient(to bottom,black,transparent 58%);\n  }",
-                  "  #view-landing .landing-wrap::before{\n    display:none;\n  }"
-              ),
-              (
-                  "  .home-hero,\n  .home-topic-rail,\n  .home-editorial,\n  .home-pillars{",
-                  "  .home-hero,\n  .home-topic-rail,\n  .home-editorial,\n  .home-pillars,\n  .home-subscribe{"
-              ),
-              (
-                  "    margin-top:72px;",
-                  "    margin-top:64px;"
-              ),
-              (
-                  "    margin-top:70px;",
-                  "    margin-top:64px;"
-              ),
-              (
-                  "    margin-top:24px;\n    padding:clamp(28px,5vw,48px);",
-                  "    margin-top:64px;\n    padding:clamp(28px,5vw,48px);"
-              ),
-              (
-                  "    background:linear-gradient(130deg,var(--gold-15),transparent 58%),var(--panel);\n  }",
-                  "    background:linear-gradient(130deg,var(--gold-15),transparent 58%),var(--panel);\n    box-shadow:var(--shadow-card);\n  }"
-              ),
-              (
-                  "    .home-editorial{ margin-top:43px; }",
-                  "    .home-editorial{ margin-top:44px; }"
-              ),
-              (
-                  "    .home-pillars{ margin-top:43px; }",
-                  "    .home-pillars{ margin-top:44px; }\n    .home-subscribe{ margin-top:44px; }"
-              ),
-          ]
-
-          for old, new in replacements:
+          def exact(old, new, expected=1, label='replacement'):
+              global text
               count = text.count(old)
-              if count != 1:
-                  raise SystemExit(f'Expected exactly one match, found {count}: {old[:80]!r}')
-              text = text.replace(old, new, 1)
+              if count != expected:
+                  raise SystemExit(f'{label}: expected {expected} exact match(es), found {count}')
+              text = text.replace(old, new, expected)
 
-          path.write_text(text)
+          def regex(pattern, repl, expected=1, label='regex replacement'):
+              global text
+              text, count = re.subn(pattern, repl, text, count=expected, flags=re.S)
+              if count != expected:
+                  raise SystemExit(f'{label}: expected {expected} match(es), found {count}')
+
+          # Shared UI polish for publish-state controls, editor navigation, and reader account danger zone.
+          css = r'''
+
+  /* Admin publishing state */
+  .publish-state{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    min-height:34px;
+    padding:5px 10px 5px 7px;
+    border:1px solid var(--rule);
+    border-radius:999px;
+    background:transparent;
+    color:var(--ink-soft);
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:.02em;
+    transition:border-color .15s ease,background .15s ease,color .15s ease,transform .15s ease;
+  }
+  .publish-state:hover{ border-color:var(--gold); color:var(--gold-soft); transform:translateY(-1px); }
+  .publish-state .publish-check{
+    width:19px;
+    height:19px;
+    display:grid;
+    place-items:center;
+    flex:none;
+    border:1px solid var(--ink-faint);
+    border-radius:5px;
+    color:var(--on-accent);
+    font-size:13px;
+    font-weight:800;
+    line-height:1;
+  }
+  .publish-state.is-published{
+    color:var(--gold-soft);
+    border-color:color-mix(in srgb,var(--gold) 50%,var(--rule));
+    background:var(--gold-15);
+  }
+  .publish-state.is-published .publish-check{ background:var(--gold); border-color:var(--gold); color:var(--on-accent); }
+  .publish-state.is-draft .publish-check{ background:transparent; }
+
+  /* Compact editor navigation */
+  .editor-nav-row{ display:flex; align-items:center; margin:0 0 14px; }
+  .editor-back-link{
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    min-height:34px;
+    padding:6px 11px;
+    border:1px solid var(--rule);
+    border-radius:999px;
+    background:transparent;
+    color:var(--ink-soft);
+    font-size:12.5px;
+    font-weight:650;
+    transition:border-color .15s ease,color .15s ease,background .15s ease;
+  }
+  .editor-back-link:hover{ border-color:var(--gold); color:var(--gold-soft); background:var(--gold-15); }
+
+  /* Reader-account self-service deletion */
+  .reader-danger-zone{
+    margin-top:30px;
+    padding-top:24px;
+    border-top:1px solid var(--rule);
+  }
+  .reader-danger-zone[hidden]{ display:none!important; }
+  .reader-danger-zone h3{ margin:0 0 7px; font:600 22px/1.2 var(--font-display); color:var(--ink); }
+  .reader-danger-zone p{ margin:0; color:var(--ink-soft); font-size:13px; line-height:1.6; }
+  .reader-danger-actions{ display:flex; align-items:center; gap:10px; margin-top:14px; flex-wrap:wrap; }
+  .btn-danger-outline{
+    border:1px solid color-mix(in srgb,var(--danger) 62%,var(--rule));
+    background:var(--danger-15);
+    color:var(--danger-text);
+  }
+  .btn-danger-outline:hover{ border-color:var(--danger); color:var(--danger-text); }
+  .reader-delete-confirm{
+    margin-top:14px;
+    padding:15px;
+    border:1px solid color-mix(in srgb,var(--danger) 45%,var(--rule));
+    border-radius:10px;
+    background:var(--danger-15);
+  }
+  .reader-delete-confirm[hidden]{ display:none!important; }
+  .reader-delete-confirm strong{ display:block; margin-bottom:5px; color:var(--ink); }
+  .reader-delete-status{ min-height:18px; margin-top:9px!important; color:var(--danger-text)!important; }
+
+  @media(max-width:700px){
+    .publish-state{ min-height:36px; font-size:11.5px; padding-right:9px; }
+    .editor-nav-row{ margin-bottom:12px; }
+    .reader-danger-actions{ align-items:stretch; }
+    .reader-danger-actions .btn{ justify-content:center; }
+  }
+'''
+          exact('\n</style>\n</head>', css + '\n</style>\n</head>', label='insert CSS')
+
+          # Replace the two editor-level Home + Back-to-dashboard controls with one compact dashboard control.
+          regex(
+              r'<button class="page-home-link" onclick="goHome\(\)" aria-label="Back to home">Home</button>\s*<button class="btn-text" onclick="goDashboard\(\)">\s*&larr; Back to dashboard\s*</button>',
+              '<div class="editor-nav-row"><button class="editor-back-link" type="button" onclick="goDashboard()" aria-label="Back to dashboard"><span aria-hidden="true">←</span> Dashboard</button></div>',
+              expected=2,
+              label='editor navigation'
+          )
+
+          # Make the post status column itself the publish/draft checkbox.
+          regex(
+              r'<td>\s*<span class="badge \$\{p\.published \? \'published\' : \'draft\'\}">\s*\$\{p\.published \? \'published\' : \'draft\'\}\s*</span>\s*</td>',
+              '''<td>
+          <button class="publish-state ${p.published ? 'is-published' : 'is-draft'}" type="button" title="${p.published ? 'Published — click to move to draft' : 'Draft — click to publish'}" aria-label="${p.published ? 'Published. Move post to draft' : 'Draft. Publish post'}" onclick="toggleStatus(${p.id})">
+            <span class="publish-check" aria-hidden="true">${p.published ? '✓' : ''}</span>
+            <span>${p.published ? 'Published' : 'Draft'}</span>
+          </button>
+        </td>''',
+              label='post status control'
+          )
+
+          # Remove the old redundant post publish icon from the action column.
+          regex(
+              r'\s*<button\s+class="btn-icon"\s+title="\$\{p\.published \? \'Move to draft\' : \'Publish\'\}"\s+onclick="toggleStatus\(\$\{p\.id\}\)"\s*>.*?</button>\s*(?=<button\s+class="btn-icon"\s+title="Edit")',
+              '\n            ',
+              label='remove post status action'
+          )
+
+          # Books: clickable checked/unchecked publish status, and remove the old circle action.
+          exact(
+              '<td><span class="badge ${book.published ? \'published\' : \'draft\'}">${book.published ? \'published\' : \'draft\'}</span></td>',
+              '''<td><button class="publish-state ${book.published ? 'is-published' : 'is-draft'}" type="button" title="${book.published ? 'Published — click to move to draft' : 'Draft — click to publish'}" aria-label="${book.published ? 'Published. Move book to draft' : 'Draft. Publish book'}" onclick="toggleBookStatus(${book.id})"><span class="publish-check" aria-hidden="true">${book.published ? '✓' : ''}</span><span>${book.published ? 'Published' : 'Draft'}</span></button></td>''',
+              label='book status control'
+          )
+          exact(
+              '<button class="btn-icon" title="${book.published ? \'Move to draft\' : \'Publish\'}" aria-label="${book.published ? \'Move book to draft\' : \'Publish book\'}" onclick="toggleBookStatus(${book.id})">${book.published ? \'&#9675;\' : \'&#9679;\'}</button>\n          ',
+              '',
+              label='remove book status action'
+          )
+
+          # Add a self-service deletion danger zone beneath newsletter preferences.
+          reader_actions = '''        <div class="preference-actions">
+          <button class="btn btn-primary" type="button" id="readerPreferencesSave" onclick="saveNewsletterPreferences()">Save preferences</button>
+          <p class="preference-status" id="readerPreferencesStatus" role="status" aria-live="polite"></p>
+        </div>
+'''
+          reader_actions_new = reader_actions + '''
+        <div class="reader-danger-zone" id="readerDangerZone" hidden>
+          <div class="eyebrow">Account controls</div>
+          <h3>Delete reader account</h3>
+          <p>Permanently delete your reader account and the profile, comments, likes, and publication-email preferences associated with it. This cannot be undone.</p>
+          <div class="reader-danger-actions">
+            <button class="btn btn-danger-outline" type="button" onclick="requestReaderAccountDeletion()">Delete my account</button>
+          </div>
+          <div class="reader-delete-confirm" id="readerDeleteConfirm" hidden>
+            <strong>Delete your account permanently?</strong>
+            <p>Your account and associated reader activity will be removed. You will be signed out immediately.</p>
+            <div class="reader-danger-actions">
+              <button class="btn btn-danger" type="button" id="readerDeleteConfirmBtn" onclick="deleteReaderAccount()">Yes, delete permanently</button>
+              <button class="btn btn-outline" type="button" onclick="cancelReaderAccountDeletion()">Cancel</button>
+            </div>
+            <p class="reader-delete-status" id="readerDeleteStatus" role="status" aria-live="polite"></p>
+          </div>
+        </div>
+'''
+          exact(reader_actions, reader_actions_new, label='reader deletion UI')
+
+          # Add the Functions API base URL.
+          exact(
+              "const SUPABASE_REST_URL = 'https://ljseqpciuohncchdcewa.supabase.co/rest/v1/';",
+              "const SUPABASE_REST_URL = 'https://ljseqpciuohncchdcewa.supabase.co/rest/v1/';\nconst SUPABASE_FUNCTIONS_URL = 'https://ljseqpciuohncchdcewa.supabase.co/functions/v1/';",
+              label='functions URL'
+          )
+
+          # Make Admin navigation deterministic: public-page clicks always go straight to /admin.
+          exact(
+              'function goAdminEntry(){\n\n',
+              "function goAdminEntry(){\n\n  if(location.pathname !== '/admin'){\n    location.assign('/admin');\n    return;\n  }\n\n",
+              label='admin first-click navigation'
+          )
+
+          # Show the deletion controls only to signed-in non-owner reader accounts.
+          exact(
+              "  const preferences = document.getElementById('readerPreferences');\n  if(isSignedIn()){",
+              "  const preferences = document.getElementById('readerPreferences');\n  const dangerZone = document.getElementById('readerDangerZone');\n  if(isSignedIn()){
+",
+              label='reader danger reference'
+          )
+          exact(
+              "    preferences.classList.add('visible');\n    document.querySelector('#view-account .auth-switch').innerHTML = '<button type=\"button\" onclick=\"logout()\">Sign out</button>';",
+              "    preferences.classList.add('visible');\n    if(dangerZone) dangerZone.hidden = isOwner();\n    document.querySelector('#view-account .auth-switch').innerHTML = '<button type=\"button\" onclick=\"logout()\">Sign out</button>';",
+              label='show reader danger zone'
+          )
+          exact(
+              "    preferences.classList.remove('visible');\n    document.querySelector('#view-account .auth-switch').innerHTML = '<span id=\"readerAuthSwitchCopy\">New here?</span> <button type=\"button\" onclick=\"toggleReaderAuthMode()\" id=\"readerAuthSwitch\">Create an account</button>';",
+              "    preferences.classList.remove('visible');\n    if(dangerZone) dangerZone.hidden = true;\n    document.querySelector('#view-account .auth-switch').innerHTML = '<span id=\"readerAuthSwitchCopy\">New here?</span> <button type=\"button\" onclick=\"toggleReaderAuthMode()\" id=\"readerAuthSwitch\">Create an account</button>';",
+              label='hide reader danger zone'
+          )
+
+          # Account-deletion interaction + authenticated call to the deployed Supabase Edge Function.
+          deletion_js = r'''
+function requestReaderAccountDeletion(){
+  if(!isSignedIn()) return goReaderAccount();
+  if(isOwner()){
+    showToast('The site owner account cannot be deleted here.');
+    return;
+  }
+  const confirmBox = document.getElementById('readerDeleteConfirm');
+  const status = document.getElementById('readerDeleteStatus');
+  if(status) status.textContent = '';
+  if(confirmBox) confirmBox.hidden = false;
+}
+
+function cancelReaderAccountDeletion(){
+  const confirmBox = document.getElementById('readerDeleteConfirm');
+  const status = document.getElementById('readerDeleteStatus');
+  if(confirmBox) confirmBox.hidden = true;
+  if(status) status.textContent = '';
+}
+
+async function deleteReaderAccount(){
+  const session = getAuthSession();
+  if(!session?.access_token) return goReaderAccount();
+  if(isOwner()) return showToast('The site owner account cannot be deleted here.');
+
+  const button = document.getElementById('readerDeleteConfirmBtn');
+  const status = document.getElementById('readerDeleteStatus');
+  if(button) button.disabled = true;
+  if(status) status.textContent = 'Deleting your account…';
+
+  try{
+    const response = await fetch(SUPABASE_FUNCTIONS_URL + 'delete-reader-account', {
+      method:'POST',
+      headers:{
+        'Authorization':`Bearer ${session.access_token}`,
+        'Content-Type':'application/json'
+      },
+      body:'{}'
+    });
+
+    let payload = {};
+    try{ payload = await response.json(); }catch(_error){}
+    if(!response.ok) throw new Error(payload.error || 'Your account could not be deleted.');
+
+    clearAuthSession();
+    sessionStorage.removeItem('mindovermatter_return_post');
+    sessionStorage.removeItem('mycms_authed');
+    showToast('Your reader account has been deleted.');
+    location.assign('/');
+  }catch(error){
+    console.error(error);
+    if(status) status.textContent = error.message || 'Your account could not be deleted. Please try again.';
+    if(button) button.disabled = false;
+  }
+}
+
+'''
+          exact('async function loadNewsletterPreferences(){', deletion_js + 'async function loadNewsletterPreferences(){', label='reader deletion JS')
+
+          index_path.write_text(text)
+
+          # Privacy Policy: describe the actual self-service deletion path and its scope.
+          privacy_path = Path('functions/privacy.js')
+          privacy = privacy_path.read_text()
+          old_privacy = '<p>Subject to applicable legal exceptions and identity verification, you may request access to personal information about you under my control or ask that inaccurate or incomplete information be corrected. You may also request deletion of your reader account by emailing <a href="mailto:hello@stephenleynard.com">hello@stephenleynard.com</a>.</p>\n<p>Some information may need to be retained where permitted or required for security, fraud prevention, legal compliance, backup integrity, or record-keeping. Public comments or other submitted content may require separate review when deletion would affect records involving other users.</p>'
+          new_privacy = '<p>Subject to applicable legal exceptions and identity verification, you may request access to personal information about you under my control or ask that inaccurate or incomplete information be corrected. Signed-in readers can permanently delete their own account directly from <strong>My Reader Account</strong>. You may also contact <a href="mailto:hello@stephenleynard.com">hello@stephenleynard.com</a> for an account-deletion or privacy request.</p>\n<p>Self-service account deletion removes the Supabase authentication account and Site records directly associated with that reader account, including the profile, comments, likes, and newsletter-subscription/preferences record. The action is permanent and signs the reader out. Limited information may still be retained where permitted or required for security, fraud prevention, legal compliance, backup integrity, or record-keeping, and residual copies may persist temporarily in routine backups until they are overwritten or expire.</p>'
+          if privacy.count(old_privacy) != 1:
+              raise SystemExit('privacy deletion section did not match exactly once')
+          privacy = privacy.replace(old_privacy, new_privacy, 1)
+          privacy_path.write_text(privacy)
+
+          # Terms: make self-service deletion an explicit reader-account feature.
+          terms_path = Path('functions/terms.js')
+          terms = terms_path.read_text()
+          old_terms = '<p>Do not post confidential health information, personal information about another person, or information you do not want made public. Display names, comments, and similar community activity may be publicly visible.</p>'
+          new_terms = '<p>Do not post confidential health information, personal information about another person, or information you do not want made public. Display names, comments, and similar community activity may be publicly visible.</p><p>Signed-in readers may permanently delete their own reader account through My Reader Account. Account deletion is irreversible and removes the account and associated Site records as described in the <a href="/privacy">Privacy Policy</a>, subject to lawful or technically necessary retention described there.</p>'
+          if terms.count(old_terms) != 1:
+              raise SystemExit('terms account section did not match exactly once')
+          terms = terms.replace(old_terms, new_terms, 1)
+          terms_path.write_text(terms)
           PY
 
       - name: Validate and commit
         run: |
           git diff --check
+          grep -q "delete-reader-account" index.html
+          grep -q "publish-state" index.html
+          grep -q "location.pathname !== '/admin'" index.html
+          grep -q "Signed-in readers can permanently delete" functions/privacy.js
+          grep -q "Signed-in readers may permanently delete" functions/terms.js
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git rm .github/workflows/home-polish-once.yml
-          git add index.html
-          git commit -m "Polish homepage spacing and background"
+          git add index.html functions/privacy.js functions/terms.js
+          git commit -m "Polish admin publishing and add reader account deletion"
           git push
