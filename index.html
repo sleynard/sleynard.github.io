@@ -170,6 +170,8 @@
   }
 
   *{ box-sizing: border-box; }
+  [hidden]{ display:none!important; }
+  /* NAVIGATION_HARDENING_2026_08_16: every app view starts hidden and only the router reveals one target. */
   html,body{ height:100%; }
 
   body{
@@ -3893,19 +3895,19 @@
   </button>
 
   <div class="nav-actions" id="navActions">
-    <button class="nav-btn" id="navHomeBtn" onclick="goHome()">Home</button>
-    <button class="nav-btn" id="navBlogBtn" onclick="goPublic()">Blog</button>
-    <button class="nav-btn" id="navBooksBtn" onclick="goBooks()">Books</button>
-    <button class="nav-btn" id="navResourcesBtn" onclick="goResources()">Resources</button>
-    <button class="nav-btn" id="navAboutBtn" onclick="goAbout()">About</button>
-    <button class="nav-btn" id="navAccountBtn" onclick="goReaderAccount()">Reader sign in</button>
-    <button class="nav-btn" id="navAdminBtn" style="display:none" onclick="goAdminEntry()">Admin</button>
+    <a class="nav-btn" id="navHomeBtn" href="/" onclick="goHome();return false">Home</a>
+    <a class="nav-btn" id="navBlogBtn" href="/blog" onclick="goPublic();return false">Blog</a>
+    <a class="nav-btn" id="navBooksBtn" href="/books" onclick="goBooks();return false">Books</a>
+    <a class="nav-btn" id="navResourcesBtn" href="/resources" onclick="goResources();return false">Resources</a>
+    <a class="nav-btn" id="navAboutBtn" href="/about" onclick="goAbout();return false">About</a>
+    <a class="nav-btn" id="navAccountBtn" href="/account">Reader sign in</a>
+    <a class="nav-btn" id="navAdminBtn" href="/admin" hidden>Admin</a>
     <button class="nav-btn theme-toggle" id="themeToggle" type="button" onclick="toggleTheme()" aria-label="Switch to light theme" title="Switch to light theme">
       <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"/></svg>
       <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
       <span class="theme-toggle-text">Theme</span>
     </button>
-    <button class="nav-btn ghost-danger" id="navLogoutBtn" style="display:none" onclick="logout()">Log out</button>
+    <button class="nav-btn ghost-danger" id="navLogoutBtn" hidden onclick="logout()">Log out</button>
   </div>
 
 </nav>
@@ -3913,7 +3915,7 @@
 <!-- ============================================================
      LANDING VIEW
      ============================================================ -->
-<div class="page" id="view-landing">
+<div class="page" id="view-landing" hidden>
   <div class="landing-wrap">
     <section class="home-hero" aria-labelledby="home-title">
       <div class="home-hero-copy">
@@ -3978,7 +3980,7 @@
         <p>Create a free reader account to join the conversation and, if you choose, receive an email when a new essay or book recommendation is published. Email updates are optional and can be turned off at any time.</p>
       </div>
       <div class="home-subscribe-action">
-        <button class="btn btn-primary" type="button" onclick="goReaderSignup()">Create a reader account <span aria-hidden="true">&rarr;</span></button>
+        <a class="btn btn-primary" href="/account?mode=signup">Create a reader account <span aria-hidden="true">&rarr;</span></a>
       </div>
     </section>
   </div>
@@ -3987,7 +3989,7 @@
 <!-- ============================================================
      ABOUT
      ============================================================ -->
-<div class="page" id="view-about">
+<div class="page" id="view-about" hidden>
   <article class="about-wrap">
     <button class="page-home-link" onclick="goHome()" aria-label="Back to home">Home</button>
 
@@ -4044,7 +4046,7 @@
 <!-- ============================================================
      BOOK RECOMMENDATIONS
      ============================================================ -->
-<div class="page" id="view-books">
+<div class="page" id="view-books" hidden>
   <main class="directory-wrap">
     <button class="page-home-link" onclick="goHome()" aria-label="Back to home">Home</button>
 
@@ -4079,7 +4081,7 @@
 <!-- ============================================================
      HELP RESOURCES
      ============================================================ -->
-<div class="page" id="view-resources">
+<div class="page" id="view-resources" hidden>
   <main class="directory-wrap">
     <button class="page-home-link" onclick="goHome()" aria-label="Back to home">Home</button>
 
@@ -4245,7 +4247,7 @@
 <!-- ============================================================
      READER ACCOUNT
      ============================================================ -->
-<div class="page" id="view-account">
+<div class="page" id="view-account" hidden>
   <div class="login-wrap">
     <div class="login-card account-card">
       <button class="page-home-link" onclick="goHome()" aria-label="Back to home">Home</button>
@@ -4344,7 +4346,7 @@
 <!-- ============================================================
      LOGIN VIEW
      ============================================================ -->
-<div class="page" id="view-login">
+<div class="page" id="view-login" hidden>
 
   <div class="login-wrap">
 
@@ -4410,7 +4412,7 @@
 <!-- ============================================================
      ADMIN DASHBOARD
      ============================================================ -->
-<div class="page" id="view-dashboard">
+<div class="page" id="view-dashboard" hidden>
 
   <div class="admin-wrap">
 
@@ -4550,7 +4552,7 @@
 <!-- ============================================================
      BOOK EDITOR
      ============================================================ -->
-<div class="page" id="view-book-editor">
+<div class="page" id="view-book-editor" hidden>
   <div class="editor-wrap">
     <div class="editor-nav-row"><button class="editor-back-link" type="button" onclick="goDashboard()" aria-label="Back to dashboard"><span aria-hidden="true">←</span> Dashboard</button></div>
 
@@ -4630,7 +4632,7 @@
 <!-- ============================================================
      EDITOR
      ============================================================ -->
-<div class="page" id="view-editor">
+<div class="page" id="view-editor" hidden>
 
   <div class="editor-wrap">
 
@@ -4773,7 +4775,7 @@
 <!-- ============================================================
      PUBLIC BLOG — LIST
      ============================================================ -->
-<div class="page" id="view-blog-list">
+<div class="page" id="view-blog-list" hidden>
 
   <div class="blog-hero">
 
@@ -4810,7 +4812,7 @@
 <!-- ============================================================
      PUBLIC BLOG — SINGLE POST
      ============================================================ -->
-<div class="page" id="view-blog-post">
+<div class="page" id="view-blog-post" hidden>
   <div class="reading-progress" id="readingProgress"></div>
   <div class="post-full" id="publicPostFull"></div>
 
@@ -4991,6 +4993,28 @@ function isSignedIn(){
   return Boolean(getAuthSession()?.access_token);
 }
 
+async function verifyOwnerSession(){
+  const session = getAuthSession();
+  if(!session?.access_token || session.user?.id !== ADMIN_USER_ID) return false;
+  const token = await getAccessToken();
+  if(!token) return false;
+  try{
+    const response = await fetch(`${SUPABASE_AUTH_URL}user`, {
+      headers:{ apikey:SUPABASE_KEY, Authorization:`Bearer ${token}` },
+      cache:'no-store'
+    });
+    if(!response.ok) return false;
+    const user = await response.json();
+    if(user?.id !== ADMIN_USER_ID) return false;
+    const current = getAuthSession();
+    if(current) storeAuthSession({ ...current, user });
+    return true;
+  }catch(error){
+    console.error('Owner session verification failed', error);
+    return false;
+  }
+}
+
 async function authRequest(path, body, accessToken = ''){
   const headers = {
     apikey:SUPABASE_KEY,
@@ -5148,7 +5172,7 @@ function publicationToast(label, delivery){
 
 async function loadPosts(){
   const path = `posts?select=${POST_COLUMNS}&order=created_at.desc`;
-  const useAuth = isSignedIn();
+  const useAuth = isOwner();
   try{
     posts = await supabaseRequest(path, { auth:useAuth });
   }catch(error){
@@ -5227,20 +5251,28 @@ function closeMobileNav(){
   button.setAttribute('aria-label', 'Open navigation menu');
 }
 
+function hideAllPages(){
+  document.querySelectorAll('.page').forEach(page => {
+    page.classList.remove('visible');
+    page.hidden = true;
+    page.setAttribute('aria-hidden','true');
+  });
+}
+
 function showPage(id){
-
   closeMobileNav();
+  const target = document.getElementById(id);
+  if(!target){
+    console.error(`Route target is unavailable: ${id}`);
+    return false;
+  }
 
-  document
-    .querySelectorAll('.page')
-    .forEach(p => p.classList.remove('visible'));
-
-  document
-    .getElementById(id)
-    .classList.add('visible');
+  hideAllPages();
+  target.hidden = false;
+  target.removeAttribute('aria-hidden');
+  target.classList.add('visible');
 
   window.scrollTo(0,0);
-
   syncNavButtons(id);
 
   if(id !== 'view-blog-post'){
@@ -5248,6 +5280,7 @@ function showPage(id){
     const progress = document.getElementById('readingProgress');
     if(progress) progress.style.width = '0';
   }
+  return true;
 }
 
 document.addEventListener('click', event => {
@@ -5269,7 +5302,9 @@ window.addEventListener('resize', () => {
 });
 
 window.addEventListener('hashchange', () => {
-  if(window.location.hash.toLowerCase() === '#admin') goAdminEntry();
+  if(window.location.hash.toLowerCase() !== '#admin') return;
+  if(document.getElementById('view-login')) goAdminEntry();
+  else location.assign('/admin');
 });
 
 function syncNavButtons(id){
@@ -5333,17 +5368,8 @@ function syncNavButtons(id){
       isAdminArea && isAuthed()
     );
 
-  document
-    .getElementById('navAdminBtn')
-    .style.display = isOwner()
-      ? 'inline-flex'
-      : 'none';
-
-  document
-    .getElementById('navLogoutBtn')
-    .style.display = isSignedIn()
-      ? 'inline-flex'
-      : 'none';
+  document.getElementById('navAdminBtn').hidden = !isOwner();
+  document.getElementById('navLogoutBtn').hidden = !isSignedIn();
 
   [
     [document.getElementById('navHomeBtn'), isHome],
@@ -5363,6 +5389,11 @@ function isAuthed(){
 }
 
 function goReaderAccount(){
+  if(!document.getElementById('view-account')){
+    location.assign('/account');
+    return;
+  }
+  const requestedMode = new URLSearchParams(location.search).get('mode');
   pushRoute('/account');
   const form = document.querySelector('#view-account form');
   const preferences = document.getElementById('readerPreferences');
@@ -5385,7 +5416,7 @@ function goReaderAccount(){
     if(dangerZone) dangerZone.hidden = true;
     if(deleteConfirm) deleteConfirm.hidden = true;
     document.querySelector('#view-account .auth-switch').innerHTML = '<span id="readerAuthSwitchCopy">New here?</span> <button type="button" onclick="toggleReaderAuthMode()" id="readerAuthSwitch">Create an account</button>';
-    setReaderAuthMode('signin');
+    setReaderAuthMode(requestedMode === 'signup' ? 'signup' : 'signin');
   }
   showPage('view-account');
   document.title = isSignedIn()
@@ -5394,6 +5425,11 @@ function goReaderAccount(){
 }
 
 function goReaderSignup(){
+  if(!document.getElementById('view-account')){
+    location.assign('/account?mode=signup');
+    return;
+  }
+  history.replaceState(history.state || {}, '', '/account?mode=signup');
   goReaderAccount();
   if(!isSignedIn()) setReaderAuthMode('signup');
 }
@@ -5730,24 +5766,25 @@ function goAbout(){
 }
 
 
-function goAdminEntry(){
+async function goAdminEntry(){
+  if(!document.getElementById('view-login')){
+    location.assign('/admin');
+    return;
+  }
 
   pushRoute('/admin');
+  hideAllPages();
 
-  if(isAuthed()){
-    goDashboard();
-  }else{
-
-    document
-      .getElementById('loginError')
-      .classList
-      .remove('visible');
-
-    document.getElementById('adminEmail').value = '';
-    document.getElementById('pw').value = '';
-
-    showPage('view-login');
+  if(await verifyOwnerSession()){
+    await goDashboard();
+    return;
   }
+
+  if(isOwner()) clearAuthSession();
+  document.getElementById('loginError').classList.remove('visible');
+  document.getElementById('adminEmail').value = '';
+  document.getElementById('pw').value = '';
+  showPage('view-login');
 }
 
 async function attemptLogin(e){
@@ -6077,6 +6114,14 @@ function navigateToPost(post){
 }
 
 window.addEventListener('popstate', () => routeFromLocation(true));
+window.addEventListener('pageshow', event => {
+  if(!event.persisted) return;
+  hideAllPages();
+  Promise.resolve(routeFromLocation(false)).catch(error => {
+    console.error('Could not restore route from browser cache', error);
+    location.reload();
+  });
+});
 
 async function routeFromLocation(restoreBlogPosition = false){
   const match = location.pathname.match(/^\/blog\/([^/]+)\/?$/);
@@ -6094,7 +6139,7 @@ async function routeFromLocation(restoreBlogPosition = false){
   if(location.pathname === '/about' || location.pathname === '/about/') return goAbout();
   if(location.pathname === '/account' || location.pathname === '/account/') return goReaderAccount();
   if(location.pathname === '/admin' || location.pathname === '/admin/') return goAdminEntry();
-  goHome(false);
+  return goHome(false);
 }
 
 function renderTable(){
@@ -7160,6 +7205,10 @@ async function loadCommunity(postId){
 
 function requireReaderSignIn(postId){
   sessionStorage.setItem('mindovermatter_return_post', String(postId));
+  if(!document.getElementById('view-account')){
+    location.assign('/account');
+    return;
+  }
   goReaderAccount();
 }
 
@@ -7291,40 +7340,41 @@ async function copyContactEmail(){
    ============================================================ */
 
 (async function init(){
-
   updateThemeToggle();
   document.getElementById('footerYear').textContent = new Date().getFullYear();
-  showPage('view-landing');
+  hideAllPages();
   document.getElementById('landingPostCount').textContent = 'Loading essays…';
 
   try{
     await consumeAuthCallback();
-    await loadPosts();
-    if(window.location.hash.toLowerCase() === '#admin'){
-      goAdminEntry();
-    }else if(location.pathname.startsWith('/blog/')){
-      routeFromLocation();
-    }else if(location.pathname === '/blog' || location.pathname === '/blog/'){
-      goPublic(false);
-    }else if(location.pathname === '/books' || location.pathname === '/books/'){
-      goBooks();
-    }else if(location.pathname === '/resources' || location.pathname === '/resources/'){
-      goResources();
-    }else if(location.pathname === '/about' || location.pathname === '/about/'){
-      goAbout();
-    }else if(location.pathname === '/account' || location.pathname === '/account/'){
-      goReaderAccount();
-    }else if(location.pathname === '/admin' || location.pathname === '/admin/'){
-      goAdminEntry();
-    }else{
-      goHome(false);
+
+    if(window.location.hash.toLowerCase() === '#admin' || location.pathname === '/admin' || location.pathname === '/admin/'){
+      await goAdminEntry();
+      return;
     }
+
+    if(location.pathname === '/account' || location.pathname === '/account/'){
+      goReaderAccount();
+      return;
+    }
+
+    await loadPosts();
+    await routeFromLocation(false);
   }catch(error){
     console.error(error);
+    hideAllPages();
+    if(location.pathname === '/admin' || location.pathname === '/admin/'){
+      await goAdminEntry();
+      return;
+    }
+    if(location.pathname === '/account' || location.pathname === '/account/'){
+      goReaderAccount();
+      return;
+    }
     document.getElementById('landingPostCount').textContent = 'Essays unavailable';
+    showPage('view-landing');
     showToast('Could not connect to the blog');
   }
-
 })();
 
 </script>

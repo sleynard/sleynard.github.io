@@ -19,8 +19,11 @@ const SPA_PUBLIC_ROUTES = {
   }
 };
 
-const PRIVATE_SELECTORS = [
-  '#view-account',
+const ACCOUNT_SELECTORS = [
+  '#view-account'
+];
+
+const ADMIN_SELECTORS = [
   '#view-login',
   '#view-dashboard',
   '#view-book-editor',
@@ -66,18 +69,6 @@ class AddBodyClass {
     const classes = new Set(current.split(/\s+/).filter(Boolean));
     classes.add(this.className);
     element.setAttribute('class', Array.from(classes).join(' '));
-  }
-}
-
-class PrivateRouteGuard {
-  element(element) {
-    element.append(
-      `<script>(function(){\n` +
-      `var account=window.goReaderAccount;if(typeof account==='function'){window.goReaderAccount=function(){if(!document.getElementById('view-account')){location.assign('/account');return;}return account.apply(this,arguments);};}\n` +
-      `var admin=window.goAdminEntry;if(typeof admin==='function'){window.goAdminEntry=function(){if(!document.getElementById('view-login')){location.assign('/admin');return;}return admin.apply(this,arguments);};}\n` +
-      `})();</script>`,
-      { html: true }
-    );
   }
 }
 
@@ -287,7 +278,8 @@ export async function onRequest(context) {
 
   const url = new URL(context.request.url);
   const path = normalizedPath(url.pathname);
-  const privateShell = path === '/account' || path === '/admin';
+  const accountShell = path === '/account';
+  const adminShell = path === '/admin';
   const standaloneLegalPage = path === '/privacy' || path === '/terms' || path === '/affiliate-disclosure';
   const routeMeta = SPA_PUBLIC_ROUTES[path];
 
@@ -304,11 +296,17 @@ export async function onRequest(context) {
       .on('main', new LegalSiteShell());
   }
 
-  if (!privateShell && !standaloneLegalPage) {
-    for (const selector of PRIVATE_SELECTORS) {
-      rewriter = rewriter.on(selector, new RemoveElement());
+  if (!standaloneLegalPage) {
+    if (!accountShell) {
+      for (const selector of ACCOUNT_SELECTORS) {
+        rewriter = rewriter.on(selector, new RemoveElement());
+      }
     }
-    rewriter = rewriter.on('body', new PrivateRouteGuard());
+    if (!adminShell) {
+      for (const selector of ADMIN_SELECTORS) {
+        rewriter = rewriter.on(selector, new RemoveElement());
+      }
+    }
   }
 
   if (routeMeta) {
