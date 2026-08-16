@@ -1,0 +1,170 @@
+name: Apply responsive design audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-responsive-design-audit.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  polish-and-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply responsive design audit
+        run: python scripts/apply-responsive-design-audit.py
+
+      - name: Static design sanity
+        run: |
+          set -euo pipefail
+          grep -F 'RESPONSIVE DESIGN AUDIT 2026-08-16' index.html
+          grep -F 'Email updates stay off unless you select the option above.' index.html
+          grep -F '#view-blog-list,' index.html
+          grep -F '.signup-legal-note{' index.html
+          git diff --check
+
+      - name: Commit polished site
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git rm scripts/apply-responsive-design-audit.py .github/workflows/apply-responsive-design-audit.yml
+          git commit -m "Polish responsive spacing and visual rhythm"
+          git push
+
+      - name: Wait for custom-domain deployment
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 36); do
+            if curl --fail --silent --show-error --location https://stephenleynard.com/ | grep -Fq 'RESPONSIVE DESIGN AUDIT 2026-08-16'; then
+              echo 'Custom domain is serving the responsive audit.'
+              exit 0
+            fi
+            sleep 5
+          done
+          echo 'Responsive audit did not reach the custom domain during verification.' >&2
+          exit 1
+
+      - name: Install browser audit tooling
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.55.0
+          npx playwright install chromium
+
+      - name: Audit desktop tablet and mobile layouts
+        run: |
+          cat > /tmp/audit.mjs <<'JS'
+          import { chromium } from 'playwright';
+
+          const cases = [
+            {name:'desktop', width:1440, height:1000},
+            {name:'small-desktop', width:1180, height:900},
+            {name:'tablet', width:1024, height:1000},
+            {name:'portrait-tablet', width:768, height:1024},
+            {name:'mobile', width:390, height:844},
+            {name:'small-mobile', width:360, height:800},
+          ];
+
+          const browser = await chromium.launch({headless:true});
+          const failures = [];
+
+          function fail(caseName, pageName, message){
+            failures.push(`${caseName} / ${pageName}: ${message}`);
+          }
+
+          for(const viewport of cases){
+            const context = await browser.newContext({viewport:{width:viewport.width,height:viewport.height}});
+            const page = await context.newPage();
+
+            for(const [pageName,url] of [
+              ['home','https://stephenleynard.com/'],
+              ['blog','https://stephenleynard.com/blog'],
+              ['books','https://stephenleynard.com/books'],
+              ['account','https://stephenleynard.com/account'],
+              ['about','https://stephenleynard.com/about'],
+              ['resources','https://stephenleynard.com/resources'],
+            ]){
+              await page.goto(url,{waitUntil:'networkidle',timeout:60000});
+              await page.waitForTimeout(250);
+              const base = await page.evaluate(() => ({
+                innerWidth:window.innerWidth,
+                bodyWidth:document.body.scrollWidth,
+                htmlWidth:document.documentElement.scrollWidth,
+                fontSize:parseFloat(getComputedStyle(document.body).fontSize),
+              }));
+              if(Math.max(base.bodyWidth,base.htmlWidth) > base.innerWidth + 2){
+                fail(viewport.name,pageName,`horizontal overflow ${Math.max(base.bodyWidth,base.htmlWidth)}px > ${base.innerWidth}px`);
+              }
+              if(base.fontSize < 15){
+                fail(viewport.name,pageName,`body font is unexpectedly small (${base.fontSize}px)`);
+              }
+            }
+
+            await page.goto('https://stephenleynard.com/account',{waitUntil:'networkidle',timeout:60000});
+            await page.evaluate(() => setReaderAuthMode('signup'));
+            const consent = await page.evaluate(() => {
+              const box = document.querySelector('.signup-consent');
+              const legal = document.querySelector('.signup-legal-note');
+              const label = document.querySelector('.consent-label');
+              const submit = document.querySelector('#readerAuthSubmit');
+              const boxRect = box.getBoundingClientRect();
+              const submitRect = submit.getBoundingClientRect();
+              const lc = getComputedStyle(legal);
+              const cc = getComputedStyle(label);
+              return {
+                visible:getComputedStyle(box).display !== 'none',
+                boxWidth:boxRect.width,
+                gapToSubmit:submitRect.top-boxRect.bottom,
+                legalLineHeight:parseFloat(lc.lineHeight),
+                legalFont:parseFloat(lc.fontSize),
+                legalPaddingTop:parseFloat(lc.paddingTop),
+                labelLineHeight:parseFloat(cc.lineHeight),
+                labelFont:parseFloat(cc.fontSize),
+              };
+            });
+            if(!consent.visible) fail(viewport.name,'account','signup consent did not become visible');
+            if(consent.boxWidth > viewport.width + 1) fail(viewport.name,'account','signup consent exceeds viewport');
+            if(consent.legalLineHeight / consent.legalFont < 1.6) fail(viewport.name,'account','legal note line-height is too tight');
+            if(consent.labelLineHeight / consent.labelFont < 1.6) fail(viewport.name,'account','publication option line-height is too tight');
+            if(consent.legalPaddingTop < 12) fail(viewport.name,'account','legal note lacks visual separation');
+
+            await page.goto('https://stephenleynard.com/blog',{waitUntil:'networkidle',timeout:60000});
+            const blog = await page.evaluate(() => {
+              const featured = document.querySelector('.featured-post');
+              const view = document.querySelector('#view-blog-list');
+              return {
+                featuredBackground:featured ? getComputedStyle(featured).backgroundImage : '',
+                pageBackground:getComputedStyle(view).backgroundImage,
+                wrapWidth:document.querySelector('.blog-wrap')?.getBoundingClientRect().width || 0,
+              };
+            });
+            if(blog.featuredBackground && blog.featuredBackground !== 'none') fail(viewport.name,'blog','featured essay still has a localized gradient');
+            if(!blog.pageBackground.includes('linear-gradient')) fail(viewport.name,'blog','page-wide subtle gradient missing');
+            if(blog.wrapWidth > viewport.width + 1) fail(viewport.name,'blog','blog content exceeds viewport');
+
+            await page.goto('https://stephenleynard.com/books',{waitUntil:'networkidle',timeout:60000});
+            const books = await page.evaluate(() => ({
+              pageBackground:getComputedStyle(document.querySelector('#view-books')).backgroundImage,
+              cards:[...document.querySelectorAll('.book-card')].slice(0,6).map(el=>el.getBoundingClientRect().width),
+            }));
+            if(!books.pageBackground.includes('linear-gradient')) fail(viewport.name,'books','page-wide subtle gradient missing');
+            if(books.cards.some(width => width > viewport.width + 1)) fail(viewport.name,'books','book card exceeds viewport');
+
+            await context.close();
+          }
+
+          await browser.close();
+          if(failures.length){
+            console.error('Responsive audit failures:\n' + failures.map(x=>' - '+x).join('\n'));
+            process.exit(1);
+          }
+          console.log('Responsive audit passed at 1440, 1180, 1024, 768, 390, and 360 CSS-pixel widths.');
+          JS
+          node /tmp/audit.mjs
