@@ -18,12 +18,16 @@ const PUBLIC_ROUTES = {
     description: 'Learn about Stephen Leynard, the psychology graduate and writer behind Mind Over Matter.'
   },
   '/privacy': {
-    title: 'Privacy | Mind Over Matter',
-    description: 'Read the privacy information for Mind Over Matter and stephenleynard.com.'
+    title: 'Privacy Policy | Mind Over Matter',
+    description: 'Read the privacy policy for Mind Over Matter and stephenleynard.com.'
+  },
+  '/terms': {
+    title: 'Terms of Use | Mind Over Matter',
+    description: 'Read the terms governing use of Mind Over Matter and stephenleynard.com.'
   },
   '/affiliate-disclosure': {
     title: 'Affiliate Disclosure | Mind Over Matter',
-    description: 'Read the affiliate disclosure for Mind Over Matter and learn how affiliate links are handled.'
+    description: 'Read the affiliate disclosure for Mind Over Matter and learn how affiliate links and material connections are handled.'
   }
 };
 
@@ -62,6 +66,12 @@ class SetAttribute {
   }
 }
 
+class AddTermsLink {
+  element(element) {
+    element.append('<a href="/terms">Terms</a>', { html: true });
+  }
+}
+
 class RedirectPrivateNavigation {
   element(element) {
     element.append(
@@ -95,7 +105,9 @@ export async function onRequest(context) {
     for (const selector of PRIVATE_SELECTORS) {
       rewriter = rewriter.on(selector, new RemoveElement());
     }
-    rewriter = rewriter.on('body', new RedirectPrivateNavigation());
+    rewriter = rewriter
+      .on('.footer-links', new AddTermsLink())
+      .on('body', new RedirectPrivateNavigation());
   }
 
   if (routeMeta) {
