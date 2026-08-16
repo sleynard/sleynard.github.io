@@ -10,15 +10,26 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     steps:
-      - name: Verify homepage frontend
+      - name: Verify public homepage shell
         run: |
           set -euo pipefail
           curl --fail --silent --show-error --location --retry 3 --retry-delay 2 https://stephenleynard.com/ -o /tmp/home.html
           grep -F "const POST_VIEW_SESSION_KEY = 'mindovermatter_viewed_posts';" /tmp/home.html
-          grep -F 'id="readerDangerZone"' /tmp/home.html
-          grep -F '<th>Views</th>' /tmp/home.html
           grep -F "location.pathname === '/admin'" /tmp/home.html
-          grep -F 'class="publish-state' /tmp/home.html
+          if grep -Fq 'id="readerDangerZone"' /tmp/home.html; then
+            echo 'Private account DOM should be stripped from the public homepage.' >&2
+            exit 1
+          fi
+      - name: Verify private routed shells
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --retry 3 --retry-delay 2 https://stephenleynard.com/account -o /tmp/account.html
+          curl --fail --silent --show-error --location --retry 3 --retry-delay 2 https://stephenleynard.com/admin -o /tmp/admin.html
+          grep -F 'id="readerDangerZone"' /tmp/account.html
+          grep -F 'Delete my account' /tmp/account.html
+          grep -F '<th>Views</th>' /tmp/admin.html
+          grep -F 'class="publish-state' /tmp/admin.html
+          grep -F 'Admin access' /tmp/admin.html
       - name: Verify legal pages
         run: |
           set -euo pipefail
@@ -27,13 +38,10 @@ jobs:
           grep -F 'simple per-article view count' /tmp/privacy.html
           grep -F 'Signed-in readers can permanently delete their own reader account directly' /tmp/privacy.html
           grep -F 'Signed-in readers may permanently delete their own reader account through My Reader Account' /tmp/terms.html
-      - name: Verify routed pages
+      - name: Verify article route
         run: |
           set -euo pipefail
-          admin_code=$(curl --silent --show-error --location -o /tmp/admin.html -w '%{http_code}' https://stephenleynard.com/admin)
           post_code=$(curl --silent --show-error --location -o /tmp/post.html -w '%{http_code}' https://stephenleynard.com/blog/test)
-          test "$admin_code" = "200"
           test "$post_code" = "200"
-          grep -F 'Admin access' /tmp/admin.html
           grep -F 'Test' /tmp/post.html
-          echo "Live verification passed: homepage, privacy, terms, admin, and blog route are serving successfully."
+          echo "Live verification passed for public, private, legal, and article routes."
