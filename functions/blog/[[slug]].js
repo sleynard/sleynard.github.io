@@ -16,11 +16,40 @@ function excerpt(value = '') {
   return text.length > 190 ? `${text.slice(0, 187).trim()}…` : text;
 }
 
+function removeElementById(html, id) {
+  const openTagPattern = new RegExp(`<([a-z][a-z0-9-]*)\\b[^>]*\\bid=["']${id}["'][^>]*>`, 'i');
+  const openMatch = openTagPattern.exec(html);
+  if (!openMatch) return html;
+
+  const tagName = openMatch[1];
+  const openStart = openMatch.index;
+  const openEnd = openStart + openMatch[0].length;
+
+  // Non-greedy regex can't find the true matching close tag once the
+  // element contains nested tags of the same name, so walk the tag
+  // stack manually instead.
+  const tagBoundaryPattern = new RegExp(`<${tagName}\\b[^>]*>|<\\/${tagName}>`, 'gi');
+  tagBoundaryPattern.lastIndex = openEnd;
+  let depth = 1;
+  let boundaryMatch;
+  while ((boundaryMatch = tagBoundaryPattern.exec(html))) {
+    if (boundaryMatch[0].toLowerCase().startsWith('</')) {
+      depth -= 1;
+      if (depth === 0) {
+        const closeEnd = boundaryMatch.index + boundaryMatch[0].length;
+        return html.slice(0, openStart) + html.slice(closeEnd);
+      }
+    } else {
+      depth += 1;
+    }
+  }
+  return html;
+}
+
 function stripPrivateViews(html) {
   const ids = ['view-account', 'view-login', 'view-dashboard', 'view-book-editor', 'view-editor', 'deleteModal', 'bookDeleteModal'];
   for (const id of ids) {
-    const pattern = new RegExp(`<([a-z][a-z0-9-]*)\\b[^>]*\\bid=["']${id}["'][^>]*>[\\s\\S]*?<\\/\\1>`, 'i');
-    html = html.replace(pattern, '');
+    html = removeElementById(html, id);
   }
   return html;
 }
