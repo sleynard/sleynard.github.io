@@ -1,5 +1,5 @@
 export async function onRequest({ env }) {
-  const mailingAddress = String(env.NEWSLETTER_PUBLIC_MAILING_ADDRESS || '').trim();
+  const mailingAddress = String(env.NEWSLETTER_MAILING_ADDRESS || '').trim();
   const senderName = String(env.NEWSLETTER_SENDER_NAME || 'Stephen Leynard').trim();
   const contactEmail = String(env.NEWSLETTER_REPLY_TO || 'hello@stephenleynard.com').trim();
   const configured = Boolean(
