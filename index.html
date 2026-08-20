@@ -6981,6 +6981,11 @@ function renderPublicList(){
 
   if(list.length === 0){
 
+    if(featured){
+      wrap.innerHTML = '';
+      return;
+    }
+
     wrap.innerHTML = `
       <div class="empty-blog">
         <span class="eyebrow">
