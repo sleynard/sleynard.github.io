@@ -1344,6 +1344,21 @@
   }
 
   .comment-author{ color:var(--gold-soft); font-weight:700; }
+  .owner-tag,
+  .comment-pending-tag{
+    display:inline-flex;
+    align-items:center;
+    font-size:10px;
+    font-weight:700;
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+    padding:2px 7px;
+    border-radius:100px;
+    margin-left:6px;
+    vertical-align:middle;
+  }
+  .owner-tag{ color:var(--gold); background:var(--gold-15); }
+  .comment-pending-tag{ color:var(--status-draft); background:var(--status-draft-15); }
   .comment-body{ color:var(--ink-soft); line-height:1.65; white-space:pre-wrap; }
 
   .account-card{
@@ -4545,6 +4560,29 @@
       </div>
     </section>
 
+    <section class="admin-secondary-section" aria-labelledby="adminCommentsHeading">
+      <div class="admin-section-head">
+        <div>
+          <div class="eyebrow">Moderation</div>
+          <h2 id="adminCommentsHeading">Comments awaiting approval</h2>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:46%">Comment</th>
+              <th>Reader</th>
+              <th>Posted</th>
+              <th style="text-align:right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="pendingCommentsTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
   </div>
 
 </div>
@@ -5191,6 +5229,14 @@ async function loadBooks(){
   return books;
 }
 
+async function loadPendingComments(){
+  pendingComments = await supabaseRequest(
+    'comments?select=id,body,created_at,post_id,profiles(display_name),posts(title,slug)&approved=eq.false&order=created_at.desc',
+    { auth:true }
+  );
+  return pendingComments;
+}
+
 function deriveExcerpt(body){
   const text = String(body || '')
     .replace(/\s+/g, ' ')
@@ -5202,6 +5248,7 @@ function deriveExcerpt(body){
 
 let posts = [];
 let books = [];
+let pendingComments = [];
 let currentFilter = 'all';
 let currentEditId = null;
 let pendingDeleteId = null;
@@ -5878,6 +5925,12 @@ async function goDashboard(){
       books = [];
       bookLoadFailed = true;
     }
+    try{
+      await loadPendingComments();
+    }catch(error){
+      console.error(error);
+      pendingComments = [];
+    }
     renderDashboard();
     loadAdminInsights();
   }catch(error){
@@ -5913,6 +5966,7 @@ function renderDashboard(){
   renderStats();
   renderTable();
   renderAdminBooks();
+  renderPendingComments();
 }
 
 function renderStats(){
@@ -6130,6 +6184,8 @@ async function routeFromLocation(restoreBlogPosition = false){
     const slug = decodeURIComponent(match[1]);
     const post = posts.find(item => item.slug === slug);
     if(post) return openPublicPost(post.id, false);
+    showToast('That essay could not be found');
+    return goPublic(false);
   }
   if(location.pathname === '/blog' || location.pathname === '/blog/'){
     return goPublic(false,{ restoreScroll:restoreBlogPosition });
@@ -6139,6 +6195,7 @@ async function routeFromLocation(restoreBlogPosition = false){
   if(location.pathname === '/about' || location.pathname === '/about/') return goAbout();
   if(location.pathname === '/account' || location.pathname === '/account/') return goReaderAccount();
   if(location.pathname === '/admin' || location.pathname === '/admin/') return goAdminEntry();
+  if(location.pathname !== '/' && location.pathname !== '') showToast('That page could not be found');
   return goHome(false);
 }
 
@@ -6349,6 +6406,59 @@ function renderAdminBooks(){
       </td>
     </tr>
   `).join('');
+}
+
+function renderPendingComments(){
+  const body = document.getElementById('pendingCommentsTableBody');
+  if(!body) return;
+
+  if(!pendingComments.length){
+    body.innerHTML = `<tr class="empty-row"><td colspan="4">No comments awaiting approval.</td></tr>`;
+    return;
+  }
+
+  body.innerHTML = pendingComments.map(comment => `
+    <tr>
+      <td class="post-title-cell">
+        <div class="pexcerpt">${escapeHtml(comment.body)}</div>
+        <div class="pexcerpt" style="margin-top:4px">On &ldquo;${escapeHtml(comment.posts?.title || 'Untitled')}&rdquo;</div>
+      </td>
+      <td class="date-cell">${escapeHtml(comment.profiles?.display_name || 'Reader')}</td>
+      <td class="date-cell">${fmtDate(comment.created_at)}</td>
+      <td>
+        <div class="actions-cell">
+          <button class="btn-icon" title="Approve" aria-label="Approve comment" onclick="approvePendingComment(${comment.id})">&#10003;</button>
+          <button class="btn-icon danger" title="Delete" aria-label="Delete comment" onclick="deletePendingComment(${comment.id})">&times;</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+async function approvePendingComment(commentId){
+  try{
+    await supabaseRequest(`comments?id=eq.${commentId}`, { method:'PATCH', auth:true, body:JSON.stringify({ approved:true }) });
+    showToast('Comment approved');
+    await loadPendingComments();
+    renderPendingComments();
+    loadAdminInsights();
+  }catch(error){
+    console.error(error);
+    showToast('Could not approve comment');
+  }
+}
+
+async function deletePendingComment(commentId){
+  try{
+    await supabaseRequest(`comments?id=eq.${commentId}`, { method:'DELETE', auth:true });
+    showToast('Comment deleted');
+    await loadPendingComments();
+    renderPendingComments();
+    loadAdminInsights();
+  }catch(error){
+    console.error(error);
+    showToast('Could not delete comment');
+  }
 }
 
 function openBookEditor(id){
@@ -7184,7 +7294,7 @@ async function loadCommunity(postId){
   try{
     const [likes, comments] = await Promise.all([
       supabaseRequest(`post_likes?select=user_id&post_id=eq.${postId}`),
-      supabaseRequest(`comments?select=id,user_id,body,created_at,profiles(display_name)&post_id=eq.${postId}&order=created_at.asc`)
+      supabaseRequest(`comments?select=id,user_id,body,created_at,approved,profiles(display_name)&post_id=eq.${postId}&order=created_at.asc`)
     ]);
     const userId = getAuthSession()?.user?.id;
     document.getElementById('likeCount').textContent = likes.length;
@@ -7197,9 +7307,10 @@ async function loadCommunity(postId){
     ` : `<p style="color:var(--ink-soft)"><button class="btn btn-outline" onclick="requireReaderSignIn(${postId})">Sign in</button> to like posts and join the conversation.</p>`;
     document.getElementById('commentsList').innerHTML = comments.length ? comments.map(comment => `
       <article class="comment-card">
-        <div class="comment-head"><span class="comment-author">${escapeHtml(comment.profiles?.display_name || 'Reader')}</span><span>${fmtDate(comment.created_at)}</span></div>
+        <div class="comment-head"><span class="comment-author">${escapeHtml(comment.profiles?.display_name || 'Reader')}${comment.user_id === ADMIN_USER_ID ? '<span class="owner-tag">Owner</span>' : ''}${!comment.approved ? '<span class="comment-pending-tag">Pending review</span>' : ''}</span><span>${fmtDate(comment.created_at)}</span></div>
         <div class="comment-body">${escapeHtml(comment.body)}</div>
         ${(userId === comment.user_id || isOwner()) ? `<button class="btn-text" style="color:var(--danger)" onclick="deleteComment(${comment.id},${postId})">Delete</button>` : ''}
+        ${(!comment.approved && isOwner()) ? `<button class="btn-text" onclick="approveComment(${comment.id},${postId})">Approve</button>` : ''}
       </article>
     `).join('') : '<p style="color:var(--ink-faint)">Be the first to comment.</p>';
   }catch(error){
@@ -7252,6 +7363,17 @@ async function deleteComment(commentId, postId){
   }catch(error){
     console.error(error);
     showToast('Could not delete comment');
+  }
+}
+
+async function approveComment(commentId, postId){
+  try{
+    await supabaseRequest(`comments?id=eq.${commentId}`, { method:'PATCH', auth:true, body:JSON.stringify({ approved:true }) });
+    showToast('Comment approved');
+    await loadCommunity(postId);
+  }catch(error){
+    console.error(error);
+    showToast('Could not approve comment');
   }
 }
 
